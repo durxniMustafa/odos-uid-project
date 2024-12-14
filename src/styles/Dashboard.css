@@ -1,0 +1,742 @@
+/* src/styles/Dashboard.css */
+
+/* Reset and Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f3f2f7;
+    color: #333;
+}
+
+/* Notification */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4caf50;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.5s ease forwards;
+    z-index: 1001;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* General Styling */
+.dashboard-container {
+    min-height: 100vh;
+    padding: 40px;
+    background-color: #f3f2f7;
+    position: relative;
+}
+
+/* AI Magic Upload Popup */
+.ai-magic-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(128, 0, 128, 0.8); /* Semi-transparent purple overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002;
+    animation: fadeInOverlay 0.5s ease forwards;
+}
+
+@keyframes fadeInOverlay {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.ai-magic-content {
+    background: radial-gradient(circle at top left, #a500a5, #800080);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    position: relative;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+    animation: pulse 2s infinite;
+}
+
+.ai-spinner {
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.7);
+    }
+    50% {
+        box-shadow: 0px 0px 20px rgba(255, 255, 255, 1);
+    }
+    100% {
+        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.7);
+    }
+}
+
+/* Search and Add Section */
+.search-add-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 40px 0;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 250px;
+    padding: 15px 20px;
+    font-size: 16px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    box-shadow: inset 0px 6px 12px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease, border 0.3s ease;
+}
+
+.search-input:focus {
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+    border-color: #800080;
+    outline: none;
+}
+
+.add-export-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.add-patient-button,
+.export-button {
+    background-color: #800080;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-patient-button:hover,
+.export-button:hover {
+    background-color: #660066;
+    transform: translateY(-3px);
+}
+
+/* Patients List */
+.patients-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(700px, 1fr));
+    gap: 40px;
+}
+
+/* Patient Card */
+.patient-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.patient-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Patient Details */
+.patient-details {
+    flex: 1;
+    margin-right: 30px;
+}
+
+.patient-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border: 3px solid #800080;
+    transition: transform 0.3s ease;
+}
+
+.patient-photo:hover {
+    transform: scale(1.05);
+}
+
+.patient-info p {
+    margin: 8px 0;
+    font-size: 16px;
+    color: #555;
+}
+
+.patient-info strong {
+    font-weight: 700;
+    color: #800080;
+}
+
+/* File Upload */
+.file-upload-label {
+    font-size: 14px;
+    margin: 15px 0;
+    display: block;
+    color: #800080;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.file-upload-input {
+    display: none; /* Hide the file input */
+}
+
+/* Upload Status */
+.upload-status {
+    margin-top: 10px;
+}
+
+.upload-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #800080;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+
+/* Enhanced Progress Bar with AI Magic */
+.progress-bar-container {
+    width: 100%;
+    height: 12px;
+    background-color: #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #800080, #a500a5);
+    background-size: 200% 100%;
+    animation: gradientShift 2s linear infinite;
+    width: 0%;
+    transition: width 0.4s ease;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 0%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+/* Action Buttons */
+.patient-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.edit-button,
+.remove-patient-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.edit-button {
+    background-color: #800080;
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #660066;
+    transform: translateY(-2px);
+}
+
+.remove-patient-button {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.remove-patient-button:hover {
+    background-color: #cc0000;
+    transform: translateY(-2px);
+}
+
+/* Brain Viewer on Right */
+.brain-viewer-container {
+    width: 500px; /* Adjust as needed */
+    height: 350px; /* Adjust as needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    border: 2px solid #ddd;
+    background-color: #f3f2f7;
+    overflow: hidden;
+    box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.brain-viewer-container:hover {
+    transform: scale(1.02);
+}
+
+.brain-viewer-container canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Brain Viewer Wrapper */
+.brain-viewer-wrapper {
+    width: 100%;
+    height: 100%;
+    margin-bottom: 20px;
+}
+
+/* Brain File Info */
+.brain-file-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.brain-file-name {
+    font-size: 14px;
+    color: #555;
+}
+
+/* Brain File Actions */
+.brain-file-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+    justify-content: center;
+}
+
+.view-brain-file-button,
+.remove-brain-file-button {
+    background-color: #800080;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.view-brain-file-button {
+    background-color: #4caf50;
+}
+
+.view-brain-file-button:hover {
+    background-color: #388e3c;
+    transform: translateY(-2px);
+}
+
+.remove-brain-file-button {
+    background-color: #ff4d4d;
+}
+
+.remove-brain-file-button:hover {
+    background-color: #cc0000;
+    transform: translateY(-2px);
+}
+
+/* Brain Viewer Error Message */
+.brain-viewer-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #ff4d4d;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Modal Styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: white;
+    border-radius: 20px;
+    width: 500px;
+    max-width: 90%;
+    padding: 30px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease;
+    text-align: center;
+}
+
+.large-modal {
+    width: 80%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #800080;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-content label {
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    color: #555;
+}
+
+.modal-content input,
+.modal-content textarea {
+    width: 100%;
+    padding: 12px 18px;
+    margin: 10px 0;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    background-color: #f3f2f7;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus {
+    border: 1px solid #800080;
+    box-shadow: 0px 0px 5px rgba(128, 0, 128, 0.3);
+    outline: none;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.large-brain-viewer {
+    width: 100%;
+    height: 100%;
+    flex: 1;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+    gap: 10px;
+}
+
+.page-button {
+    background-color: #800080;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.page-button:hover {
+    background-color: #660066;
+    transform: translateY(-2px);
+}
+
+.page-button.active {
+    background-color: #a500a5;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .brain-viewer-container {
+        width: 400px;
+        height: 300px;
+    }
+}
+
+@media (max-width: 992px) {
+    .patient-card {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .patient-details {
+        margin-right: 0;
+        text-align: center;
+    }
+
+    .brain-viewer-container {
+        width: 100%;
+        height: 300px;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-add-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .search-input {
+        width: 100%;
+    }
+
+    .add-export-buttons {
+        justify-content: center;
+    }
+
+    .patient-card {
+        padding: 20px;
+    }
+
+    .brain-viewer-container {
+        height: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .brain-viewer-container {
+        height: 200px;
+    }
+}
+
+/* AI Magic Popup Styles */
+.ai-magic-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(128, 0, 128, 0.8); /* Semi-transparent purple overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002;
+    animation: fadeInOverlay 0.5s ease forwards;
+}
+
+@keyframes fadeInOverlay {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.ai-magic-content {
+    background: radial-gradient(circle at top left, #a500a5, #800080);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    position: relative;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+    animation: pulse 2s infinite;
+}
+
+.ai-spinner {
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.7);
+    }
+    50% {
+        box-shadow: 0px 0px 20px rgba(255, 255, 255, 1);
+    }
+    100% {
+        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.7);
+    }
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Large Modal Styling */
+.large-modal .brain-viewer-wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+.large-modal .brain-viewer-wrapper canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+/* src/styles/BrainViewer.css */
+
+/* Existing styles... */
+
+/* Brain Viewer Controls */
+.brain-viewer-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+    z-index: 1003; /* Above the viewer */
+}
+
+.reset-button,
+.fullscreen-button {
+    background-color: #800080;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.reset-button:hover,
+.fullscreen-button:hover {
+    background-color: #660066;
+    transform: translateY(-2px);
+}
+
+/* Adjust z-index for the brain-viewer-container to accommodate controls */
+.brain-viewer-container {
+    position: relative;
+    /* Existing styles... */
+}
+/* src/styles/Dashboard.css */
+
+/* Existing styles... */
+
+/* Error Text Styling */
+.error-text {
+    color: #ff4d4d;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Dropdown and Multi-Select Styling */
+.modal-content select {
+    height: 40px;
+}
+
+.modal-content select[multiple] {
+    height: auto;
+}
+
+/* Ensure the Brain Viewer Container accommodates absolute positioning of controls */
+.brain-viewer-container {
+    position: relative;
+    /* Existing styles... */
+}
