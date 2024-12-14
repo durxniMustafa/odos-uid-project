@@ -6,6 +6,8 @@ import BrainViewer from "./BrainViewer"
 import Navbar from "../components/Navbar";
 import UserProfile from "./UserProfile";// Import UserProfile
 import { v4 as uuidv4 } from "uuid";
+import { FaUpload, FaCheckCircle } from 'react-icons/fa';
+import { Link } from "react-router-dom"; // Add this import
 
 function Dashboard() {
     const [patients, setPatients] = useState(() => {
@@ -406,49 +408,11 @@ function Dashboard() {
                                         <strong>Address:</strong> {patient.address}
                                     </p>
                                 </div>
-                                {/* File Upload */}
-                                <label
-                                    className="file-upload-label"
-                                    htmlFor={`upload-${patient.id}`}
-                                >
-                                    Upload Brain Files:
-                                </label>
-                                <input
-                                    type="file"
-                                    id={`upload-${patient.id}`}
-                                    accept=".glb"
-                                    multiple
-                                    onChange={(e) =>
-                                        handleFileUpload(patient.id, e.target.files)
-                                    }
-                                    className="file-upload-input"
-                                />
-                                {/* Upload Status */}
-                                {Object.keys(patient.uploadProgress).length > 0 && (
-                                    <div className="upload-status">
-                                        {Object.entries(patient.uploadProgress).map(
-                                            ([fileId, progress]) => (
-                                                <div key={fileId} className="upload-progress">
-                                                    <div className="spinner"></div>
-                                                    <div className="progress-bar-container">
-                                                        <div
-                                                            className="progress-bar"
-                                                            style={{ width: `${progress}%` }}
-                                                        ></div>
-                                                    </div>
-                                                </div>
-                                            )
-                                        )}
-                                    </div>
-                                )}
                                 {/* Action Buttons */}
                                 <div className="patient-actions">
-                                    <button
-                                        className="edit-button"
-                                        onClick={() => handleEditPatient(patient)}
-                                    >
-                                        Edit
-                                    </button>
+                                    <Link to={`/patient/${patient.id}`} className="view-details-button">
+                                        View Details
+                                    </Link>
                                     <button
                                         className="remove-patient-button"
                                         onClick={() => handleRemovePatient(patient.id)}
@@ -456,40 +420,6 @@ function Dashboard() {
                                         Remove
                                     </button>
                                 </div>
-                            </div>
-
-                            {/* Brain Viewer on Right */}
-                            <div className="brain-viewer-container">
-                                {patient.brainFiles.length > 0 ? (
-                                    patient.brainFiles.map((brainFile) => (
-                                        <div key={brainFile.id} className="brain-viewer-wrapper">
-                                            <BrainViewer file={brainFile.url} />
-                                            <div className="brain-file-info">
-                                                <p className="brain-file-name">{brainFile.name}</p>
-                                                <div className="brain-file-actions">
-                                                    <button
-                                                        className="view-brain-file-button"
-                                                        onClick={() =>
-                                                            handleViewBrainImage(brainFile)
-                                                        }
-                                                    >
-                                                        View Larger
-                                                    </button>
-                                                    <button
-                                                        className="remove-brain-file-button"
-                                                        onClick={() =>
-                                                            handleRemoveBrainFile(patient.id, brainFile.id)
-                                                        }
-                                                    >
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No brain image uploaded</p>
-                                )}
                             </div>
                         </div>
                     ))
@@ -521,6 +451,7 @@ function Dashboard() {
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <h2>Add New Patient</h2>
                         <div className="modal-content">
+                            {/* Existing form fields */}
                             <label htmlFor="add-name">
                                 Name:
                                 <input
@@ -622,7 +553,7 @@ function Dashboard() {
                 </div>
             )}
         </div>
-    )
-};
+    );
+}
 
 export default Dashboard;

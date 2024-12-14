@@ -1,0 +1,979 @@
+# 2. `PatientDetail.css`
+
+### **Key Design Principles:**
+
+- **Clean and Minimalistic:** Emphasizes whitespace and clear typography.
+- **Consistent Color Scheme:** Utilizes harmonious colors with sufficient contrast.
+- **Modern Typography:** Uses modern fonts with appropriate sizing and weights.
+- **Responsive Design:** Ensures the layout adapts seamlessly across devices.
+- **Interactive Elements:** Incorporates smooth transitions and hover effects for better user interaction.
+- **Sophisticated Animations:** Enhances user experience with subtle animations.
+
+### **Enhanced `PatientDetail.css`:**
+
+```css
+/* src/styles/PatientDetail.css */
+
+/* =====================================================
+   1. Reset and Base Styles
+   ===================================================== */
+
+/* Reset CSS */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* =====================================================
+   2. Container and Layout Styles
+   ===================================================== */
+
+.patient-detail-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 0;
+}
+
+/* =====================================================
+   3. Navbar Integration
+   ===================================================== */
+
+/* Ensure the Navbar has a fixed position or appropriate z-index if overlapping occurs */
+/* .navbar { ... } */
+
+/* =====================================================
+   4. Notification Styles
+   ===================================================== */
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4caf50;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.5s ease forwards;
+    z-index: 1001;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* =====================================================
+   5. Back Button Styles
+   ===================================================== */
+
+.back-button {
+    background-color: #6a1b9a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #5e1480;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* =====================================================
+   6. Header Styles
+   ===================================================== */
+
+.detail-header {
+    font-size: 28px;
+    color: #800080;
+    margin-bottom: 30px;
+    text-align: center;
+    position: relative;
+}
+
+.detail-header::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background-color: #800080;
+    margin: 10px auto 0;
+    border-radius: 2px;
+}
+
+/* =====================================================
+   7. Patient Information Styles
+   ===================================================== */
+
+.patient-info {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.patient-info:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.patient-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 30px;
+    border: 4px solid #800080;
+    transition: transform 0.3s ease;
+}
+
+.patient-photo:hover {
+    transform: scale(1.05);
+}
+
+.patient-details {
+    flex: 1;
+}
+
+.patient-details p {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #555;
+}
+
+.patient-details strong {
+    font-weight: 700;
+    color: #800080;
+}
+
+/* =====================================================
+   8. Notes Section Styles
+   ===================================================== */
+
+.notes-section {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.notes-section h3 {
+    font-size: 18px;
+    color: #800080;
+    margin-bottom: 10px;
+}
+
+.view-notes p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.edit-notes-button {
+    background-color: #4caf50;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.edit-notes-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.edit-notes-button svg {
+    font-size: 14px;
+}
+
+.edit-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.edit-notes textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    resize: vertical;
+    font-size: 14px;
+    background-color: #f3f2f7;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.edit-notes textarea:focus {
+    border: 1px solid #800080;
+    box-shadow: 0 0 5px rgba(128, 0, 128, 0.3);
+    outline: none;
+}
+
+.notes-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+}
+
+.save-button,
+.cancel-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.save-button {
+    background-color: #4caf50;
+    color: white;
+}
+
+.save-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cancel-button {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.cancel-button:hover {
+    background-color: #cc0000;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* =====================================================
+   9. File Upload Section Styles
+   ===================================================== */
+
+.file-upload-section {
+    margin-bottom: 30px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.file-upload-label {
+    font-size: 16px;
+    margin-bottom: 10px;
+    display: block;
+    color: #800080;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.file-upload-input {
+    display: none; /* Hide the actual file input */
+}
+
+.upload-button {
+    display: inline-flex;
+    align-items: center;
+    background-color: #6a1b9a;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.upload-button:hover {
+    background-color: #5e1480;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.file-upload-icon {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+/* =====================================================
+   10. AI Magic Progress Bar Styles
+   ===================================================== */
+
+.ai-magic-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(128, 0, 128, 0.8); /* Semi-transparent purple overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002;
+    animation: fadeInOverlay 0.5s ease forwards;
+}
+
+@keyframes fadeInOverlay {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.ai-magic-content {
+    background: radial-gradient(circle at top left, #a500a5, #800080);
+    padding: 40px 60px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    animation: pulse 2s infinite;
+}
+
+.ai-spinner {
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 1);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    }
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 12px;
+    background-color: #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #800080, #a500a5);
+    background-size: 200% 100%;
+    animation: gradientShift 2s linear infinite;
+    width: 0%;
+    transition: width 0.4s ease;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 0%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+/* =====================================================
+   11. Brain Viewer Section Styles
+   ===================================================== */
+
+.brain-viewer-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 40px;
+}
+
+.brain-viewer-wrapper {
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.brain-viewer-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.brain-viewer-container {
+    width: 100%;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    border: 2px solid #ddd;
+    background-color: #f3f2f7;
+    overflow: hidden;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.brain-viewer-container:hover {
+    transform: scale(1.02);
+}
+
+.brain-viewer-container canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.brain-file-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.brain-file-name {
+    font-size: 14px;
+    color: #555;
+}
+
+.brain-file-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.view-brain-file-button,
+.remove-brain-file-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #6a1b9a;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.view-brain-file-button {
+    background-color: #4caf50;
+}
+
+.view-brain-file-button:hover {
+    background-color: #388e3c;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.remove-brain-file-button {
+    background-color: #ff4d4d;
+}
+
+.remove-brain-file-button:hover {
+    background-color: #cc0000;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.no-upload-message {
+    font-size: 16px;
+    color: #555;
+    text-align: center;
+}
+
+/* =====================================================
+   12. Share Section Styles
+   ===================================================== */
+
+.share-section {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.share-button {
+    background-color: #6a1b9a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.share-button:hover {
+    background-color: #5e1480;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.share-button svg {
+    font-size: 18px;
+}
+
+/* =====================================================
+   13. Modal Styles
+   ===================================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6); /* Darker overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: white;
+    border-radius: 20px;
+    width: 600px;
+    max-width: 95%;
+    padding: 30px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.5s ease forwards;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.large-modal {
+    width: 80%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #800080;
+}
+
+.large-brain-viewer {
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+}
+
+.cancel-button {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.cancel-button:hover {
+    background-color: #cc0000;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.save-button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.save-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* =====================================================
+   14. AI Magic Progress Bar Styles
+   ===================================================== */
+
+/* Reusing existing AI Magic styles for consistency */
+
+.ai-magic-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(128, 0, 128, 0.8); /* Semi-transparent purple overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1002;
+    animation: fadeInOverlay 0.5s ease forwards;
+}
+
+@keyframes fadeInOverlay {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.ai-magic-content {
+    background: radial-gradient(circle at top left, #a500a5, #800080);
+    padding: 40px 60px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    animation: pulse 2s infinite;
+}
+
+.ai-spinner {
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 1);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    }
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 12px;
+    background-color: #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #800080, #a500a5);
+    background-size: 200% 100%;
+    animation: gradientShift 2s linear infinite;
+    width: 0%;
+    transition: width 0.4s ease;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 0%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+/* =====================================================
+   15. Share Section Styles
+   ===================================================== */
+
+/* Reusing share-section styles */
+
+.share-section {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.share-button {
+    background-color: #6a1b9a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.share-button:hover {
+    background-color: #5e1480;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.share-button svg {
+    font-size: 18px;
+}
+
+/* =====================================================
+   16. Modal Styles
+   ===================================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6); /* Darker overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: white;
+    border-radius: 20px;
+    width: 600px;
+    max-width: 95%;
+    padding: 30px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.5s ease forwards;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.large-modal {
+    width: 80%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #800080;
+}
+
+.large-brain-viewer {
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+}
+
+.cancel-button {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.cancel-button:hover {
+    background-color: #cc0000;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.save-button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.save-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* =====================================================
+   17. Responsive Design Enhancements
+   ===================================================== */
+
+@media (max-width: 1200px) {
+    .brain-viewer-section {
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    .patient-info {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .patient-photo {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+    .brain-viewer-section {
+        grid-template-columns: 1fr;
+    }
+
+    .large-modal {
+        width: 90%;
+        height: 90%;
+    }
+}
+
+@media (max-width: 768px) {
+    .file-upload-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .share-section {
+        flex-direction: column;
+    }
+
+    .share-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .brain-viewer-container {
+        height: 200px;
+    }
+
+    .patient-info {
+        padding: 20px;
+    }
+
+    .share-button {
+        padding: 8px 16px;
+    }
+}
+
+/* =====================================================
+   18. Additional Enhancements
+   ===================================================== */
+
+/* Smooth Transitions for Interactive Elements */
+button,
+.input,
+.patient-card,
+.brain-viewer-container,
+.modal,
+.upload-button,
+.edit-notes-button,
+.share-button {
+    transition: all 0.3s ease;
+}
+
+/* Enhance Accessibility */
+button:focus,
+input:focus,
+textarea:focus {
+    outline: 2px solid #800080;
+    outline-offset: 2px;
+}
+
+/* Ensure sufficient color contrast */
+body {
+    color: #333;
+}
+
+.patient-info strong,
+.notes-section h3,
+.modal h2 {
+    color: #800080;
+}
+
+/* =====================================================
+   19. Share Button Placeholder Icon Styling
+   ===================================================== */
+
+.share-button svg {
+    font-size: 18px;
+}

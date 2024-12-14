@@ -1,4 +1,4 @@
-// src/components/BrainViewer.js
+// src/pages/BrainViewer.js
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
@@ -10,33 +10,20 @@ function BrainViewer({ file }) {
     const rendererRef = useRef(null);
     const controlsRef = useRef(null);
     const [error, setError] = useState(null);
-
-    // State to manage full-screen mode
-    const [isFullScreen, setIsFullScreen] = useState(false);
-
-    // Reference to initial camera position for reset
-    const initialCameraPosition = useRef({ x: 0, y: 1, z: 3 });
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         if (!file) return;
 
-        // Initialize Scene
         const scene = new THREE.Scene();
-
-        // Initialize Camera
         const camera = new THREE.PerspectiveCamera(
             75,
             mountRef.current.clientWidth / mountRef.current.clientHeight,
             0.1,
             1000
         );
-        camera.position.set(
-            initialCameraPosition.current.x,
-            initialCameraPosition.current.y,
-            initialCameraPosition.current.z
-        );
+        camera.position.set(0, 1, 3);
 
-        // Initialize Renderer
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(
             mountRef.current.clientWidth,
@@ -46,18 +33,11 @@ function BrainViewer({ file }) {
         mountRef.current.appendChild(renderer.domElement);
         rendererRef.current = renderer;
 
-        // Add OrbitControls
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controlsRef.current = controls;
 
-        // Within the useEffect hook in BrainViewer.js
-
-        // Add additional lights for better visualization
-        const pointLight = new THREE.PointLight(0xffffff, 0.5);
-        pointLight.position.set(10, 10, 10);
-        scene.add(pointLight);
-
+        // Lighting
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
 
@@ -65,27 +45,26 @@ function BrainViewer({ file }) {
         directionalLight.position.set(5, 10, 7.5);
         scene.add(directionalLight);
 
-
         // Load GLTF Model
         const loader = new GLTFLoader();
         loader.load(
             file,
             (gltf) => {
                 const model = gltf.scene;
-                // Optional: Scale and position the model
                 model.scale.set(1, 1, 1);
                 scene.add(model);
+                setIsLoading(false);
                 animate();
             },
             undefined,
             (error) => {
-                console.error("An error occurred while loading the model:", error);
+                console.error("Error loading model:", error);
                 setError("Failed to load the brain model.");
+                setIsLoading(false);
             }
         );
 
-
-        // Handle Window Resize
+        // Handle Resize
         const handleResize = () => {
             if (!mountRef.current || !rendererRef.current) return;
             const width = mountRef.current.clientWidth;
@@ -96,14 +75,14 @@ function BrainViewer({ file }) {
         };
         window.addEventListener("resize", handleResize);
 
-        // Animation Loop
+        // Animation
         const animate = () => {
             requestAnimationFrame(animate);
             controls.update();
             renderer.render(scene, camera);
         };
 
-        // Cleanup on Unmount
+        // Cleanup
         return () => {
             if (mountRef.current && rendererRef.current) {
                 mountRef.current.removeChild(rendererRef.current.domElement);
@@ -114,55 +93,11 @@ function BrainViewer({ file }) {
         };
     }, [file]);
 
-    // Function to toggle full-screen mode
-    const toggleFullScreen = () => {
-        if (!document.fullscreenElement) {
-            mountRef.current.requestFullscreen().catch(err => {
-                alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-            });
-            setIsFullScreen(true);
-        } else {
-            document.exitFullscreen();
-            setIsFullScreen(false);
-        }
-    };
-
-    // Listen for full-screen change to update state
-    useEffect(() => {
-        const handleFullScreenChange = () => {
-            if (!document.fullscreenElement) {
-                setIsFullScreen(false);
-            }
-        };
-        document.addEventListener("fullscreenchange", handleFullScreenChange);
-        return () => {
-            document.removeEventListener("fullscreenchange", handleFullScreenChange);
-        };
-    }, []);
-
-    // Function to reset the camera view
-    const resetView = () => {
-        if (controlsRef.current) {
-            controlsRef.current.reset();
-        }
-    };
-
-    if (error) {
-        return <div className="brain-viewer-error">{error}</div>;
-    }
-
     return (
         <div className="brain-viewer-container">
+            {isLoading && <div className="loading-spinner">Loading...</div>}
             <div className="brain-viewer-wrapper" ref={mountRef}></div>
-            {/* Control Buttons */}
-            <div className="brain-viewer-controls">
-                <button className="reset-button" onClick={resetView}>
-                    Reset View
-                </button>
-                <button className="fullscreen-button" onClick={toggleFullScreen}>
-                    {isFullScreen ? "Exit Full Screen" : "Full Screen"}
-                </button>
-            </div>
+            {error && <div className="brain-viewer-error">{error}</div>}
         </div>
     );
 }
