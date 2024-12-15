@@ -1,10 +1,6 @@
-/* src/styles/PatientDetail.css */
+/* PatientDetail.css */
 
-/* =====================================================
-   1. Reset and Base Styles
-   ===================================================== */
-
-/* Reset CSS */
+/* Reset and Base */
 *,
 *::before,
 *::after {
@@ -15,89 +11,86 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
+    background: #fff; /* Solid white background */
+    color: #000;
     line-height: 1.6;
 }
 
-/* =====================================================
-   2. Notification Styles
-   ===================================================== */
-
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: #4caf50;
-    color: #fff;
-    padding: 15px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    animation: slideIn 0.5s ease forwards;
-    z-index: 1001;
+button {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+    outline: none;
 }
 
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+/* Container */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
 }
 
-/* =====================================================
-   3. Back Button Styles
-   ===================================================== */
-
+/* Back Button */
 .back-button {
     background-color: #6a1b9a;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 25px;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
     font-size: 14px;
-    cursor: pointer;
     margin-bottom: 20px;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
 .back-button:hover {
     background-color: #5e1480;
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
 }
 
-/* =====================================================
-   4. Patient Information Styles
-   ===================================================== */
-
-.patient-info {
+/* Header Section */
+.header-section {
     display: flex;
     align-items: center;
-    background-color: #fff;
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    padding: 30px;
+    justify-content: space-between;
     margin-bottom: 30px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.patient-info:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+.detail-header {
+    font-size: 24px;
+    color: #6a1b9a;
+    font-weight: 600;
+}
+
+.favorite-button {
+    background: none;
+    color: #ff9800;
+    font-size: 20px;
+    transition: transform 0.3s;
+}
+
+.favorite-button:hover {
+    transform: scale(1.05);
+}
+
+/* Patient Info Card */
+.patient-info-card {
+    display: flex;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+    padding:30px;
+    margin-bottom:30px;
+    align-items:center;
+    gap:30px;
 }
 
 .patient-photo {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 30px;
-    border: 4px solid #800080;
-    transition: transform 0.3s ease;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    border:3px solid #6a1b9a;
+    object-fit:cover;
+    transition:transform 0.3s;
 }
 
 .patient-photo:hover {
@@ -105,599 +98,711 @@ body {
 }
 
 .patient-details p {
-    margin: 10px 0;
-    font-size: 16px;
-    color: #555;
+    margin:8px 0;
+    font-size:14px;
+    color:#555;
 }
 
 .patient-details strong {
-    font-weight: 700;
-    color: #800080;
+    font-weight:600;
+    color:#6a1b9a;
 }
 
-/* =====================================================
-   5. Notes Section Styles
-   ===================================================== */
-
-.notes-section {
-    margin-top: 20px;
-    width: 100%;
+/* Notes Card */
+.notes-card {
+    background:#fff;
+    border-radius:15px;
+    padding:20px 25px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom:30px;
 }
 
-.notes-section h3 {
-    font-size: 18px;
-    color: #800080;
-    margin-bottom: 10px;
+.notes-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.notes-header h3 {
+    color:#6a1b9a;
+    font-size:18px;
+    font-weight:600;
+}
+
+.notes-actions-bar button {
+    background:#6a1b9a;
+    color:#fff;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:14px;
+    display:inline-flex;align-items:center;gap:5px;
+}
+
+.notes-actions-bar button:hover {
+    background:#5e1480;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
 }
 
 .view-notes p {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 10px;
-}
-
-.edit-notes-button {
-    background-color: #4caf50;
-    color: white;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 20px;
-    font-size: 12px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-}
-
-.edit-notes-button:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.edit-notes-button svg {
-    font-size: 14px;
+    font-size:14px;
+    color:#555;
+    margin-bottom:10px;
 }
 
 .edit-notes {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display:flex;flex-direction:column;gap:10px;
 }
 
 .edit-notes textarea {
-    width: 100%;
-    height: 100px;
-    padding: 10px 15px;
-    border-radius: 12px;
-    border: 1px solid #ddd;
-    resize: vertical;
-    font-size: 14px;
-    background-color: #f3f2f7;
-    transition: border 0.3s ease, box-shadow 0.3s ease;
+    width:100%;
+    height:100px;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    font-size:14px;
+    background:#f9f9f9;
+    transition:border 0.3s, box-shadow 0.3s;
 }
 
 .edit-notes textarea:focus {
-    border: 1px solid #800080;
-    box-shadow: 0 0 5px rgba(128, 0, 128, 0.3);
-    outline: none;
+    border:1px solid #6a1b9a;
+    box-shadow:0 0 4px rgba(106,27,154,0.3);
 }
 
 .notes-actions {
-    display: flex;
-    gap: 15px;
-    justify-content: flex-end;
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
 }
 
 .save-button,
 .cancel-button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:14px;
+    font-weight:600;
+    color:#fff;
 }
 
 .save-button {
-    background-color: #4caf50;
-    color: white;
+    background:#4caf50;
 }
 
 .save-button:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background:#45a049;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
 }
 
 .cancel-button {
-    background-color: #ff4d4d;
-    color: white;
+    background:#ff4d4d;
 }
 
 .cancel-button:hover {
-    background-color: #cc0000;
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background:#cc0000;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
 }
 
-/* =====================================================
-   6. File Upload Section Styles
-   ===================================================== */
-
+/* File Upload Section */
 .file-upload-section {
-    margin-bottom: 30px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 15px;
+    background:#fff;
+    border-radius:15px;
+    padding:20px 25px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom:30px;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
 }
 
 .file-upload-label {
-    font-size: 16px;
-    margin-bottom: 10px;
-    display: block;
-    color: #800080;
-    cursor: pointer;
-    font-weight: 600;
+    font-size:14px;
+    font-weight:600;
+    color:#6a1b9a;
 }
 
 .file-upload-input {
-    display: none; /* Hide the actual file input */
+    display:none;
 }
 
 .upload-button {
-    display: inline-flex;
-    align-items: center;
-    background-color: #6a1b9a;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    font-size: 14px;
-    font-weight: bold;
+    display:inline-flex;
+    align-items:center;
+    background:#6a1b9a;
+    color:#fff;
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:14px;
+    font-weight:600;
+    transition:background 0.3s,transform 0.2s,box-shadow 0.3s;
 }
 
 .upload-button:hover {
-    background-color: #5e1480;
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background:#5e1480;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
 }
 
 .file-upload-icon {
-    margin-right: 8px;
-    font-size: 18px;
+    margin-right:8px;
+    font-size:16px;
 }
 
-/* =====================================================
-   7. AI Magic Progress Bar Styles
-   ===================================================== */
+.file-upload-section.drag-over {
+    border:2px dashed #6a1b9a;
+    background:rgba(106,27,154,0.05);
+}
 
+.drag-overlay {
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;justify-content:center;
+    font-size:16px;
+    color:#6a1b9a;
+    font-weight:600;
+    background:rgba(255,255,255,0.8);
+}
+
+/* AI Magic Progress */
 .ai-magic-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(128, 0, 128, 0.8); /* Semi-transparent purple overlay */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1002;
-    animation: fadeInOverlay 0.5s ease forwards;
-}
-
-@keyframes fadeInOverlay {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    position:fixed;
+    top:0;left:0;
+    width:100vw;height:100vh;
+    background:rgba(106,27,154,0.8);
+    display:flex;align-items:center;justify-content:center;
+    z-index:2000;
 }
 
 .ai-magic-content {
-    background: radial-gradient(circle at top left, #a500a5, #800080);
-    padding: 40px 60px;
-    border-radius: 20px;
-    text-align: center;
-    color: white;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    animation: pulse 2s infinite;
+    background:#6a1b9a;
+    padding:30px 40px;
+    border-radius:15px;
+    text-align:center;
+    color:#fff;
+    box-shadow:0 10px 20px rgba(0,0,0,0.2);
 }
 
 .ai-spinner {
-    border: 6px solid rgba(255, 255, 255, 0.3);
-    border-top-color: #ffffff;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    margin: 0 auto 20px;
+    border:6px solid rgba(255,255,255,0.3);
+    border-top-color:#fff;
+    border-radius:50%;
+    width:40px;height:40px;
+    margin:0 auto 15px;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-    }
-    50% {
-        box-shadow: 0 0 20px rgba(255, 255, 255, 1);
-    }
-    100% {
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-    }
+    to {transform:rotate(360deg);}
 }
 
 .progress-bar-container {
-    width: 100%;
-    height: 12px;
-    background-color: #e0e0e0;
-    border-radius: 12px;
-    overflow: hidden;
+    width:100%;
+    height:10px;
+    background:#e0e0e0;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:15px;
 }
 
 .progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #800080, #a500a5);
-    background-size: 200% 100%;
-    animation: gradientShift 2s linear infinite;
-    width: 0%;
-    transition: width 0.4s ease;
+    height:100%;
+    background:#6a1b9a;
+    width:0%;
+    transition:width 0.4s ease;
 }
 
-@keyframes gradientShift {
-    0% {
-        background-position: 0% 0%;
-    }
-    50% {
-        background-position: 100% 0%;
-    }
-    100% {
-        background-position: 0% 0%;
-    }
+/* Brain Files Filter */
+.brain-files-filter {
+    display:flex;
+    align-items:center;
+    background:#fff;
+    border-radius:20px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+    padding:8px 15px;
+    margin-bottom:30px;
+    max-width:400px;
 }
 
-/* =====================================================
-   8. Brain Viewer Section Styles
-   ===================================================== */
+.search-icon {
+    font-size:14px;
+    margin-right:8px;
+    color:#6a1b9a;
+}
 
+.brain-file-search-input {
+    border:none;
+    outline:none;
+    font-size:14px;
+    width:100%;
+}
+
+/* Brain Viewer Section */
 .brain-viewer-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-    gap: 40px;
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px,1fr));
+    gap:30px;
+    margin-bottom:30px;
 }
 
 .brain-viewer-wrapper {
-    background-color: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    background:#fff;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+    padding:20px;
+    display:flex;flex-direction:column;align-items:center;
+    transition:transform 0.3s, box-shadow 0.3s;
 }
 
 .brain-viewer-wrapper:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    transform:translateY(-5px);
+    box-shadow:0 8px 20px rgba(0,0,0,0.1);
 }
 
 .brain-viewer-container {
-    width: 100%;
-    height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 16px;
-    border: 2px solid #ddd;
-    background-color: #f3f2f7;
-    overflow: hidden;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative;
-}
-
-.brain-viewer-container:hover {
-    transform: scale(1.02);
-}
-
-.brain-viewer-container canvas {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+    width:100%;
+    height:250px;
+    display:flex;
+    align-items:center;justify-content:center;
+    border-radius:12px;
+    border:2px solid #ddd;
+    background:#f9f9f9;
+    overflow:hidden;
+    margin-bottom:15px;
 }
 
 .brain-file-info {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    width:100%;
 }
 
 .brain-file-name {
-    font-size: 14px;
-    color: #555;
+    font-size:14px;
+    color:#555;
+    font-weight:500;
 }
 
 .brain-file-actions {
-    display: flex;
-    gap: 10px;
+    display:flex;
+    gap:8px;
 }
 
 .view-brain-file-button,
-.remove-brain-file-button {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background-color: #6a1b9a;
-    color: white;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 12px;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+.remove-brain-file-button,
+.download-brain-file-button {
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    display:flex;align-items:center;gap:5px;
+    color:#fff;
+    transition:background 0.3s,transform 0.2s,box-shadow 0.3s;
 }
 
 .view-brain-file-button {
-    background-color: #4caf50;
+    background:#4caf50;
 }
 
 .view-brain-file-button:hover {
-    background-color: #388e3c;
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background:#45a049;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
 }
 
 .remove-brain-file-button {
-    background-color: #ff4d4d;
+    background:#ff4d4d;
 }
 
 .remove-brain-file-button:hover {
-    background-color: #cc0000;
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background:#cc0000;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
 }
 
-/* =====================================================
-   9. Share Section Styles
-   ===================================================== */
+.download-brain-file-button {
+    background:#2196f3;
+}
 
+.download-brain-file-button:hover {
+    background:#1976d2;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
+}
+
+.no-upload-message {
+    font-size:14px;
+    color:#555;
+    text-align:center;
+}
+
+/* Share Section */
 .share-section {
-    margin-top: 30px;
-    display: flex;
-    justify-content: center;
+    display:flex;
+    justify-content:center;
+    margin-bottom:40px;
 }
 
 .share-button {
-    background-color: #6a1b9a;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 25px;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    background:#6a1b9a;
+    color:#fff;
+    padding:8px 16px;
+    border-radius:20px;
+    font-size:14px;
+    display:flex;align-items:center;gap:5px;
+    transition:background 0.3s,transform 0.2s,box-shadow 0.3s;
 }
 
 .share-button:hover {
-    background-color: #5e1480;
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background:#5e1480;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
 }
 
-.share-button svg {
-    font-size: 18px;
-}
-
-/* =====================================================
-   10. Modal Styles
-   ===================================================== */
-
+/* Modal Overlay */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.6); /* Darker overlay */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    position:fixed;
+    top:0;left:0;
+    width:100vw;height:100vh;
+    background:rgba(0,0,0,0.5);
+    display:flex;align-items:center;justify-content:center;
+    z-index:2000;
 }
 
 .modal {
-    background-color: white;
-    border-radius: 20px;
-    width: 600px;
-    max-width: 95%;
-    padding: 30px;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-    animation: fadeIn 0.5s ease forwards;
-    text-align: center;
-    transition: all 0.3s ease;
+    background:#fff;
+    border-radius:20px;
+    width:80%;
+    max-width:800px;
+    padding:30px;
+    box-shadow:0 12px 24px rgba(0,0,0,0.3);
+    text-align:center;
+    position:relative;
+}
+
+.modal h2 {
+    margin-bottom:20px;
+    font-size:20px;
+    color:#6a1b9a;
 }
 
 .large-modal {
-    width: 80%;
-    height: 80%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.modal h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #800080;
+    /* Styles for larger modals if needed */
 }
 
 .large-brain-viewer {
-    width: 100%;
-    height: 100%;
-    flex: 1;
-    margin-bottom: 20px;
+    width:100%;
+    height:60vh;
+    margin-bottom:20px;
+    background:#f9f9f9;
+    border-radius:12px;
+    overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
 }
 
 .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 20px;
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+}
+
+.close-modal-button {
+    position:absolute;
+    top:20px;right:20px;
+    background:#ff4d4d;
+    color:#fff;
+    width:40px;height:40px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px;
+    transition:background-color 0.3s;
+}
+
+.close-modal-button:hover {
+    background-color:#cc0000;
 }
 
 .cancel-button {
-    background-color: #ff4d4d;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    background:#ff4d4d;
+    color:#fff;
+    border-radius:20px;
+    padding:8px 14px;
+    font-size:14px;
+    font-weight:600;
+    transition:background 0.3s,transform 0.2s,box-shadow 0.3s;
 }
 
 .cancel-button:hover {
-    background-color: #cc0000;
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background:#cc0000;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
 }
 
-.save-button {
-    background-color: #4caf50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+/* Confirmation Dialog */
+.confirmation-dialog-overlay {
+    position:fixed;top:0;left:0;
+    width:100vw;height:100vh;
+    background:rgba(0,0,0,0.5);
+    display:flex;align-items:center;justify-content:center;
+    z-index:3000;
 }
 
-.save-button:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.confirmation-dialog {
+    background:#fff;
+    border-radius:20px;
+    padding:30px;
+    max-width:400px;
+    width:90%;
+    text-align:center;
+    box-shadow:0 10px 20px rgba(0,0,0,0.2);
+    animation:fadeInDialog 0.3s ease forwards;
 }
 
-/* =====================================================
-   11. AI Magic Progress Bar Styles
-   ===================================================== */
-
-/* Reusing the existing AI Magic styles for consistency */
-
-/* =====================================================
-   12. Responsive Design Enhancements
-   ===================================================== */
-
-@media (max-width: 1200px) {
-    .brain-viewer-section {
-        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    }
+@keyframes fadeInDialog {
+    from {opacity:0;transform:translateY(-10px);}
+    to {opacity:1;transform:translateY(0);}
 }
 
-@media (max-width: 992px) {
-    .patient-info {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .patient-photo {
-        margin-right: 0;
-        margin-bottom: 20px;
-    }
-
-    .brain-viewer-section {
-        grid-template-columns: 1fr;
-    }
-
-    .large-modal {
-        width: 90%;
-        height: 90%;
-    }
+.confirmation-dialog p {
+    margin-bottom:20px;
+    font-size:14px;
+    color:#555;
+    line-height:1.4;
 }
 
-@media (max-width: 768px) {
-    .file-upload-section {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .share-section {
-        flex-direction: column;
-    }
-
-    .share-button {
-        width: 100%;
-        justify-content: center;
-    }
+.dialog-actions {
+    display:flex;
+    justify-content:flex-end;
+    gap:15px;
 }
 
-@media (max-width: 576px) {
-    .brain-viewer-container {
-        height: 200px;
+.dialog-actions .cancel-button,
+.dialog-actions .save-button {
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:14px;
+    font-weight:600;
+    color:#fff;
+    transition:background-color 0.3s,transform 0.2s,box-shadow 0.3s;
+}
+
+.dialog-actions .cancel-button {
+    background-color:#ff4d4d;
+}
+
+.dialog-actions .cancel-button:hover {
+    background-color:#cc0000;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
+}
+
+.dialog-actions .save-button {
+    background-color:#4caf50;
+}
+
+.dialog-actions .save-button:hover {
+    background-color:#45a049;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
+}
+
+/* Notification */
+.notification {
+    position:fixed;
+    top:20px;right:20px;
+    background-color:#4caf50;
+    color:#fff;
+    padding:12px 20px;
+    border-radius:8px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    font-size:14px;
+    font-weight:500;
+    letter-spacing:0.5px;
+    animation: slideIn 0.5s ease forwards;
+    z-index:4000;
+}
+
+@keyframes slideIn {
+    from {opacity:0;transform:translateX(100%);}
+    to {opacity:1;transform:translateX(0);}
+}
+
+/* No patient found */
+.no-patient-found {
+    text-align:center;
+    margin-top:50px;
+}
+
+.no-patient-content {
+    display:flex;flex-direction:column;gap:20px;align-items:center;
+}
+
+/* Focus states */
+button:focus, input:focus, textarea:focus {
+    outline:2px solid #6a1b9a;
+    outline-offset:2px;
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: #fff;
     }
-
-    .patient-info {
-        padding: 20px;
+    .back-button,
+    .favorite-button,
+    .edit-notes-button,
+    .print-button,
+    .export-notes-button,
+    .upload-button,
+    .file-upload-label,
+    .brain-files-filter,
+    .share-button,
+    .remove-brain-file-button,
+    .view-brain-file-button,
+    .download-brain-file-button,
+    .confirmation-dialog-overlay,
+    .notification {
+        display: none !important;
     }
-
-    .share-button {
-        padding: 8px 16px;
+    .modal-overlay {
+        display:none !important;
+    }
+    .patient-detail-page {
+        background:#fff;
     }
 }
+/* Additional CSS for Diagnosis and Stages */
 
-/* =====================================================
-   13. Additional Enhancements
-   ===================================================== */
-
-/* Smooth Transitions for Interactive Elements */
-button,
-.input,
-.patient-card,
-.brain-viewer-container,
-.modal,
-.upload-button,
-.edit-notes-button,
-.share-button {
-    transition: all 0.3s ease;
+/* Stages Section */
+.stages-section {
+    margin-bottom: 40px;
+    text-align: center;
 }
 
-/* Enhance Accessibility */
-button:focus,
-input:focus,
-textarea:focus {
-    outline: 2px solid #800080;
-    outline-offset: 2px;
-}
-
-/* Ensure sufficient color contrast */
-body {
-    color: #333;
-}
-
-.patient-info strong,
-.notes-section h3,
-.modal h2 {
-    color: #800080;
-}
-
-/* =====================================================
-   14. Share Button Placeholder Icon Styling
-   ===================================================== */
-
-.share-button svg {
+.section-title {
     font-size: 18px;
+    color: #6a1b9a;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.stages-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stage-item {
+    background: #f9f9f9;
+    border-radius: 50px;
+    padding: 8px 16px;
+    font-size:14px;
+    color:#555;
+    border:1px solid #ddd;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.stage-item:hover {
+    transform:translateY(-2px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
+}
+
+.stage-item.completed {
+    border:1px solid #4caf50;
+    color:#4caf50;
+}
+
+.stage-item.current {
+    border:2px solid #6a1b9a;
+    color:#6a1b9a;
+    font-weight:600;
+}
+
+/* MRI Data and Session Metadata */
+.mri-session-details {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.mri-data, .session-metadata {
+    flex:1;
+    background:#fff;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+    padding:20px;
+}
+
+.mri-data h4,
+.session-metadata h4 {
+    color:#6a1b9a;
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:15px;
+}
+
+.mri-data p,
+.session-metadata p {
+    font-size:14px;
+    color:#555;
+    margin:5px 0;
+}
+
+.session-metadata ul {
+    list-style:disc inside;
+    margin-bottom:10px;
+    color:#555;
+    font-size:14px;
+}
+
+.results-row {
+    display:flex;
+    gap:40px;
+    margin-bottom:30px;
+}
+
+.results-column {
+    flex:1;
+    background:#fff;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+    padding:20px;
+}
+
+.results-column h4 {
+    color:#6a1b9a;
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:10px;
+}
+
+.results-column p {
+    font-size:14px;
+    color:#555;
+    margin:5px 0;
+}
+
+.signature-section {
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.signature-section .primary-button {
+    background:#6a1b9a;
+    color:#fff;
+    padding:8px 16px;
+    border-radius:20px;
+    font-size:14px;
+    font-weight:600;
+}
+
+.signature-section .primary-button:hover {
+    background:#5e1480;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
 }

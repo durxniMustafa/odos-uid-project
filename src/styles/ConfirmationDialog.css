@@ -1,0 +1,76 @@
+/* ConfirmationDialog.css */
+
+.confirmation-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.confirmation-dialog {
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    animation: fadeInDialog 0.3s ease forwards;
+}
+
+.confirmation-dialog p {
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #555;
+    line-height: 1.4;
+}
+
+.dialog-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-end;
+}
+
+.dialog-actions .cancel-button,
+.dialog-actions .save-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.dialog-actions .cancel-button {
+    background-color: #ff4d4d; /* Red for cancel */
+    color: white;
+}
+
+.dialog-actions .cancel-button:hover {
+    background-color: #cc0000;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.dialog-actions .save-button {
+    background-color: #4caf50; /* Green for confirm */
+    color: white;
+}
+
+.dialog-actions .save-button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+@keyframes fadeInDialog {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
