@@ -1,5 +1,3 @@
-/* PatientDetail.css */
-
 /* Reset and Base */
 *,
 *::before,
@@ -11,7 +9,7 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: #fff; /* Solid white background */
+    background: #fff;
     color: #000;
     line-height: 1.6;
 }
@@ -69,7 +67,7 @@ button {
 }
 
 .favorite-button:hover {
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
 /* Patient Info Card */
@@ -217,6 +215,7 @@ button {
     display:flex;
     flex-direction:column;
     gap:15px;
+    transition:border 0.3s ease;
 }
 
 .file-upload-label {
@@ -285,6 +284,12 @@ button {
     text-align:center;
     color:#fff;
     box-shadow:0 10px 20px rgba(0,0,0,0.2);
+    animation:fadeInDialog 0.3s ease forwards;
+}
+
+@keyframes fadeInDialog {
+    from {opacity:0;transform:translateY(-20px);}
+    to {opacity:1;transform:translateY(0);}
 }
 
 .ai-spinner {
@@ -314,6 +319,29 @@ button {
     background:#6a1b9a;
     width:0%;
     transition:width 0.4s ease;
+}
+
+.progress-info {
+    margin-top:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:14px;
+    color:#fff;
+}
+
+.cancel-upload-button {
+    background:#ff4d4d;
+    color:#fff;
+    border-radius:20px;
+    padding:6px 12px;
+    font-size:14px;
+}
+
+.cancel-upload-button:hover {
+    background:#cc0000;
+    transform:translateY(-1px);
+    box-shadow:0 3px 6px rgba(0,0,0,0.1);
 }
 
 /* Brain Files Filter */
@@ -482,6 +510,7 @@ button {
     box-shadow:0 12px 24px rgba(0,0,0,0.3);
     text-align:center;
     position:relative;
+    animation:fadeInDialog 0.3s ease forwards;
 }
 
 .modal h2 {
@@ -491,7 +520,7 @@ button {
 }
 
 .large-modal {
-    /* Styles for larger modals if needed */
+    /* For larger modal if needed */
 }
 
 .large-brain-viewer {
@@ -560,11 +589,6 @@ button {
     text-align:center;
     box-shadow:0 10px 20px rgba(0,0,0,0.2);
     animation:fadeInDialog 0.3s ease forwards;
-}
-
-@keyframes fadeInDialog {
-    from {opacity:0;transform:translateY(-10px);}
-    to {opacity:1;transform:translateY(0);}
 }
 
 .confirmation-dialog p {
@@ -675,12 +699,12 @@ button:focus, input:focus, textarea:focus {
         background:#fff;
     }
 }
-/* Additional CSS for Diagnosis and Stages */
 
 /* Stages Section */
 .stages-section {
     margin-bottom: 40px;
     text-align: center;
+    animation:fadeIn 0.5s ease forwards;
 }
 
 .section-title {
@@ -704,12 +728,14 @@ button:focus, input:focus, textarea:focus {
     font-size:14px;
     color:#555;
     border:1px solid #ddd;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    cursor:pointer;
 }
 
 .stage-item:hover {
     transform:translateY(-2px);
     box-shadow:0 3px 6px rgba(0,0,0,0.1);
+    background:#f0f0fe;
 }
 
 .stage-item.completed {

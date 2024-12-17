@@ -46,6 +46,10 @@ function PatientDetail({ patients, setPatients }) {
     const [showDiagnosis, setShowDiagnosis] = useState(false);
     const [showSignatureModal, setShowSignatureModal] = useState(false);
 
+    // Store upload progress and interval
+    const [currentFileId, setCurrentFileId] = useState(null);
+    const uploadIntervalRef = useRef(null);
+
     const closeBrainImageModal = useCallback((e) => {
         if (e && e.type === "keydown" && e.key !== "Escape") return;
         setViewingBrainFile(null);
@@ -101,14 +105,13 @@ function PatientDetail({ patients, setPatients }) {
 
         const fileURL = URL.createObjectURL(file);
         const fileId = uuidv4();
+        setCurrentFileId(fileId);
 
         // Reupload logic: remove old files
         setPatients((prev) =>
             prev.map((p) => {
                 if (p.id === id) {
-                    const updatedBrainFiles = [];
-                    const updatedUploadProgress = {};
-                    return { ...p, brainFiles: updatedBrainFiles, uploadProgress: updatedUploadProgress };
+                    return { ...p, brainFiles: [], uploadProgress: {} };
                 }
                 return p;
             })
@@ -127,10 +130,11 @@ function PatientDetail({ patients, setPatients }) {
             )
         );
 
+        // Simulate upload progress
         let progress = 0;
-        const interval = setInterval(() => {
-            if (progress < 100) {
-                progress += 20;
+        uploadIntervalRef.current = setInterval(() => {
+            progress += 10;
+            if (progress <= 100) {
                 setPatients((prev) =>
                     prev.map((p) =>
                         p.id === id
@@ -139,13 +143,41 @@ function PatientDetail({ patients, setPatients }) {
                     )
                 );
             } else {
-                clearInterval(interval);
+                clearInterval(uploadIntervalRef.current);
+                uploadIntervalRef.current = null;
                 showNotification(`File "${file.name}" uploaded successfully!`);
                 setUploading(false);
                 // After AI completes for the new file, show new diagnosis
                 setShowDiagnosis(true);
             }
-        }, 200);
+        }, 300);
+    };
+
+    const cancelUpload = () => {
+        if (uploadIntervalRef.current) {
+            clearInterval(uploadIntervalRef.current);
+            uploadIntervalRef.current = null;
+        }
+
+        // Revert any partial upload progress and remove the file
+        setPatients((prev) =>
+            prev.map((p) => {
+                if (p.id === id) {
+                    // Remove the uploaded file and progress
+                    p.brainFiles.forEach((file) => {
+                        if (file.id === currentFileId) {
+                            URL.revokeObjectURL(file.url);
+                        }
+                    });
+                    return { ...p, brainFiles: [], uploadProgress: {} };
+                }
+                return p;
+            })
+        );
+
+        setCurrentFileId(null);
+        setUploading(false);
+        showNotification("Upload canceled.");
     };
 
     const handleRemoveBrainFile = (fileId) => {
@@ -168,7 +200,7 @@ function PatientDetail({ patients, setPatients }) {
                         return p;
                     })
                 );
-                showDiagnosis(false); // No files now, so no diagnosis
+                setShowDiagnosis(false); // No files now, so hide diagnosis
                 showNotification("Brain file removed successfully!");
             },
         });
@@ -278,6 +310,8 @@ function PatientDetail({ patients, setPatients }) {
         file.name.toLowerCase().includes(brainFileFilter.toLowerCase())
     );
 
+    const uploadProgress = patient.uploadProgress && currentFileId ? patient.uploadProgress[currentFileId] : 0;
+
     return (
         <div className="patient-detail-page">
             <Navbar />
@@ -385,8 +419,14 @@ function PatientDetail({ patients, setPatients }) {
                             <div className="ai-spinner"></div>
                             <p>AI Magic Happens Here...</p>
                             <div className="progress-bar-container">
-                                {/* For demonstration, let's say partial progress */}
-                                <div className="progress-bar" style={{ width: "50%" }}></div>
+                                <div
+                                    className="progress-bar"
+                                    style={{ width: `${uploadProgress}%` }}
+                                ></div>
+                            </div>
+                            <div className="progress-info">
+                                <p>Uploading: {uploadProgress}%</p>
+                                <button className="cancel-upload-button" onClick={cancelUpload}>Cancel Upload</button>
                             </div>
                         </div>
                     </div>

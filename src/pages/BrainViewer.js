@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { FaRedo, FaCube, FaCamera, FaRulerCombined, FaArrowsAlt, FaMagic, FaVolumeUp, FaAdjust, FaInfoCircle, FaAlignCenter } from "react-icons/fa";
+import { FaRedo, FaCube, FaCamera, FaInfoCircle, FaAlignCenter } from "react-icons/fa";
 import "../styles/BrainViewer.css";
 
 function BrainViewer({ file }) {
@@ -17,11 +17,7 @@ function BrainViewer({ file }) {
     const [isLoading, setIsLoading] = useState(true);
     const [isWireframe, setIsWireframe] = useState(false);
     const [notification, setNotification] = useState(null);
-    const [analysisMode, setAnalysisMode] = useState(false);
     const [rotationAngle, setRotationAngle] = useState(0);
-    const [arMode, setArMode] = useState(false);
-    const [envBright, setEnvBright] = useState(true);
-    const [fullScreen, setFullScreen] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
 
     const showNotification = (msg) => {
@@ -54,10 +50,10 @@ function BrainViewer({ file }) {
         controls.target.set(0, 0.5, 0);
         controlsRef.current = controls;
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, envBright ? 1.0 : 0.3);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
         scene.add(ambientLight);
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, envBright ? 0.4 : 0.1);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
         directionalLight.position.set(5, 10, 5);
         scene.add(directionalLight);
 
@@ -103,7 +99,7 @@ function BrainViewer({ file }) {
             }
             window.removeEventListener("resize", handleResize);
         };
-    }, [file, envBright]);
+    }, [file]);
 
     const resetView = () => {
         if (!cameraRef.current || !controlsRef.current) return;
@@ -124,40 +120,16 @@ function BrainViewer({ file }) {
         showNotification(isWireframe ? "Solid mode" : "Wireframe mode");
     };
 
-    const takeScreenshot = () => {
-        showNotification("Screenshot captured (simulated)");
-    };
-
-    const toggleAnalysis = () => {
-        setAnalysisMode((prev) => !prev);
-        showNotification(!analysisMode ? "Analysis mode on" : "Analysis mode off");
-    };
-
     const rotateModel = () => {
         if (!modelRef.current) return;
         setRotationAngle((prev) => prev + 90);
         const rad = (rotationAngle + 90) * (Math.PI / 180);
         modelRef.current.rotation.y = rad;
-        showNotification("Model rotated 90°");
+        showNotification("Model rotated");
     };
 
-    const toggleAR = () => {
-        setArMode((prev) => !prev);
-        showNotification(!arMode ? "AR Mode Activated" : "AR Mode Deactivated");
-    };
-
-    const toggleEnv = () => {
-        setEnvBright((prev) => !prev);
-        showNotification(envBright ? "Dim Environment" : "Bright Environment");
-    };
-
-    const toggleFullScreen = () => {
-        setFullScreen((prev) => !prev);
-        showNotification(!fullScreen ? "Full Screen Mode" : "Windowed Mode");
-    };
-
-    const voiceAssistant = () => {
-        showNotification("Voice Assistant: Brain Model Overview");
+    const takeScreenshot = () => {
+        showNotification("Screenshot captured (simulated)");
     };
 
     const centerModel = () => {
@@ -171,7 +143,7 @@ function BrainViewer({ file }) {
     };
 
     return (
-        <div className={`brain-viewer-root ${analysisMode ? 'analysis' : ''} ${arMode ? 'ar-mode' : ''} ${fullScreen ? 'full-screen' : ''}`}>
+        <div className="brain-viewer-root">
             {isLoading && <div className="loading-spinner">Loading model...</div>}
             {error && <div className="brain-viewer-error">{error}</div>}
 
@@ -179,27 +151,18 @@ function BrainViewer({ file }) {
 
             {!isLoading && !error && (
                 <div className="viewer-toolbar">
-                    <button onClick={resetView} title="Reset View" className="toolbar-button"><FaRedo /></button>
-                    <button onClick={toggleWireframe} title="Toggle Wireframe" className="toolbar-button"><FaCube /></button>
-                    <button onClick={takeScreenshot} title="Screenshot" className="toolbar-button"><FaCamera /></button>
-                    <button onClick={rotateModel} title="Rotate Model" className="toolbar-button">&#8635;</button>
-                    <button onClick={toggleAnalysis} title="Analysis Mode" className="toolbar-button"><FaRulerCombined /></button>
-                    <button onClick={toggleAR} title="AR Mode" className="toolbar-button"><FaMagic /></button>
-                    <button onClick={voiceAssistant} title="Voice Assistant" className="toolbar-button"><FaVolumeUp /></button>
-                    <button onClick={toggleEnv} title="Toggle Environment" className="toolbar-button"><FaAdjust /></button>
-                    <button onClick={toggleFullScreen} title="Full Screen" className="toolbar-button"><FaArrowsAlt /></button>
-                    <button onClick={centerModel} title="Center Model" className="toolbar-button"><FaAlignCenter /></button>
-                    <button onClick={viewInfo} title="View Info" className="toolbar-button"><FaInfoCircle /></button>
+                    <button onClick={resetView} className="toolbar-button" title="Reset View"><FaRedo /></button>
+                    <button onClick={toggleWireframe} className="toolbar-button" title="Toggle Wireframe"><FaCube /></button>
+                    <button onClick={rotateModel} className="toolbar-button" title="Rotate Model">&#8635;</button>
+                    <button onClick={centerModel} className="toolbar-button" title="Center Model"><FaAlignCenter /></button>
+                    <button onClick={takeScreenshot} className="toolbar-button" title="Screenshot"><FaCamera /></button>
+                    <button onClick={viewInfo} className="toolbar-button" title="View Info"><FaInfoCircle /></button>
                 </div>
-            )}
-
-            {analysisMode && !isLoading && !error && (
-                <div className="analysis-overlay">Measurements & Analysis Overlay</div>
             )}
 
             {showInfo && !isLoading && !error && (
                 <div className="info-overlay">
-                    <h4>Brain Model Metadata</h4>
+                    <h4>Brain Model Info</h4>
                     <p>Name: Example Brain</p>
                     <p>Size: ~2MB</p>
                     <p>Created: Jan 12, 2022</p>
