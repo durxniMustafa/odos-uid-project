@@ -13,8 +13,8 @@ import Notification from "../components/Notification";
 import useWindowSize from "../hooks/useWindowSize";
 
 // Icons
-import { FaShare, FaPrint, FaFileExport } from "react-icons/fa";
-import { FiEdit, FiUpload, FiSearch } from "react-icons/fi";
+import { FaShare, FaPrint } from "react-icons/fa";
+import { FiSearch } from "react-icons/fi";
 
 // Sections
 import UploadSection from "../sections/UploadSection";
@@ -46,14 +46,6 @@ function PatientDetail({ patients, setPatients }) {
     const [isFavorite, setIsFavorite] = useState(patient?.isFavorite || false);
     const [brainFileFilter, setBrainFileFilter] = useState("");
 
-    // Move useMemo above the early return
-    const filteredBrainFiles = useMemo(() => {
-        if (!patient || !patient.brainFiles) return [];
-        return patient.brainFiles.filter((file) =>
-            file.name.toLowerCase().includes(brainFileFilter.toLowerCase())
-        );
-    }, [patient, brainFileFilter]);
-
     // SIGNATURE MODAL
     const [showSignatureModal, setShowSignatureModal] = useState(false);
     // We store the signature data (base64) so we can show or print it
@@ -69,9 +61,20 @@ function PatientDetail({ patients, setPatients }) {
     const [showReportButton, setShowReportButton] = useState(false);
     const [showRetrainingButton, setShowRetrainingButton] = useState(false);
 
+    // (1) Larger viewer after upload
+    const [isExtendedViewer, setIsExtendedViewer] = useState(false);
+
     const dragCounter = useRef(0);
     const { width, height } = useWindowSize();
     const contentHeight = height - 100;
+
+    // Filter brain files
+    const filteredBrainFiles = useMemo(() => {
+        if (!patient || !patient.brainFiles) return [];
+        return patient.brainFiles.filter((file) =>
+            file.name.toLowerCase().includes(brainFileFilter.toLowerCase())
+        );
+    }, [patient, brainFileFilter]);
 
     // Close brain image modal on ESC
     const closeBrainImageModal = useCallback((e) => {
@@ -91,11 +94,13 @@ function PatientDetail({ patients, setPatients }) {
         };
     }, [closeBrainImageModal]);
 
+    // Notification helper
     const showNotificationMessage = useCallback((message) => {
         setNotification(message);
         setTimeout(() => setNotification(null), 3000);
     }, []);
 
+    // File upload
     const handleFileUpload = useCallback(
         (files) => {
             if (!files || files.length === 0) return;
@@ -111,15 +116,14 @@ function PatientDetail({ patients, setPatients }) {
             const fileId = file.name + "-" + Date.now();
             setCurrentFileId(fileId);
 
+            // Save to patient
             setPatients((prev) =>
                 prev.map((p) =>
                     p.id === id
                         ? {
                             ...p,
-                            brainFiles: [
-                                { id: fileId, url: fileURL, name: file.name }
-                            ],
-                            uploadProgress: { [fileId]: 0 }
+                            brainFiles: [{ id: fileId, url: fileURL, name: file.name }],
+                            uploadProgress: { [fileId]: 0 },
                         }
                         : p
                 )
@@ -130,6 +134,7 @@ function PatientDetail({ patients, setPatients }) {
         [id, setPatients, showNotificationMessage]
     );
 
+    // Called after file is "uploaded"
     const startUploadSimulation = useCallback(() => {
         let stepCount = 0;
         setUploadStep(1);
@@ -145,29 +150,28 @@ function PatientDetail({ patients, setPatients }) {
                 showNotificationMessage("File uploaded and processed successfully!");
                 setShowDiagnosis(true);
                 setShowReportButton(true);
+
+                // (1) Mark viewer as extended
+                setIsExtendedViewer(true);
             }
         }, 1500);
     }, [showNotificationMessage]);
 
+    // Save notes
     const handleSaveNotes = useCallback(() => {
         setPatients((prev) =>
-            prev.map((p) =>
-                p.id === id
-                    ? { ...p, notes: notes }
-                    : p
-            )
+            prev.map((p) => (p.id === id ? { ...p, notes: notes } : p))
         );
         setIsEditingNotes(false);
         showNotificationMessage("Notes updated successfully!");
     }, [id, notes, setPatients, showNotificationMessage]);
 
+    // Favorite toggle
     const handleFavoriteToggle = useCallback(() => {
         setIsFavorite((prev) => !prev);
         setPatients((prev) =>
             prev.map((p) =>
-                p.id === id
-                    ? { ...p, isFavorite: !isFavorite }
-                    : p
+                p.id === id ? { ...p, isFavorite: !isFavorite } : p
             )
         );
         showNotificationMessage(
@@ -175,6 +179,7 @@ function PatientDetail({ patients, setPatients }) {
         );
     }, [id, isFavorite, setPatients, showNotificationMessage]);
 
+    // Export notes
     const handleExportNotes = useCallback(() => {
         const blob = new Blob([notes || ""], { type: "text/plain;charset=utf-8" });
         const url = URL.createObjectURL(blob);
@@ -188,32 +193,51 @@ function PatientDetail({ patients, setPatients }) {
         showNotificationMessage("Notes exported successfully!");
     }, [notes, patient, showNotificationMessage]);
 
+    // (2) Send file via email
+    const handleEmailFile = useCallback(() => {
+        if (!patient?.brainFiles || patient.brainFiles.length === 0) {
+            showNotificationMessage("No file to send via email.");
+            return;
+        }
+        const fileName = patient.brainFiles[0].name || "brain-model.glb";
+        const mailBody = encodeURIComponent(
+            `Hello,\n\nI am sharing the brain file "${fileName}".\n\nBest regards,\n[Your Name]`
+        );
+        const mailLink = `mailto:?subject=Brain File&body=${mailBody}`;
+        window.location.href = mailLink;
+        showNotificationMessage("Email client opened to send file.");
+    }, [patient, showNotificationMessage]);
+
+    // Share
     const handleShare = useCallback(async () => {
-        const shareLink = `https://example.com/patient/${id}`;
         try {
+            const shareLink = `https://example.com/patient/${id}`;
             await navigator.clipboard.writeText(shareLink);
             showNotificationMessage("Share link copied to clipboard!");
         } catch {
             showNotificationMessage("Failed to copy share link.");
         }
-    }, [id, showNotificationMessage]);
+        // Also open mail client
+        handleEmailFile();
+    }, [id, handleEmailFile, showNotificationMessage]);
 
     const handlePrint = useCallback(() => {
-        // We can either call window.print() directly OR do something more advanced
         window.print();
     }, []);
 
+    // Feedback
     const handleFeedback = useCallback((type) => {
         if (type === "dislike") {
             setShowRetrainingButton(true);
         }
     }, []);
 
+    // AI Report
     const handleGenerateReport = useCallback(() => {
         showNotificationMessage("AI Report generated (simulated)!");
     }, [showNotificationMessage]);
 
-    // Drag & Drop Handlers
+    // Drag & Drop
     const handleDragEnter = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -225,9 +249,7 @@ function PatientDetail({ patients, setPatients }) {
         e.preventDefault();
         e.stopPropagation();
         dragCounter.current--;
-        if (dragCounter.current === 0) {
-            setIsDraggingOver(false);
-        }
+        if (dragCounter.current === 0) setIsDraggingOver(false);
     };
 
     const handleDragOver = (e) => {
@@ -246,11 +268,15 @@ function PatientDetail({ patients, setPatients }) {
         }
     };
 
-    const handleInputFileChange = (e) => {
-        handleFileUpload(e.target.files);
-    };
+    // handleInputFileChange for your <input> "onChange"
+    const handleInputFileChange = useCallback(
+        (e) => {
+            handleFileUpload(e.target.files);
+        },
+        [handleFileUpload]
+    );
 
-    // SIGNATURE
+    // Signature
     const handleAddSignature = useCallback(() => {
         setShowSignatureModal(true);
     }, []);
@@ -288,7 +314,9 @@ function PatientDetail({ patients, setPatients }) {
             style={{ maxHeight: contentHeight, overflowY: "auto" }}
         >
             <Navbar />
+
             {notification && <Notification message={notification} />}
+
             {confirmDialog.isOpen && (
                 <ConfirmationDialog
                     message={confirmDialog.message}
@@ -316,9 +344,7 @@ function PatientDetail({ patients, setPatients }) {
                 </button>
 
                 <div className="header-section">
-                    <h2 className="detail-header">
-                        {patient.name}&apos;s Detail Page
-                    </h2>
+                    <h2 className="detail-header">{patient.name}&apos;s Detail Page</h2>
                     <button
                         className="favorite-button"
                         onClick={handleFavoriteToggle}
@@ -347,6 +373,7 @@ function PatientDetail({ patients, setPatients }) {
                         <p>
                             <strong>Address:</strong> {patient.address}
                         </p>
+
                         {signatureData && (
                             <div className="signature-preview">
                                 <strong>Signature:</strong>
@@ -376,6 +403,7 @@ function PatientDetail({ patients, setPatients }) {
                         handleDragLeave={handleDragLeave}
                         handleDragOver={handleDragOver}
                         handleDrop={handleDrop}
+                        // Hook up handleInputFileChange here
                         handleInputFileChange={handleInputFileChange}
                     />
                 )}
@@ -426,9 +454,7 @@ function PatientDetail({ patients, setPatients }) {
                     <div className="retraining-section">
                         <button
                             className="primary-button"
-                            onClick={() =>
-                                showNotificationMessage("Retraining simulated!")
-                            }
+                            onClick={() => showNotificationMessage("Retraining simulated!")}
                         >
                             Simulate Retraining
                         </button>
@@ -442,7 +468,6 @@ function PatientDetail({ patients, setPatients }) {
                         aria-label="Copy share link"
                     >
                         <FaShare /> Share Patient
-                      
                     </button>
                     <button
                         className="print-button"
@@ -469,7 +494,8 @@ function PatientDetail({ patients, setPatients }) {
                     role="dialog"
                 >
                     <div
-                        className="modal large-modal"
+                        // If `isExtendedViewer` is true, enlarge the viewer area
+                        className={`modal large-modal ${isExtendedViewer ? "viewer-extended" : ""}`}
                         onClick={(e) => e.stopPropagation()}
                         role="document"
                     >
