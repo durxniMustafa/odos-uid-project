@@ -1518,4 +1518,40 @@ body {
     font-size: 18px; /* Adjust icon size */
     color: inherit; /* Match icon color to text */
   }
+  /* Remove or override the overflow and max-height for print */
+@media print {
+    .patient-detail-page, 
+    .container,
+    .brain-viewer-root,
+    .modal-overlay, 
+    .modal,
+    .large-brain-viewer {
+      max-height: none !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+  
+    /* If you had rules that hide certain sections, you can remove or comment them out */
+    /*
+    .back-button,
+    .favorite-button,
+    .edit-notes-button,
+    .print-button,
+    .export-notes-button,
+    .upload-button,
+    .file-upload-label,
+    .brain-files-filter,
+    .share-button,
+    .remove-brain-file-button,
+    .view-brain-file-button,
+    .download-brain-file-button,
+    .confirmation-dialog-overlay,
+    .notification {
+        display: none !important;
+    }
+    */
+    
+    /* If you want all of them shown, remove them from the display: none list 
+       or comment them out as needed */
+  }
   

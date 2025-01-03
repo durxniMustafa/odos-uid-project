@@ -65,8 +65,9 @@ function PatientDetail({ patients, setPatients }) {
     const [isExtendedViewer, setIsExtendedViewer] = useState(false);
 
     const dragCounter = useRef(0);
+
+    // we can keep useWindowSize if you still want it for other reasons
     const { width, height } = useWindowSize();
-    const contentHeight = height - 100;
 
     // Filter brain files
     const filteredBrainFiles = useMemo(() => {
@@ -221,6 +222,7 @@ function PatientDetail({ patients, setPatients }) {
         handleEmailFile();
     }, [id, handleEmailFile, showNotificationMessage]);
 
+    // **Important**: This calls window.print(), but see CSS below
     const handlePrint = useCallback(() => {
         window.print();
     }, []);
@@ -309,10 +311,7 @@ function PatientDetail({ patients, setPatients }) {
     }
 
     return (
-        <div
-            className="patient-detail-page"
-            style={{ maxHeight: contentHeight, overflowY: "auto" }}
-        >
+        <div className="patient-detail-page">
             <Navbar />
 
             {notification && <Notification message={notification} />}
@@ -403,7 +402,6 @@ function PatientDetail({ patients, setPatients }) {
                         handleDragLeave={handleDragLeave}
                         handleDragOver={handleDragOver}
                         handleDrop={handleDrop}
-                        // Hook up handleInputFileChange here
                         handleInputFileChange={handleInputFileChange}
                     />
                 )}
@@ -494,8 +492,8 @@ function PatientDetail({ patients, setPatients }) {
                     role="dialog"
                 >
                     <div
-                        // If `isExtendedViewer` is true, enlarge the viewer area
-                        className={`modal large-modal ${isExtendedViewer ? "viewer-extended" : ""}`}
+                        className={`modal large-modal ${isExtendedViewer ? "viewer-extended" : ""
+                            }`}
                         onClick={(e) => e.stopPropagation()}
                         role="document"
                     >
