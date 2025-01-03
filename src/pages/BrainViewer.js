@@ -1,12 +1,23 @@
-// src/pages/BrainViewer.js
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { FaRedo, FaCube, FaCamera, FaInfoCircle, FaAlignCenter } from "react-icons/fa";
-import "../styles/BrainViewer.css";
+import {
+    FiRefreshCw,
+    FiBox,
+    FiCamera,
+    FiInfo,
+    FiAlignCenter,
+    FiRotateCw,
+    FiMaximize,
+    FiThumbsUp,
+    FiThumbsDown
+} from "react-icons/fi";
 
-function BrainViewer({ file }) {
+import "../styles/BrainViewer.css";
+import useWindowSize from "../hooks/useWindowSize";
+
+function BrainViewer({ file, onFeedback, showReportButton, onGenerateReport }) {
     const mountRef = useRef(null);
     const rendererRef = useRef(null);
     const controlsRef = useRef(null);
@@ -19,8 +30,12 @@ function BrainViewer({ file }) {
     const [notification, setNotification] = useState(null);
     const [rotationAngle, setRotationAngle] = useState(0);
     const [showInfo, setShowInfo] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [showFeedbackButtons, setShowFeedbackButtons] = useState(false);
 
-    const showNotification = (msg) => {
+    const { width, height } = useWindowSize();
+
+    const showViewerNotification = (msg) => {
         setNotification(msg);
         setTimeout(() => setNotification(null), 2000);
     };
@@ -65,6 +80,7 @@ function BrainViewer({ file }) {
                 scene.add(model);
                 modelRef.current = model;
                 setIsLoading(false);
+                setShowFeedbackButtons(true);
                 animate();
             },
             undefined,
@@ -75,16 +91,6 @@ function BrainViewer({ file }) {
             }
         );
 
-        const handleResize = () => {
-            if (!mountRef.current || !rendererRef.current) return;
-            const width = mountRef.current.clientWidth;
-            const height = mountRef.current.clientHeight;
-            renderer.setSize(width, height);
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-        };
-        window.addEventListener("resize", handleResize);
-
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
@@ -92,21 +98,34 @@ function BrainViewer({ file }) {
         }
 
         return () => {
-            if (mountRef.current && rendererRef.current) {
-                mountRef.current.removeChild(rendererRef.current.domElement);
+            // Cleanup: Only remove if still present
+            if (rendererRef.current && rendererRef.current.domElement && mountRef.current) {
+                if (mountRef.current.contains(rendererRef.current.domElement)) {
+                    mountRef.current.removeChild(rendererRef.current.domElement);
+                }
                 rendererRef.current.dispose();
                 rendererRef.current = null;
             }
-            window.removeEventListener("resize", handleResize);
         };
     }, [file]);
+
+    // Adjust camera & renderer on window size change
+    useEffect(() => {
+        if (rendererRef.current && cameraRef.current && mountRef.current) {
+            const newWidth = mountRef.current.clientWidth;
+            const newHeight = mountRef.current.clientHeight;
+            rendererRef.current.setSize(newWidth, newHeight);
+            cameraRef.current.aspect = newWidth / newHeight;
+            cameraRef.current.updateProjectionMatrix();
+        }
+    }, [width, height]);
 
     const resetView = () => {
         if (!cameraRef.current || !controlsRef.current) return;
         cameraRef.current.position.set(0, 1.5, 3);
         controlsRef.current.target.set(0, 0.5, 0);
         controlsRef.current.update();
-        showNotification("View reset");
+        showViewerNotification("View reset");
     };
 
     const toggleWireframe = () => {
@@ -117,7 +136,7 @@ function BrainViewer({ file }) {
             }
         });
         setIsWireframe((prev) => !prev);
-        showNotification(isWireframe ? "Solid mode" : "Wireframe mode");
+        showViewerNotification(isWireframe ? "Solid mode" : "Wireframe mode");
     };
 
     const rotateModel = () => {
@@ -125,39 +144,69 @@ function BrainViewer({ file }) {
         setRotationAngle((prev) => prev + 90);
         const rad = (rotationAngle + 90) * (Math.PI / 180);
         modelRef.current.rotation.y = rad;
-        showNotification("Model rotated");
+        showViewerNotification("Model rotated");
     };
 
     const takeScreenshot = () => {
-        showNotification("Screenshot captured (simulated)");
+        showViewerNotification("Screenshot captured (simulated)");
     };
 
     const centerModel = () => {
         if (!modelRef.current) return;
         modelRef.current.position.set(0, 0, 0);
-        showNotification("Model centered");
+        showViewerNotification("Model centered");
     };
 
     const viewInfo = () => {
         setShowInfo((prev) => !prev);
     };
 
+    const toggleFullscreen = () => {
+        setIsFullscreen((prev) => !prev);
+    };
+
+    const handleLike = () => {
+        onFeedback && onFeedback('like');
+        showViewerNotification("Thanks for your feedback!");
+    };
+
+    const handleDislike = () => {
+        onFeedback && onFeedback('dislike');
+        showViewerNotification("Thanks for your feedback!");
+    };
+
     return (
-        <div className="brain-viewer-root">
+        <div className={`brain-viewer-root ${isFullscreen ? 'fullscreen' : ''}`}>
             {isLoading && <div className="loading-spinner">Loading model...</div>}
             {error && <div className="brain-viewer-error">{error}</div>}
 
             <div className="brain-viewer-mount" ref={mountRef}></div>
 
             {!isLoading && !error && (
-                <div className="viewer-toolbar">
-                    <button onClick={resetView} className="toolbar-button" title="Reset View"><FaRedo /></button>
-                    <button onClick={toggleWireframe} className="toolbar-button" title="Toggle Wireframe"><FaCube /></button>
-                    <button onClick={rotateModel} className="toolbar-button" title="Rotate Model">&#8635;</button>
-                    <button onClick={centerModel} className="toolbar-button" title="Center Model"><FaAlignCenter /></button>
-                    <button onClick={takeScreenshot} className="toolbar-button" title="Screenshot"><FaCamera /></button>
-                    <button onClick={viewInfo} className="toolbar-button" title="View Info"><FaInfoCircle /></button>
-                </div>
+                <>
+                    <div className="viewer-toolbar">
+                        <button onClick={toggleFullscreen} className="toolbar-button" title="Toggle Fullscreen"><FiMaximize /></button>
+                        <button onClick={resetView} className="toolbar-button" title="Reset View"><FiRefreshCw /></button>
+                        <button onClick={toggleWireframe} className="toolbar-button" title="Toggle Wireframe"><FiBox /></button>
+                        <button onClick={rotateModel} className="toolbar-button" title="Rotate Model"><FiRotateCw /></button>
+                        <button onClick={centerModel} className="toolbar-button" title="Center Model"><FiAlignCenter /></button>
+                        <button onClick={takeScreenshot} className="toolbar-button" title="Screenshot"><FiCamera /></button>
+                        <button onClick={viewInfo} className="toolbar-button" title="View Info"><FiInfo /></button>
+                    </div>
+
+                    {showFeedbackButtons && (
+                        <div className="feedback-buttons">
+                            <button className="like-button" onClick={handleLike}><FiThumbsUp /> Like</button>
+                            <button className="dislike-button" onClick={handleDislike}><FiThumbsDown /> Dislike</button>
+                        </div>
+                    )}
+
+                    {showReportButton && (
+                        <div className="generate-report-button">
+                            <button className="primary-button" onClick={onGenerateReport}>Generate AI Report</button>
+                        </div>
+                    )}
+                </>
             )}
 
             {showInfo && !isLoading && !error && (

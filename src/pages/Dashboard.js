@@ -3,34 +3,79 @@ import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import Navbar from "../components/Navbar";
 import "../styles/Dashboard.css";
+import Notification from "../components/Notification";
+import useWindowSize from "../hooks/useWindowSize";
+import { FaUserPlus } from "react-icons/fa6";
+
+
+// Modern icon replacements (example using Ant Design icons)
+import {
+    AiOutlineUserAdd,
+    AiOutlineSearch,
+    AiOutlineLineChart,
+    AiOutlineFilter,
+    AiOutlineMail,
+    AiOutlinePhone,
+    AiOutlineEnvironment,
+    AiOutlineCalendar
+} from "react-icons/ai";
+
+function PilotBanner({ onDismiss }) {
+    return (
+        <div className="pilot-banner">
+            <p>
+                <strong>Try our free pilot program!</strong> Experience AI-assisted MRI analysis,
+                detect anomalies earlier, and improve patient outcomes.
+            </p>
+            <button onClick={onDismiss} className="dismiss-button">
+                Dismiss
+            </button>
+        </div>
+    );
+}
 
 function Dashboard() {
     const [patients, setPatients] = useState(() => {
         const saved = localStorage.getItem("patients");
-        return saved ? JSON.parse(saved) : [
-            {
-                id: uuidv4(),
-                name: "Yamini Gowda",
-                email: "yamini_gowda@home.com",
-                dob: "2020-12-10",
-                phone: "+91 9788399999",
-                address: "Kisan Vihar Ext, Nr Daharkar Wadi Bunder Pakhadi Rd, Kandivli, Alwar",
-                photo: "https://via.placeholder.com/100",
-                brainFiles: [],
-                uploadProgress: {},
-                status: "Stable",
-            },
-        ];
+        return saved
+            ? JSON.parse(saved)
+            : [
+                {
+                    id: uuidv4(),
+                    name: "Mustafa Durani@outlook.de",
+                    email: "M.Durani",
+                    dob: "2020-12-10",
+                    phone: "+91 9788399999",
+                    address:
+                        "Kisan Vihar Ext, Nr Daharkar Wadi Bunder Pakhadi Rd, Kandivli, Alwar",
+                    photo: "https://via.placeholder.com/100",
+                    brainFiles: [],
+                    uploadProgress: {},
+                    notes: "",
+                    isFavorite: false,
+                },
+            ];
     });
 
     const [notification, setNotification] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState("name");
     const [showAddModal, setShowAddModal] = useState(false);
-    const [newPatient, setNewPatient] = useState({ name: "", email: "", dob: "", phone: "", address: "" });
+    const [newPatient, setNewPatient] = useState({
+        name: "",
+        email: "",
+        dob: "",
+        phone: "",
+        address: "",
+    });
     const [focusMode, setFocusMode] = useState(false);
+    const [showPilotBanner, setShowPilotBanner] = useState(() => {
+        return localStorage.getItem("dismissedPilotBanner") !== "true";
+    });
 
-    const showNotification = (message) => {
+    const { width, height } = useWindowSize();
+
+    const showNotificationMessage = (message) => {
         setNotification(message);
         setTimeout(() => setNotification(null), 3000);
     };
@@ -60,53 +105,90 @@ function Dashboard() {
         });
 
     const addPatient = () => {
-        // Simple validation
-        if (!newPatient.name || !newPatient.email || !newPatient.dob || !newPatient.phone || !newPatient.address) {
-            showNotification("Please fill in all fields.");
+        if (
+            !newPatient.name ||
+            !newPatient.email ||
+            !newPatient.dob ||
+            !newPatient.phone ||
+            !newPatient.address
+        ) {
+            showNotificationMessage("Please fill in all fields.");
             return;
         }
 
-        setPatients((prev) => [...prev, { ...newPatient, id: uuidv4(), brainFiles: [], uploadProgress: {}, status: "Stable" }]);
-        setNewPatient({ name: "", email: "", dob: "", phone: "", address: "" });
+        setPatients((prev) => [
+            ...prev,
+            {
+                ...newPatient,
+                id: uuidv4(),
+                brainFiles: [],
+                uploadProgress: {},
+                notes: "",
+                isFavorite: false,
+            },
+        ]);
+        setNewPatient({
+            name: "",
+            email: "",
+            dob: "",
+            phone: "",
+            address: "",
+        });
         setShowAddModal(false);
-        showNotification("Patient added!");
+        showNotificationMessage("Patient added!");
     };
 
     const generateInsights = () => {
-        // Simulate generating a report
-        showNotification("Patient insights generated (simulated)!");
+        showNotificationMessage("Patient insights generated (simulated)!");
+    };
+
+    const dismissPilot = () => {
+        setShowPilotBanner(false);
+        localStorage.setItem("dismissedPilotBanner", "true");
     };
 
     return (
         <div className="dashboard-fullscreen">
             <Navbar />
 
-            {notification && <div className="notification">{notification}</div>}
+            {notification && <Notification message={notification} />}
+
+            {showPilotBanner && <PilotBanner onDismiss={dismissPilot} />}
 
             <div className="dashboard-content">
                 <div className="top-bar">
-                    <input
-                        type="text"
-                        placeholder="Search patients..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="search-input"
-                    />
+                    <div className="search-bar-wrapper">
+                        <AiOutlineSearch className="icon" />
+                        <input
+                            type="text"
+                            placeholder="Search patients..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="search-input"
+                        />
+                    </div>
 
-                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-select">
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="sort-select"
+                    >
                         <option value="name">Sort by Name</option>
                         <option value="dob">Sort by Date of Birth</option>
                     </select>
 
                     <button onClick={() => setShowAddModal(true)} className="primary-button">
-                        Add Patient
+                    <FaUserPlus />Add Patient
                     </button>
                     <button onClick={generateInsights} className="secondary-button">
-                        Generate Insights
+                        <AiOutlineLineChart /> Generate Insights
                     </button>
                     <button onClick={() => setFocusMode((prev) => !prev)} className="secondary-button">
-                        {focusMode ? "Exit Focus Mode" : "Focus Mode"}
+                        <AiOutlineFilter /> {focusMode ? "Exit Focus" : "Focus Mode"}
                     </button>
+                    <Link to="/metrics" className="secondary-button">
+                        View Metrics
+                    </Link>
                 </div>
 
                 <div className="patients-list">
@@ -120,21 +202,32 @@ function Dashboard() {
                                 />
                                 {!focusMode && (
                                     <div className="patient-info">
-                                        <p><strong>{patient.name}</strong></p>
-                                        <p>{patient.email}</p>
-                                        <p>DOB: {patient.dob}</p>
-                                        <p>{patient.phone}</p>
-                                        <p>{patient.address}</p>
-                                        <span className="status-badge">{patient.status}</span>
+                                        <p className="patient-name">
+                                            <strong>{patient.name}</strong>
+                                        </p>
+                                        <p className="patient-detail">
+                                            <AiOutlineMail className="detail-icon" /> {patient.email}
+                                        </p>
+                                        <p className="patient-detail">
+                                            <AiOutlineCalendar className="detail-icon" /> {patient.dob}
+                                        </p>
+                                        <p className="patient-detail">
+                                            <AiOutlinePhone className="detail-icon" /> {patient.phone}
+                                        </p>
+                                        <p className="patient-detail">
+                                            <AiOutlineEnvironment className="detail-icon" /> {patient.address}
+                                        </p>
                                     </div>
                                 )}
                                 {focusMode && (
                                     <div className="patient-info">
-                                        <p><strong>{patient.name}</strong></p>
+                                        <p className="patient-name">
+                                            <strong>{patient.name}</strong>
+                                        </p>
                                     </div>
                                 )}
                                 <Link to={`/patient/${patient.id}`} className="details-button">
-                                    View Details
+                                    Details
                                 </Link>
                             </div>
                         ))
@@ -190,8 +283,15 @@ function Dashboard() {
                             </label>
                         </div>
                         <div className="modal-actions">
-                            <button onClick={addPatient} className="primary-button">Add</button>
-                            <button onClick={() => setShowAddModal(false)} className="secondary-button">Cancel</button>
+                            <button onClick={addPatient} className="primary-button">
+                                Add
+                            </button>
+                            <button
+                                onClick={() => setShowAddModal(false)}
+                                className="secondary-button"
+                            >
+                                Cancel
+                            </button>
                         </div>
                     </div>
                 </div>

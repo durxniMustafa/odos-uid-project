@@ -1,25 +1,19 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
-import BrainViewer from "./BrainViewer";
 import Navbar from "../components/Navbar";
-import {
-    FaUpload,
-    FaShareAlt,
-    FaEdit,
-    FaTrash,
-    FaTimes,
-    FaDownload,
-    FaExpand,
-    FaStar,
-    FaRegStar,
-    FaPrint,
-    FaFileExport,
-    FaSearch
-} from "react-icons/fa";
-import "../styles/PatientDetails.css";
+import BrainViewer from "./BrainViewer";
 import ConfirmationDialog from "../components/ConfirmationDialog";
 import Notification from "../components/Notification";
+import useWindowSize from "../hooks/useWindowSize";
+
+import { FaShare, FaPrint, FaFileExport } from "react-icons/fa";
+import { FiEdit, FiUpload, FiSearch } from "react-icons/fi";
+import UploadSection from "../sections/UploadSection";
+import BrainFilesSection from "../sections/BrainFileSection";
+import NotesSection from "../sections/NoteSection";
+import DiagnosisSection from "../sections/DiagnosisSection";
+
+import "../styles/PatientDetails.css";
 
 function PatientDetail({ patients, setPatients }) {
     const { id } = useParams();
@@ -39,16 +33,16 @@ function PatientDetail({ patients, setPatients }) {
     const [isDraggingOver, setIsDraggingOver] = useState(false);
     const [isFavorite, setIsFavorite] = useState(patient?.isFavorite || false);
     const [brainFileFilter, setBrainFileFilter] = useState("");
+    const [showSignatureModal, setShowSignatureModal] = useState(false);
+    const [showDiagnosis, setShowDiagnosis] = useState(false);
+    const [uploadStep, setUploadStep] = useState(0);
+    const [currentFileId, setCurrentFileId] = useState(null);
+    const [showReportButton, setShowReportButton] = useState(false);
+    const [showRetrainingButton, setShowRetrainingButton] = useState(false);
 
     const dragCounter = useRef(0);
-
-    // New states for diagnosis and signature
-    const [showDiagnosis, setShowDiagnosis] = useState(false);
-    const [showSignatureModal, setShowSignatureModal] = useState(false);
-
-    // Store upload progress and interval
-    const [currentFileId, setCurrentFileId] = useState(null);
-    const uploadIntervalRef = useRef(null);
+    const { width, height } = useWindowSize();
+    const contentHeight = height - 100;
 
     const closeBrainImageModal = useCallback((e) => {
         if (e && e.type === "keydown" && e.key !== "Escape") return;
@@ -67,173 +61,122 @@ function PatientDetail({ patients, setPatients }) {
         };
     }, [closeBrainImageModal]);
 
-    if (!patient) {
-        return (
-            <div className="no-patient-found">
-                <Navbar />
-                <div className="no-patient-content">
-                    <h2>Patient not found</h2>
-                    <button className="back-button" onClick={() => navigate("/")}>
-                        &larr; Back to Dashboard
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    const showNotification = (message) => {
+    const showNotificationMessage = useCallback((message) => {
         setNotification(message);
         setTimeout(() => {
             setNotification(null);
         }, 3000);
-    };
+    }, []);
 
-    const handleFileUpload = (files) => {
-        if (!files || files.length === 0) return;
+    const handleFileUpload = useCallback(
+        (files) => {
+            if (!files || files.length === 0) return;
+            const file = files[0];
+            const isValidExtension = file.name.toLowerCase().endsWith(".glb");
 
-        const file = files[0];
-        const validMimeTypes = ["model/gltf-binary", "application/octet-stream"];
-        const isValidMimeType = validMimeTypes.includes(file.type);
-        const isValidExtension = file.name.toLowerCase().endsWith(".glb");
+            if (!isValidExtension) {
+                showNotificationMessage(`"${file.name}" is not a valid .glb file.`);
+                return;
+            }
 
-        if (!isValidMimeType && !isValidExtension) {
-            showNotification(`"${file.name}" is not a valid .glb file.`);
-            return;
-        }
+            const fileURL = URL.createObjectURL(file);
+            const fileId = file.name + "-" + Date.now();
+            setCurrentFileId(fileId);
 
+            // Remove old files and add new file
+            setPatients((prev) =>
+                prev.map((p) =>
+                    p.id === id
+                        ? { ...p, brainFiles: [{ id: fileId, url: fileURL, name: file.name }], uploadProgress: { [fileId]: 0 } }
+                        : p
+                )
+            );
+
+            startUploadSimulation();
+        },
+        [id, setPatients, showNotificationMessage]
+    );
+
+    const startUploadSimulation = useCallback(() => {
+        let stepCount = 0;
+        setUploadStep(1);
         setUploading(true);
 
-        const fileURL = URL.createObjectURL(file);
-        const fileId = uuidv4();
-        setCurrentFileId(fileId);
-
-        // Reupload logic: remove old files
-        setPatients((prev) =>
-            prev.map((p) => {
-                if (p.id === id) {
-                    return { ...p, brainFiles: [], uploadProgress: {} };
-                }
-                return p;
-            })
-        );
-
-        // Add new file
-        setPatients((prev) =>
-            prev.map((p) =>
-                p.id === id
-                    ? {
-                        ...p,
-                        brainFiles: [{ id: fileId, url: fileURL, name: file.name }],
-                        uploadProgress: { [fileId]: 0 },
-                    }
-                    : p
-            )
-        );
-
-        // Simulate upload progress
-        let progress = 0;
-        uploadIntervalRef.current = setInterval(() => {
-            progress += 10;
-            if (progress <= 100) {
-                setPatients((prev) =>
-                    prev.map((p) =>
-                        p.id === id
-                            ? { ...p, uploadProgress: { [fileId]: progress } }
-                            : p
-                    )
-                );
+        const stepsInterval = setInterval(() => {
+            stepCount++;
+            if (stepCount <= 3) {
+                setUploadStep((prev) => prev + 1);
             } else {
-                clearInterval(uploadIntervalRef.current);
-                uploadIntervalRef.current = null;
-                showNotification(`File "${file.name}" uploaded successfully!`);
+                clearInterval(stepsInterval);
                 setUploading(false);
-                // After AI completes for the new file, show new diagnosis
+                showNotificationMessage(`File uploaded and processed successfully!`);
                 setShowDiagnosis(true);
+                setShowReportButton(true);
             }
-        }, 300);
-    };
+        }, 1500);
+    }, [showNotificationMessage]);
 
-    const cancelUpload = () => {
-        if (uploadIntervalRef.current) {
-            clearInterval(uploadIntervalRef.current);
-            uploadIntervalRef.current = null;
-        }
-
-        // Revert any partial upload progress and remove the file
+    const handleSaveNotes = useCallback(() => {
         setPatients((prev) =>
-            prev.map((p) => {
-                if (p.id === id) {
-                    // Remove the uploaded file and progress
-                    p.brainFiles.forEach((file) => {
-                        if (file.id === currentFileId) {
-                            URL.revokeObjectURL(file.url);
-                        }
-                    });
-                    return { ...p, brainFiles: [], uploadProgress: {} };
-                }
-                return p;
-            })
-        );
-
-        setCurrentFileId(null);
-        setUploading(false);
-        showNotification("Upload canceled.");
-    };
-
-    const handleRemoveBrainFile = (fileId) => {
-        setConfirmDialog({
-            isOpen: true,
-            message: "Are you sure you want to remove this brain file?",
-            onConfirm: () => {
-                setPatients((prev) =>
-                    prev.map((p) => {
-                        if (p.id === id) {
-                            const updatedBrainFiles = p.brainFiles.filter((file) => file.id !== fileId);
-                            const removedFile = p.brainFiles.find((file) => file.id === fileId);
-                            if (removedFile) {
-                                URL.revokeObjectURL(removedFile.url);
-                            }
-                            const updatedUploadProgress = { ...p.uploadProgress };
-                            delete updatedUploadProgress[fileId];
-                            return { ...p, brainFiles: updatedBrainFiles, uploadProgress: updatedUploadProgress };
-                        }
-                        return p;
-                    })
-                );
-                setShowDiagnosis(false); // No files now, so hide diagnosis
-                showNotification("Brain file removed successfully!");
-            },
-        });
-    };
-
-    const handleViewBrainImage = (brainFile) => {
-        setViewingBrainFile(brainFile);
-    };
-
-    const handleEditNotes = () => {
-        setIsEditingNotes(true);
-    };
-
-    const handleSaveNotes = () => {
-        setPatients((prev) =>
-            prev.map((p) =>
-                p.id === id ? { ...p, notes: notes } : p
-            )
+            prev.map((p) => (p.id === id ? { ...p, notes: notes } : p))
         );
         setIsEditingNotes(false);
-        showNotification("Notes updated successfully!");
-    };
+        showNotificationMessage("Notes updated successfully!");
+    }, [id, notes, setPatients, showNotificationMessage]);
 
-    const handleShare = async () => {
+    const handleFavoriteToggle = useCallback(() => {
+        setIsFavorite((prev) => !prev);
+        setPatients((prev) =>
+            prev.map((p) => (p.id === id ? { ...p, isFavorite: !isFavorite } : p))
+        );
+        showNotificationMessage(isFavorite ? "Removed from favorites." : "Added to favorites!");
+    }, [id, isFavorite, setPatients, showNotificationMessage]);
+
+    const handleExportNotes = useCallback(() => {
+        const blob = new Blob([notes || ""], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${patient.name}-notes.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showNotificationMessage("Notes exported successfully!");
+    }, [notes, patient, showNotificationMessage]);
+
+    const handleShare = useCallback(async () => {
         const shareLink = `https://example.com/patient/${id}`;
         try {
             await navigator.clipboard.writeText(shareLink);
-            showNotification("Share link copied to clipboard!");
+            showNotificationMessage("Share link copied to clipboard!");
         } catch {
-            showNotification("Failed to copy share link.");
+            showNotificationMessage("Failed to copy share link.");
         }
-    };
+    }, [id, showNotificationMessage]);
 
+    const handlePrint = useCallback(() => {
+        window.print();
+    }, []);
+
+    const handleFeedback = useCallback((type) => {
+        if (type === 'dislike') {
+            setShowRetrainingButton(true);
+        }
+    }, []);
+
+    const handleGenerateReport = useCallback(() => {
+        showNotificationMessage("AI Report generated (simulated)!");
+    }, [showNotificationMessage]);
+
+    const filteredBrainFiles = useMemo(() => {
+        if (!patient || !patient.brainFiles) return [];
+        return patient.brainFiles.filter((file) =>
+            file.name.toLowerCase().includes(brainFileFilter.toLowerCase())
+        );
+    }, [patient, brainFileFilter]);
+
+    // Drag & Drop Handlers
     const handleDragEnter = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -270,50 +213,31 @@ function PatientDetail({ patients, setPatients }) {
         handleFileUpload(e.target.files);
     };
 
-    const handleFavoriteToggle = () => {
-        setIsFavorite((prev) => !prev);
-        setPatients((prev) =>
-            prev.map((p) =>
-                p.id === id ? { ...p, isFavorite: !isFavorite } : p
-            )
-        );
-        showNotification(isFavorite ? "Removed from favorites." : "Added to favorites!");
-    };
-
-    const handleExportNotes = () => {
-        const blob = new Blob([notes || ""], { type: "text/plain;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${patient.name}-notes.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showNotification("Notes exported successfully!");
-    };
-
-    const handlePrint = () => {
-        window.print();
-    };
-
-    const handleAddSignature = () => {
+    const handleAddSignature = useCallback(() => {
         setShowSignatureModal(true);
-    };
+    }, []);
 
-    const handleSignatureConfirm = () => {
+    const handleSignatureConfirm = useCallback(() => {
         setShowSignatureModal(false);
-        showNotification("Signature added (simulated)!");
-    };
+        showNotificationMessage("Signature added (simulated)!");
+    }, [showNotificationMessage]);
 
-    const filteredBrainFiles = patient.brainFiles.filter((file) =>
-        file.name.toLowerCase().includes(brainFileFilter.toLowerCase())
-    );
-
-    const uploadProgress = patient.uploadProgress && currentFileId ? patient.uploadProgress[currentFileId] : 0;
+    if (!patient) {
+        return (
+            <div className="no-patient-found">
+                <Navbar />
+                <div className="no-patient-content">
+                    <h2>Patient not found</h2>
+                    <button className="back-button" onClick={() => navigate("/")}>
+                        &larr; Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="patient-detail-page">
+        <div className="patient-detail-page" style={{ maxHeight: contentHeight, overflowY: "auto" }}>
             <Navbar />
             {notification && <Notification message={notification} />}
             {confirmDialog.isOpen && (
@@ -339,7 +263,7 @@ function PatientDetail({ patients, setPatients }) {
                         {patient.name}'s Detail Page
                     </h2>
                     <button className="favorite-button" onClick={handleFavoriteToggle} aria-label="Toggle favorite">
-                        {isFavorite ? <FaStar /> : <FaRegStar />}
+                        {isFavorite ? "★" : "☆"}
                     </button>
                 </div>
 
@@ -357,84 +281,43 @@ function PatientDetail({ patients, setPatients }) {
                     </div>
                 </div>
 
-                <div className="notes-card">
-                    <div className="notes-header">
-                        <h3>Notes</h3>
-                        <div className="notes-actions-bar">
-                            {!isEditingNotes && (
-                                <>
-                                    <button className="edit-notes-button" onClick={handleEditNotes}><FaEdit /> Edit</button>
-                                    <button className="export-notes-button" onClick={handleExportNotes} title="Export Notes"><FaFileExport /> Export</button>
-                                    <button className="print-button" onClick={handlePrint} title="Print Page"><FaPrint /> Print</button>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                    {isEditingNotes ? (
-                        <div className="edit-notes">
-                            <textarea
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                placeholder="Enter notes here..."
-                                aria-label="Patient notes input"
-                            ></textarea>
-                            <div className="notes-actions">
-                                <button className="save-button" onClick={handleSaveNotes}>Save</button>
-                                <button className="cancel-button" onClick={() => setIsEditingNotes(false)}>Cancel</button>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="view-notes">
-                            <p>{notes || "No notes added yet."}</p>
-                        </div>
-                    )}
-                </div>
+                <NotesSection
+                    notes={notes}
+                    setNotes={setNotes}
+                    isEditingNotes={isEditingNotes}
+                    setIsEditingNotes={setIsEditingNotes}
+                    handleSaveNotes={handleSaveNotes}
+                    handleExportNotes={handleExportNotes}
+                    handlePrint={handlePrint}
+                />
 
-                <div
-                    className={`file-upload-section ${isDraggingOver ? "drag-over" : ""}`}
-                    onDragEnter={handleDragEnter}
-                    onDragLeave={handleDragLeave}
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                >
-                    <label className="file-upload-label" htmlFor={`upload-${patient.id}`}>
-                        Drag & Drop or Click to Upload a Brain File:
-                    </label>
-                    <input
-                        type="file"
-                        id={`upload-${patient.id}`}
-                        accept=".glb"
-                        onChange={handleInputFileChange}
-                        className="file-upload-input"
+                {!showDiagnosis && (
+                    <UploadSection
+                        patientId={patient.id}
+                        isDraggingOver={isDraggingOver}
+                        handleDragEnter={handleDragEnter}
+                        handleDragLeave={handleDragLeave}
+                        handleDragOver={handleDragOver}
+                        handleDrop={handleDrop}
+                        handleInputFileChange={handleInputFileChange}
                     />
-                    <label htmlFor={`upload-${patient.id}`} className="upload-button">
-                        <FaUpload className="file-upload-icon" /> Choose File
-                    </label>
-                    {isDraggingOver && <div className="drag-overlay">Drop file here</div>}
-                </div>
+                )}
 
                 {uploading && (
-                    <div className="ai-magic-progress">
-                        <div className="ai-magic-content">
-                            <div className="ai-spinner"></div>
-                            <p>AI Magic Happens Here...</p>
-                            <div className="progress-bar-container">
-                                <div
-                                    className="progress-bar"
-                                    style={{ width: `${uploadProgress}%` }}
-                                ></div>
-                            </div>
-                            <div className="progress-info">
-                                <p>Uploading: {uploadProgress}%</p>
-                                <button className="cancel-upload-button" onClick={cancelUpload}>Cancel Upload</button>
-                            </div>
+                    <div className="upload-steps">
+                        <h3>Uploading & Processing Steps</h3>
+                        <div className="steps-container">
+                            <div className={`step ${uploadStep >= 1 ? 'completed' : ''}`}>Step 1: Uploading File</div>
+                            <div className={`step ${uploadStep >= 2 ? 'completed' : ''}`}>Step 2: Data Preprocessing</div>
+                            <div className={`step ${uploadStep >= 3 ? 'completed' : ''}`}>Step 3: AI Inference</div>
+                            <div className={`step ${uploadStep >= 4 ? 'completed' : ''}`}>Step 4: Finalizing</div>
                         </div>
                     </div>
                 )}
 
                 {patient.brainFiles.length > 1 && (
                     <div className="brain-files-filter">
-                        <FaSearch className="search-icon" />
+                        <FiSearch className="search-icon" />
                         <input
                             type="text"
                             placeholder="Search brain files..."
@@ -445,104 +328,34 @@ function PatientDetail({ patients, setPatients }) {
                     </div>
                 )}
 
-                <div className="brain-viewer-section">
-                    {filteredBrainFiles.length > 0 ? (
-                        filteredBrainFiles.map((brainFile) => (
-                            <div key={brainFile.id} className="brain-viewer-wrapper">
-                                <div className="brain-viewer-container">
-                                    <BrainViewer file={brainFile.url} />
-                                </div>
-                                <div className="brain-file-info">
-                                    <p className="brain-file-name">{brainFile.name}</p>
-                                    <div className="brain-file-actions">
-                                        <button className="view-brain-file-button" onClick={() => handleViewBrainImage(brainFile)}><FaExpand /> View</button>
-                                        <a className="download-brain-file-button" href={brainFile.url} download={brainFile.name}><FaDownload /> Download</a>
-                                        <button className="remove-brain-file-button" onClick={() => handleRemoveBrainFile(brainFile.id)}><FaTrash /> Remove</button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="no-upload-message">No brain image uploaded or no files match your search.</p>
-                    )}
-                </div>
+                {showDiagnosis && (
+                    <BrainFilesSection
+                        filteredBrainFiles={filteredBrainFiles}
+                        showReportButton={showReportButton}
+                        handleFeedback={handleFeedback}
+                        handleGenerateReport={handleGenerateReport}
+                    />
+                )}
+
+                {showRetrainingButton && (
+                    <div className="retraining-section">
+                        <button className="primary-button" onClick={() => showNotificationMessage("Retraining simulated!")}>
+                            Simulate Retraining
+                        </button>
+                    </div>
+                )}
 
                 <div className="share-section">
                     <button className="share-button" onClick={handleShare} aria-label="Copy share link">
-                        <FaShareAlt /> Share Patient
+                        <FaShare /> Share Patient
                     </button>
                 </div>
 
-                {/* After upload and AI done, show diagnosis */}
                 {showDiagnosis && (
-                    <>
-                        <div className="stages-section">
-                            <h3 className="section-title">Processing Stages</h3>
-                            <div className="stages-container">
-                                <div className="stage-item completed">Stage 1</div>
-                                <div className="stage-item completed">Stage 2</div>
-                                <div className="stage-item completed">Stage 3</div>
-                                <div className="stage-item completed">Stage 4</div>
-                                <div className="stage-item current">Stage 5</div>
-                            </div>
-                            <button className="primary-button" style={{ marginTop: '20px' }}>View Report</button>
-                        </div>
-
-                        <div className="mri-session-details">
-                            <div className="mri-data">
-                                <h4>MRI Data Details</h4>
-                                <p><strong>Modality:</strong> DTI</p>
-                                <p><strong>Resolution:</strong> 1x1x1 mm</p>
-                                <p><strong>Orientation:</strong> Axial</p>
-                                <p><strong>Acquisition Time:</strong> 15 minutes</p>
-                                <p><strong>Patient Name:</strong> {patient.name}</p>
-                                <p><strong>Patient ID:</strong> {patient.id}</p>
-                                <p><strong>Scan Date:</strong> 2024-11-25</p>
-                            </div>
-                            <div className="session-metadata">
-                                <h4>Session Metadata</h4>
-                                <p><strong>Session ID:</strong> MRI20241125001</p>
-                                <p><strong>Date and Time:</strong> 2024-11-25 10:45 AM</p>
-                                <p><strong>MRI Device:</strong></p>
-                                <ul>
-                                    <li>Manufacturer: Siemens</li>
-                                    <li>Model: Magnetom Prisma</li>
-                                    <li>Field Strength: 3T</li>
-                                </ul>
-                                <p><strong>Technician:</strong> Dr. Emily Carter</p>
-                            </div>
-                        </div>
-
-                        <div className="results-row">
-                            <div className="results-column">
-                                <h4>Imaging Results</h4>
-                                <p><strong>Description:</strong> Heterogeneously enhanced mass with irregular borders.</p>
-                                <p><strong>Scan Type:</strong> DTI with contrast.</p>
-                                <p><strong>Prognosis:</strong> Poor (12-15 months survival est.)</p>
-                            </div>
-                            <div className="results-column">
-                                <h4>Clinical Notes</h4>
-                                <p><strong>Symptoms:</strong> Headaches, nausea, mild memory loss.</p>
-                                <p><strong>Action:</strong> Surgical resection + radiation & chemotherapy.</p>
-                            </div>
-                        </div>
-
-                        <div className="results-row">
-                            <div className="results-column">
-                                <h4>Diagnosis Details</h4>
-                                <p><strong>Condition:</strong> Glioblastoma Multiforme (GBM)</p>
-                                <p><strong>Grade:</strong> IV (High-grade)</p>
-                                <p><strong>Location:</strong> Left Temporal Lobe</p>
-                                <p><strong>Size:</strong> 3.5 cm</p>
-                            </div>
-                        </div>
-
-                        <div className="signature-section">
-                            <button className="primary-button" onClick={handleAddSignature}>
-                                Add Signature
-                            </button>
-                        </div>
-                    </>
+                    <DiagnosisSection
+                        patient={patient}
+                        handleAddSignature={handleAddSignature}
+                    />
                 )}
             </div>
 
@@ -558,7 +371,7 @@ function PatientDetail({ patients, setPatients }) {
                             onClick={closeBrainImageModal}
                             aria-label="Close modal"
                         >
-                            <FaTimes />
+                            ×
                         </button>
                         <h2>{viewingBrainFile.name}</h2>
                         <div className="large-brain-viewer">

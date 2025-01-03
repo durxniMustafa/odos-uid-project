@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "../styles/Navbar.css";
-import logo from "../assets/logo.png"; // Ensure the correct path
+import logo from "../assets/logo.png"; // Ensure the correct path to your logo
+import { FaRegUserCircle } from "react-icons/fa";
+import { IoIosNotifications } from "react-icons/io";
 
 function Navbar() {
     const [isMoreOpen, setMoreOpen] = useState(false);
@@ -14,11 +16,20 @@ function Navbar() {
             </div>
 
             <ul className="navbar-links">
-                <li><span title="View Patients">Patients</span></li>
-                <li><span title="View Results">Results</span></li>
-                <li><span title="Current Processes">Current Processes</span></li>
-                <li><span title="View Issues">Issues</span></li>
-                <li className="navbar-dropdown"
+                <li>
+                    <span title="View Patients">Patients</span>
+                </li>
+                <li>
+                    <span title="View Results">Results</span>
+                </li>
+                <li>
+                    <span title="Current Processes">Current Processes</span>
+                </li>
+                <li>
+                    <span title="View Issues">Issues</span>
+                </li>
+                <li
+                    className="navbar-dropdown"
                     onMouseEnter={() => setMoreOpen(true)}
                     onMouseLeave={() => setMoreOpen(false)}
                 >
@@ -37,14 +48,18 @@ function Navbar() {
                 <div className="navbar-actions-left">
                     <input type="text" className="navbar-search" placeholder="Search..." />
                     <span className="navbar-bell" title="Notifications">
-                        🔔<span className="bell-count">3</span>
+                        <IoIosNotifications />
+                        <span className="bell-count">3</span>
                     </span>
                 </div>
-                <div className="navbar-profile-section"
+                <div
+                    className="navbar-profile-section"
                     onMouseEnter={() => setProfileOpen(true)}
                     onMouseLeave={() => setProfileOpen(false)}
                 >
-                    <span className="navbar-profile" title="User Profile">👤</span>
+                    <span className="navbar-profile" title="User Profile">
+                        <FaRegUserCircle />
+                    </span>
                     {isProfileOpen && (
                         <ul className="profile-menu">
                             <li>My Profile</li>

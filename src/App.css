@@ -1,3 +1,16 @@
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+  background: #FAFBFD;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+button, input, textarea, select {
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+
 .App {
   text-align: center;
 }
