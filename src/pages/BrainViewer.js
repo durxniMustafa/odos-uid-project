@@ -12,7 +12,9 @@ import {
     FiMaximize,
     FiThumbsUp,
     FiThumbsDown,
+    FiMapPin // a pin icon to represent 'annotate'
 } from "react-icons/fi";
+
 import useWindowSize from "../hooks/useWindowSize";
 import "../styles/BrainViewer.css";
 
@@ -22,6 +24,7 @@ function BrainViewer({ file, onFeedback, showReportButton, onGenerateReport }) {
     const controlsRef = useRef(null);
     const modelRef = useRef(null);
     const cameraRef = useRef(null);
+    const sceneRef = useRef(null);
 
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -32,9 +35,13 @@ function BrainViewer({ file, onFeedback, showReportButton, onGenerateReport }) {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [showFeedbackButtons, setShowFeedbackButtons] = useState(false);
 
+    // (A) We track a list of annotations
+    const [annotations, setAnnotations] = useState([]);
+    const [annotationMode, setAnnotationMode] = useState(false);
+
     const { width, height } = useWindowSize();
 
-    // Helper to show short-lived notifications (top-center)
+    // Helper to show short-lived notifications
     const showViewerNotification = useCallback((msg) => {
         setNotification(msg);
         setTimeout(() => setNotification(null), 2000);
@@ -45,6 +52,7 @@ function BrainViewer({ file, onFeedback, showReportButton, onGenerateReport }) {
         if (!file) return;
 
         const scene = new THREE.Scene();
+        sceneRef.current = scene;
 
         // Camera
         const camera = new THREE.PerspectiveCamera(
@@ -106,7 +114,7 @@ function BrainViewer({ file, onFeedback, showReportButton, onGenerateReport }) {
             renderer.render(scene, camera);
         }
 
-        // Cleanup on component unmount
+        // Cleanup
         return () => {
             if (rendererRef.current?.domElement && mountRef.current) {
                 if (mountRef.current.contains(rendererRef.current.domElement)) {
@@ -129,7 +137,7 @@ function BrainViewer({ file, onFeedback, showReportButton, onGenerateReport }) {
         }
     }, [width, height]);
 
-    // ----------- Toolbar Actions -----------
+    // Toolbar actions
     const resetView = () => {
         if (!cameraRef.current || !controlsRef.current) return;
         cameraRef.current.position.set(0, 1.5, 3);
@@ -158,7 +166,6 @@ function BrainViewer({ file, onFeedback, showReportButton, onGenerateReport }) {
     };
 
     const takeScreenshot = () => {
-        // In a real scenario, you'd grab the WebGL canvas and convert to an image.
         showViewerNotification("Screenshot captured (simulated)");
     };
 
@@ -177,7 +184,67 @@ function BrainViewer({ file, onFeedback, showReportButton, onGenerateReport }) {
         showViewerNotification("Fullscreen toggled");
     };
 
-    // ----------- Feedback / Reporting -----------
+    // (B) Toggle annotation mode
+    const toggleAnnotationMode = () => {
+        setAnnotationMode((prev) => !prev);
+        showViewerNotification(
+            annotationMode ? "Annotation mode off" : "Annotation mode on"
+        );
+    };
+
+    // (C) On click in scene, if annotation mode is on, place a marker
+    const handleSceneClick = useCallback((event) => {
+        if (!annotationMode || !rendererRef.current || !cameraRef.current) return;
+
+        const rendererBounds = rendererRef.current.domElement.getBoundingClientRect();
+        const x = event.clientX - rendererBounds.left;
+        const y = event.clientY - rendererBounds.top;
+
+        // NDC (Normalized Device Coordinates)
+        const mouse = new THREE.Vector2(
+            (x / rendererBounds.width) * 2 - 1,
+            -(y / rendererBounds.height) * 2 + 1
+        );
+
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse, cameraRef.current);
+
+        const scene = sceneRef.current;
+        const intersects = raycaster.intersectObjects(scene.children, true);
+
+        if (intersects.length > 0) {
+            const point = intersects[0].point.clone();
+            // Create a small sphere or marker
+            const markerGeometry = new THREE.SphereGeometry(0.01, 16, 16);
+            const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const markerMesh = new THREE.Mesh(markerGeometry, markerMaterial);
+            markerMesh.position.copy(point);
+            scene.add(markerMesh);
+
+            // Save annotation info
+            const newAnnotation = {
+                position: point,
+                id: Date.now(),
+            };
+            setAnnotations((prev) => [...prev, newAnnotation]);
+            showViewerNotification("Annotation added!");
+        }
+    }, [annotationMode, showViewerNotification]);
+
+    useEffect(() => {
+        const domElem = rendererRef.current?.domElement;
+        if (!domElem) return;
+
+        // Add event listener for clicks
+        domElem.addEventListener("mousedown", handleSceneClick);
+
+        return () => {
+            // Cleanup
+            domElem.removeEventListener("mousedown", handleSceneClick);
+        };
+    }, [handleSceneClick]);
+
+    // Feedback / Reporting
     const handleLike = () => {
         onFeedback?.("like");
         showViewerNotification("Thanks for your feedback!");
@@ -188,41 +255,60 @@ function BrainViewer({ file, onFeedback, showReportButton, onGenerateReport }) {
         showViewerNotification("Thanks for your feedback!");
     };
 
-    // --------------------------------------------
-
     return (
         <div className={`brain-viewer-root ${isFullscreen ? "fullscreen" : ""}`}>
-            {/* Loading Spinner / Error */}
             {isLoading && <div className="loading-spinner">Loading model...</div>}
             {error && <div className="brain-viewer-error">{error}</div>}
 
-            {/* Main 3D Canvas Mount */}
             <div className="brain-viewer-mount" ref={mountRef}></div>
 
-            {/* Toolbar (only show if loaded and no error) */}
             {!isLoading && !error && (
                 <>
                     <div className="viewer-toolbar">
-                        <button onClick={toggleFullscreen} className="toolbar-button" title="Toggle Fullscreen">
+                        <button
+                            onClick={toggleFullscreen}
+                            className="toolbar-button"
+                            title="Toggle Fullscreen"
+                        >
                             <FiMaximize />
                         </button>
                         <button onClick={resetView} className="toolbar-button" title="Reset View">
                             <FiRefreshCw />
                         </button>
-                        <button onClick={toggleWireframe} className="toolbar-button" title="Toggle Wireframe">
+                        <button
+                            onClick={toggleWireframe}
+                            className="toolbar-button"
+                            title="Toggle Wireframe"
+                        >
                             <FiBox />
                         </button>
                         <button onClick={rotateModel} className="toolbar-button" title="Rotate Model">
                             <FiRotateCw />
                         </button>
-                        <button onClick={centerModel} className="toolbar-button" title="Center Model">
+                        <button
+                            onClick={centerModel}
+                            className="toolbar-button"
+                            title="Center Model"
+                        >
                             <FiAlignCenter />
                         </button>
-                        <button onClick={takeScreenshot} className="toolbar-button" title="Screenshot">
+                        <button
+                            onClick={takeScreenshot}
+                            className="toolbar-button"
+                            title="Screenshot"
+                        >
                             <FiCamera />
                         </button>
                         <button onClick={viewInfo} className="toolbar-button" title="View Info">
                             <FiInfo />
+                        </button>
+                        {/* (B) Annotation button */}
+                        <button
+                            onClick={toggleAnnotationMode}
+                            className="toolbar-button"
+                            title="Toggle Annotation Mode"
+                        >
+                            <FiMapPin />
                         </button>
                     </div>
 
@@ -237,7 +323,6 @@ function BrainViewer({ file, onFeedback, showReportButton, onGenerateReport }) {
                         </div>
                     )}
 
-                    {/* Generate AI Report Button */}
                     {showReportButton && (
                         <div className="generate-report-button">
                             <button className="primary-button" onClick={onGenerateReport}>
@@ -248,7 +333,6 @@ function BrainViewer({ file, onFeedback, showReportButton, onGenerateReport }) {
                 </>
             )}
 
-            {/* Info Overlay */}
             {showInfo && !isLoading && !error && (
                 <div className="info-overlay">
                     <h4>Brain Model Info</h4>
@@ -258,7 +342,6 @@ function BrainViewer({ file, onFeedback, showReportButton, onGenerateReport }) {
                 </div>
             )}
 
-            {/* Short notification in top-center */}
             {notification && <div className="viewer-notification">{notification}</div>}
         </div>
     );
