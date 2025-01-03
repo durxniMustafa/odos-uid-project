@@ -398,3 +398,29 @@
     box-shadow: 0 3px 6px var(--shadow-color);
   }
   
+  /* Add this at the end of your Dashboard.css or wherever styling is */
+.delete-button {
+  background: #ff4d4d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  margin-top: 8px; /* a bit of spacing */
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s;
+}
+
+.delete-button:hover {
+  background: #cc0000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.delete-button:active {
+  transform: translateY(0);
+  background: #aa0000;
+}

@@ -524,14 +524,18 @@ button {
 }
 
 .large-brain-viewer {
-    width:300%;
-    height:3000vh;
-    margin-bottom:20px;
-    background:#f9f9f9;
-    border-radius:12px;
-    overflow:hidden;
-    display:flex;align-items:center;justify-content:center;
+    width: 1200px;    /* or 100% if you want it to fill the modal container */
+    height: 800px;    /* adjust as desired */
+    margin-bottom: 20px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Remove big "3000vh" so we can see a normal area */
 }
+
 
 .modal-actions {
     display:flex;
@@ -1073,7 +1077,7 @@ body {
     color: #6a1b9a;
 }
 
-.large-modal {
+.modal.large-modal-modal {
     display: flex;
     flex-direction: column;
     align-items: center;
