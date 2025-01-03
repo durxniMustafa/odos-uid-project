@@ -1,0 +1,68 @@
+.signature-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+  }
+  
+  .signature-modal {
+    max-width: 700px;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    text-align: center;
+    position: relative;
+    animation: fadeInDialog 0.3s ease forwards;
+  }
+  
+  .signature-modal h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #6a1b9a;
+    font-weight: 600;
+  }
+  
+  .signature-canvas-wrapper {
+    background: #ffffff;
+    border: 2px dashed #6a1b9a;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .sigCanvas {
+    background-color: #fafafa;
+  }
+  
+  .signature-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .clear-button {
+    background: #9e9e9e;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+  }
+  
+  .clear-button:hover {
+    background: #757575;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  }
+  
+  /* Reuse existing .cancel-button & .primary-button if you’d like 
+     or keep them here for clarity */
+  
+  @keyframes fadeInDialog {
+    from {opacity:0; transform:translateY(-20px);}
+    to {opacity:1; transform:translateY(0);}
+  }
+  

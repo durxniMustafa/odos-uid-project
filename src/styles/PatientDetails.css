@@ -680,6 +680,8 @@ button:focus, input:focus, textarea:focus {
     .favorite-button,
     .edit-notes-button,
     .print-button,
+  
+
     .export-notes-button,
     .upload-button,
     .file-upload-label,
@@ -1463,3 +1465,43 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
+.print-button {
+    background:#6a1b9a;; /* Purple background */
+    color: #fff; /* White text */
+    border: none;
+    border-radius: 20px; /* Rounded corners */
+    padding: 8px 16px; /* Padding around the button */
+    font-size: 14px; /* Text size */
+    font-weight: 600; /* Slightly bolder text */
+    display: inline-flex; /* Align icon and text inline */
+    align-items: center; /* Vertically center content */
+    justify-content: center; /* Center content horizontally */
+    gap: 8px; /* Space between the icon and text */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Smooth hover/active effects */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  }
+  
+  .print-button:hover {
+  /* Darker purple for hover */
+    transform: translateY(-2px); /* Lift button slightly */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+  }
+  
+  .print-button:active {
+    background: #5a28a0; /* Even darker purple for active state */
+    transform: translateY(0); /* Reset lift */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  }
+  
+  .print-button:focus {
+    outline: 2px solid rgba(124, 58, 237, 0.5); /* Purple outline on focus */
+    outline-offset: 2px; /* Space between outline and button */
+  }
+  
+  /* Optional for icon styling */
+  .print-button svg {
+    font-size: 18px; /* Adjust icon size */
+    color: inherit; /* Match icon color to text */
+  }
+  

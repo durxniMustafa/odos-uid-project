@@ -1,4 +1,10 @@
-import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import React, {
+    useState,
+    useRef,
+    useCallback,
+    useEffect,
+    useMemo
+} from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import BrainViewer from "./BrainViewer";
@@ -6,12 +12,18 @@ import ConfirmationDialog from "../components/ConfirmationDialog";
 import Notification from "../components/Notification";
 import useWindowSize from "../hooks/useWindowSize";
 
+// Icons
 import { FaShare, FaPrint, FaFileExport } from "react-icons/fa";
 import { FiEdit, FiUpload, FiSearch } from "react-icons/fi";
+
+// Sections
 import UploadSection from "../sections/UploadSection";
 import BrainFilesSection from "../sections/BrainFileSection";
 import NotesSection from "../sections/NoteSection";
 import DiagnosisSection from "../sections/DiagnosisSection";
+
+// Signature Modal
+import SignatureModal from "../components/SignatureModal";
 
 import "../styles/PatientDetails.css";
 
@@ -33,10 +45,27 @@ function PatientDetail({ patients, setPatients }) {
     const [isDraggingOver, setIsDraggingOver] = useState(false);
     const [isFavorite, setIsFavorite] = useState(patient?.isFavorite || false);
     const [brainFileFilter, setBrainFileFilter] = useState("");
+
+    // Move useMemo above the early return
+    const filteredBrainFiles = useMemo(() => {
+        if (!patient || !patient.brainFiles) return [];
+        return patient.brainFiles.filter((file) =>
+            file.name.toLowerCase().includes(brainFileFilter.toLowerCase())
+        );
+    }, [patient, brainFileFilter]);
+
+    // SIGNATURE MODAL
     const [showSignatureModal, setShowSignatureModal] = useState(false);
+    // We store the signature data (base64) so we can show or print it
+    const [signatureData, setSignatureData] = useState(null);
+
+    // DIAGNOSIS
     const [showDiagnosis, setShowDiagnosis] = useState(false);
+
     const [uploadStep, setUploadStep] = useState(0);
     const [currentFileId, setCurrentFileId] = useState(null);
+
+    // Retraining / Reporting
     const [showReportButton, setShowReportButton] = useState(false);
     const [showRetrainingButton, setShowRetrainingButton] = useState(false);
 
@@ -44,6 +73,7 @@ function PatientDetail({ patients, setPatients }) {
     const { width, height } = useWindowSize();
     const contentHeight = height - 100;
 
+    // Close brain image modal on ESC
     const closeBrainImageModal = useCallback((e) => {
         if (e && e.type === "keydown" && e.key !== "Escape") return;
         setViewingBrainFile(null);
@@ -63,9 +93,7 @@ function PatientDetail({ patients, setPatients }) {
 
     const showNotificationMessage = useCallback((message) => {
         setNotification(message);
-        setTimeout(() => {
-            setNotification(null);
-        }, 3000);
+        setTimeout(() => setNotification(null), 3000);
     }, []);
 
     const handleFileUpload = useCallback(
@@ -83,11 +111,16 @@ function PatientDetail({ patients, setPatients }) {
             const fileId = file.name + "-" + Date.now();
             setCurrentFileId(fileId);
 
-            // Remove old files and add new file
             setPatients((prev) =>
                 prev.map((p) =>
                     p.id === id
-                        ? { ...p, brainFiles: [{ id: fileId, url: fileURL, name: file.name }], uploadProgress: { [fileId]: 0 } }
+                        ? {
+                            ...p,
+                            brainFiles: [
+                                { id: fileId, url: fileURL, name: file.name }
+                            ],
+                            uploadProgress: { [fileId]: 0 }
+                        }
                         : p
                 )
             );
@@ -109,7 +142,7 @@ function PatientDetail({ patients, setPatients }) {
             } else {
                 clearInterval(stepsInterval);
                 setUploading(false);
-                showNotificationMessage(`File uploaded and processed successfully!`);
+                showNotificationMessage("File uploaded and processed successfully!");
                 setShowDiagnosis(true);
                 setShowReportButton(true);
             }
@@ -118,7 +151,11 @@ function PatientDetail({ patients, setPatients }) {
 
     const handleSaveNotes = useCallback(() => {
         setPatients((prev) =>
-            prev.map((p) => (p.id === id ? { ...p, notes: notes } : p))
+            prev.map((p) =>
+                p.id === id
+                    ? { ...p, notes: notes }
+                    : p
+            )
         );
         setIsEditingNotes(false);
         showNotificationMessage("Notes updated successfully!");
@@ -127,9 +164,15 @@ function PatientDetail({ patients, setPatients }) {
     const handleFavoriteToggle = useCallback(() => {
         setIsFavorite((prev) => !prev);
         setPatients((prev) =>
-            prev.map((p) => (p.id === id ? { ...p, isFavorite: !isFavorite } : p))
+            prev.map((p) =>
+                p.id === id
+                    ? { ...p, isFavorite: !isFavorite }
+                    : p
+            )
         );
-        showNotificationMessage(isFavorite ? "Removed from favorites." : "Added to favorites!");
+        showNotificationMessage(
+            isFavorite ? "Removed from favorites." : "Added to favorites!"
+        );
     }, [id, isFavorite, setPatients, showNotificationMessage]);
 
     const handleExportNotes = useCallback(() => {
@@ -156,11 +199,12 @@ function PatientDetail({ patients, setPatients }) {
     }, [id, showNotificationMessage]);
 
     const handlePrint = useCallback(() => {
+        // We can either call window.print() directly OR do something more advanced
         window.print();
     }, []);
 
     const handleFeedback = useCallback((type) => {
-        if (type === 'dislike') {
+        if (type === "dislike") {
             setShowRetrainingButton(true);
         }
     }, []);
@@ -168,13 +212,6 @@ function PatientDetail({ patients, setPatients }) {
     const handleGenerateReport = useCallback(() => {
         showNotificationMessage("AI Report generated (simulated)!");
     }, [showNotificationMessage]);
-
-    const filteredBrainFiles = useMemo(() => {
-        if (!patient || !patient.brainFiles) return [];
-        return patient.brainFiles.filter((file) =>
-            file.name.toLowerCase().includes(brainFileFilter.toLowerCase())
-        );
-    }, [patient, brainFileFilter]);
 
     // Drag & Drop Handlers
     const handleDragEnter = (e) => {
@@ -213,14 +250,23 @@ function PatientDetail({ patients, setPatients }) {
         handleFileUpload(e.target.files);
     };
 
+    // SIGNATURE
     const handleAddSignature = useCallback(() => {
         setShowSignatureModal(true);
     }, []);
 
-    const handleSignatureConfirm = useCallback(() => {
-        setShowSignatureModal(false);
-        showNotificationMessage("Signature added (simulated)!");
-    }, [showNotificationMessage]);
+    const handleSignatureConfirm = useCallback(
+        (signatureDataURL) => {
+            setShowSignatureModal(false);
+            if (signatureDataURL) {
+                setSignatureData(signatureDataURL);
+                showNotificationMessage("Signature saved!");
+            } else {
+                showNotificationMessage("Signature canceled.");
+            }
+        },
+        [showNotificationMessage]
+    );
 
     if (!patient) {
         return (
@@ -237,7 +283,10 @@ function PatientDetail({ patients, setPatients }) {
     }
 
     return (
-        <div className="patient-detail-page" style={{ maxHeight: contentHeight, overflowY: "auto" }}>
+        <div
+            className="patient-detail-page"
+            style={{ maxHeight: contentHeight, overflowY: "auto" }}
+        >
             <Navbar />
             {notification && <Notification message={notification} />}
             {confirmDialog.isOpen && (
@@ -245,10 +294,18 @@ function PatientDetail({ patients, setPatients }) {
                     message={confirmDialog.message}
                     onConfirm={() => {
                         confirmDialog.onConfirm();
-                        setConfirmDialog({ isOpen: false, message: "", onConfirm: () => { } });
+                        setConfirmDialog({
+                            isOpen: false,
+                            message: "",
+                            onConfirm: () => { },
+                        });
                     }}
                     onCancel={() =>
-                        setConfirmDialog({ isOpen: false, message: "", onConfirm: () => { } })
+                        setConfirmDialog({
+                            isOpen: false,
+                            message: "",
+                            onConfirm: () => { },
+                        })
                     }
                 />
             )}
@@ -260,9 +317,13 @@ function PatientDetail({ patients, setPatients }) {
 
                 <div className="header-section">
                     <h2 className="detail-header">
-                        {patient.name}'s Detail Page
+                        {patient.name}&apos;s Detail Page
                     </h2>
-                    <button className="favorite-button" onClick={handleFavoriteToggle} aria-label="Toggle favorite">
+                    <button
+                        className="favorite-button"
+                        onClick={handleFavoriteToggle}
+                        aria-label="Toggle favorite"
+                    >
                         {isFavorite ? "★" : "☆"}
                     </button>
                 </div>
@@ -274,10 +335,26 @@ function PatientDetail({ patients, setPatients }) {
                         className="patient-photo"
                     />
                     <div className="patient-details">
-                        <p><strong>Email:</strong> {patient.email}</p>
-                        <p><strong>Date of Birth:</strong> {patient.dob}</p>
-                        <p><strong>Phone:</strong> {patient.phone}</p>
-                        <p><strong>Address:</strong> {patient.address}</p>
+                        <p>
+                            <strong>Email:</strong> {patient.email}
+                        </p>
+                        <p>
+                            <strong>Date of Birth:</strong> {patient.dob}
+                        </p>
+                        <p>
+                            <strong>Phone:</strong> {patient.phone}
+                        </p>
+                        <p>
+                            <strong>Address:</strong> {patient.address}
+                        </p>
+                        {signatureData && (
+                            <div className="signature-preview">
+                                <strong>Signature:</strong>
+                                <div className="signature-wrapper">
+                                    <img src={signatureData} alt="Patient Signature" />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -305,12 +382,20 @@ function PatientDetail({ patients, setPatients }) {
 
                 {uploading && (
                     <div className="upload-steps">
-                        <h3>Uploading & Processing Steps</h3>
+                        <h3>Uploading &amp; Processing Steps</h3>
                         <div className="steps-container">
-                            <div className={`step ${uploadStep >= 1 ? 'completed' : ''}`}>Step 1: Uploading File</div>
-                            <div className={`step ${uploadStep >= 2 ? 'completed' : ''}`}>Step 2: Data Preprocessing</div>
-                            <div className={`step ${uploadStep >= 3 ? 'completed' : ''}`}>Step 3: AI Inference</div>
-                            <div className={`step ${uploadStep >= 4 ? 'completed' : ''}`}>Step 4: Finalizing</div>
+                            <div className={`step ${uploadStep >= 1 ? "completed" : ""}`}>
+                                Step 1: Uploading File
+                            </div>
+                            <div className={`step ${uploadStep >= 2 ? "completed" : ""}`}>
+                                Step 2: Data Preprocessing
+                            </div>
+                            <div className={`step ${uploadStep >= 3 ? "completed" : ""}`}>
+                                Step 3: AI Inference
+                            </div>
+                            <div className={`step ${uploadStep >= 4 ? "completed" : ""}`}>
+                                Step 4: Finalizing
+                            </div>
                         </div>
                     </div>
                 )}
@@ -339,15 +424,32 @@ function PatientDetail({ patients, setPatients }) {
 
                 {showRetrainingButton && (
                     <div className="retraining-section">
-                        <button className="primary-button" onClick={() => showNotificationMessage("Retraining simulated!")}>
+                        <button
+                            className="primary-button"
+                            onClick={() =>
+                                showNotificationMessage("Retraining simulated!")
+                            }
+                        >
                             Simulate Retraining
                         </button>
                     </div>
                 )}
 
                 <div className="share-section">
-                    <button className="share-button" onClick={handleShare} aria-label="Copy share link">
+                    <button
+                        className="share-button"
+                        onClick={handleShare}
+                        aria-label="Copy share link"
+                    >
                         <FaShare /> Share Patient
+                      
+                    </button>
+                    <button
+                        className="print-button"
+                        onClick={handlePrint}
+                        aria-label="Print"
+                    >
+                        <FaPrint /> Print
                     </button>
                 </div>
 
@@ -360,7 +462,12 @@ function PatientDetail({ patients, setPatients }) {
             </div>
 
             {viewingBrainFile && (
-                <div className="modal-overlay" onClick={closeBrainImageModal} aria-modal="true" role="dialog">
+                <div
+                    className="modal-overlay"
+                    onClick={closeBrainImageModal}
+                    aria-modal="true"
+                    role="dialog"
+                >
                     <div
                         className="modal large-modal"
                         onClick={(e) => e.stopPropagation()}
@@ -378,23 +485,19 @@ function PatientDetail({ patients, setPatients }) {
                             <BrainViewer file={viewingBrainFile.url} />
                         </div>
                         <div className="modal-actions">
-                            <button onClick={closeBrainImageModal} className="cancel-button">Close</button>
+                            <button onClick={closeBrainImageModal} className="cancel-button">
+                                Close
+                            </button>
                         </div>
                     </div>
                 </div>
             )}
 
             {showSignatureModal && (
-                <div className="modal-overlay" onClick={() => setShowSignatureModal(false)} aria-modal="true">
-                    <div className="modal" onClick={(e) => e.stopPropagation()}>
-                        <h2>Add Signature</h2>
-                        <p>Simulate adding a signature.</p>
-                        <div className="modal-actions">
-                            <button className="primary-button" onClick={handleSignatureConfirm}>Confirm</button>
-                            <button className="cancel-button" onClick={() => setShowSignatureModal(false)}>Cancel</button>
-                        </div>
-                    </div>
-                </div>
+                <SignatureModal
+                    onClose={() => setShowSignatureModal(false)}
+                    onConfirm={handleSignatureConfirm}
+                />
             )}
         </div>
     );

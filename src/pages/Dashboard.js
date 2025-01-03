@@ -5,7 +5,8 @@ import Navbar from "../components/Navbar";
 import "../styles/Dashboard.css";
 import Notification from "../components/Notification";
 import useWindowSize from "../hooks/useWindowSize";
-import { FaUserPlus } from "react-icons/fa6";
+import { FaRegUserCircle } from "react-icons/fa";
+import { TiUserAddOutline } from "react-icons/ti";
 
 
 // Modern icon replacements (example using Ant Design icons)
@@ -178,7 +179,7 @@ function Dashboard() {
                     </select>
 
                     <button onClick={() => setShowAddModal(true)} className="primary-button">
-                    <FaUserPlus />Add Patient
+                        <TiUserAddOutline /> Add Patient
                     </button>
                     <button onClick={generateInsights} className="secondary-button">
                         <AiOutlineLineChart /> Generate Insights
