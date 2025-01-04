@@ -1,3 +1,4 @@
+// src/pages/Dashboard.jsx
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -5,22 +6,11 @@ import Navbar from "../components/Navbar";
 import "../styles/Dashboard.css";
 import Notification from "../components/Notification";
 import useWindowSize from "../hooks/useWindowSize";
-
-// Icons
-import {
-    AiOutlineSearch,
-    AiOutlineLineChart,
-    AiOutlineFilter,
-    AiOutlineMail,
-    AiOutlinePhone,
-    AiOutlineEnvironment,
-    AiOutlineCalendar,
-} from "react-icons/ai";
+import { AiOutlineSearch, AiOutlineLineChart, AiOutlineFilter, AiOutlineMail, AiOutlinePhone, AiOutlineEnvironment, AiOutlineCalendar, AiOutlineEdit } from "react-icons/ai";
 import { TiUserAddOutline } from "react-icons/ti";
 import jsPDF from "jspdf";
 
-// Multi-step wizard imports
-// (You can keep these in the same file or separate, for brevity we keep them here)
+// -------------- Multi-Step Wizard (Add New Patient) --------------
 function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
     const [step, setStep] = useState(1);
     const [basicInfo, setBasicInfo] = useState({ name: "", dob: "" });
@@ -63,7 +53,17 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
             photo: "https://via.placeholder.com/100",
             brainFiles: [],
             uploadProgress: {},
-            notes: "",
+
+            // Instead of just "notes" string, we store subfields:
+            notes: {
+                medicalHistory: "No history yet...",
+                currentMedications: "No current medications yet...",
+                immunizations: "No immunizations listed...",
+                labResults: "No recent lab results yet...",
+                lifestyleNotes: "No lifestyle notes...",
+                lastVisitHistory: "No past visit history...",
+            },
+
             isFavorite: false,
         };
         onAdd(newPatient);
@@ -127,21 +127,11 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                 {step === 3 && (
                     <div className="modal-content">
                         <p>Please confirm all information:</p>
-                        <p>
-                            <strong>Name:</strong> {basicInfo.name}
-                        </p>
-                        <p>
-                            <strong>Date of Birth:</strong> {basicInfo.dob}
-                        </p>
-                        <p>
-                            <strong>Email:</strong> {contactInfo.email}
-                        </p>
-                        <p>
-                            <strong>Phone:</strong> {contactInfo.phone}
-                        </p>
-                        <p>
-                            <strong>Address:</strong> {contactInfo.address}
-                        </p>
+                        <p><strong>Name:</strong> {basicInfo.name}</p>
+                        <p><strong>Date of Birth:</strong> {basicInfo.dob}</p>
+                        <p><strong>Email:</strong> {contactInfo.email}</p>
+                        <p><strong>Phone:</strong> {contactInfo.phone}</p>
+                        <p><strong>Address:</strong> {contactInfo.address}</p>
                     </div>
                 )}
 
@@ -170,20 +160,111 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
     );
 }
 
-function PilotBanner({ onDismiss }) {
+// -------------- Edit Profile Modal --------------
+function EditProfileModal({ patient, onClose, onSave, showNotification }) {
+    const [tempProfile, setTempProfile] = useState({ ...patient });
+
+    // When user picks a new photo:
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        // For real apps, you'd upload to a server. Here we create a local preview:
+        const previewURL = URL.createObjectURL(file);
+        setTempProfile((prev) => ({ ...prev, photo: previewURL }));
+    };
+
+    const handleSave = () => {
+        if (!tempProfile.name || !tempProfile.email) {
+            showNotification("Name and email are required!");
+            return;
+        }
+        onSave(tempProfile);
+        onClose();
+    };
+
     return (
-        <div className="pilot-banner">
-            <p>
-                <strong>Try our free pilot program!</strong> Experience AI-assisted MRI analysis,
-                detect anomalies earlier, and improve patient outcomes.
-            </p>
-            <button onClick={onDismiss} className="dismiss-button">
-                Dismiss
-            </button>
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal multi-step-modal" onClick={(e) => e.stopPropagation()}>
+                <h2>Edit Patient Profile</h2>
+
+                <div className="modal-content">
+                    <label>
+                        Full Name:
+                        <input
+                            type="text"
+                            value={tempProfile.name}
+                            onChange={(e) => setTempProfile({ ...tempProfile, name: e.target.value })}
+                        />
+                    </label>
+                    <label>
+                        Date of Birth:
+                        <input
+                            type="date"
+                            value={tempProfile.dob || ""}
+                            onChange={(e) => setTempProfile({ ...tempProfile, dob: e.target.value })}
+                        />
+                    </label>
+                    <label>
+                        Email:
+                        <input
+                            type="email"
+                            value={tempProfile.email}
+                            onChange={(e) => setTempProfile({ ...tempProfile, email: e.target.value })}
+                        />
+                    </label>
+                    <label>
+                        Phone:
+                        <input
+                            type="tel"
+                            value={tempProfile.phone}
+                            onChange={(e) => setTempProfile({ ...tempProfile, phone: e.target.value })}
+                        />
+                    </label>
+                    <label>
+                        Address:
+                        <textarea
+                            value={tempProfile.address}
+                            onChange={(e) => setTempProfile({ ...tempProfile, address: e.target.value })}
+                        />
+                    </label>
+                    {/* Photo uploader */}
+                    <label>
+                        Photo:
+                        <input type="file" accept="image/*" onChange={handlePhotoChange} />
+                    </label>
+                    {/* Preview the newly selected photo */}
+                    {tempProfile.photo && (
+                        <img
+                            src={tempProfile.photo}
+                            alt="Preview"
+                            style={{ width: 80, height: 80, borderRadius: "50%" }}
+                        />
+                    )}
+                </div>
+
+                <div className="modal-actions">
+                    <button onClick={handleSave} className="primary-button">Save</button>
+                    <button onClick={onClose} className="secondary-button">Cancel</button>
+                </div>
+            </div>
         </div>
     );
 }
 
+// -------------- Pilot Banner --------------
+function PilotBanner({ onDismiss }) {
+    return (
+        <div className="pilot-banner">
+            <p>
+                <strong>Try our free pilot program!</strong> Experience AI-assisted MRI
+                analysis, detect anomalies earlier, and improve patient outcomes.
+            </p>
+            <button onClick={onDismiss} className="dismiss-button">Dismiss</button>
+        </div>
+    );
+}
+
+// -------------- Main Dashboard --------------
 function Dashboard() {
     const [patients, setPatients] = useState(() => {
         const saved = localStorage.getItem("patients");
@@ -196,11 +277,21 @@ function Dashboard() {
                     email: "M.Durani@outlook.de",
                     dob: "2020-12-10",
                     phone: "+91 9788399999",
-                    address: "Kisan Vihar Ext, Nr Daharkar Wadi, Pakhadi Rd, Kandivli, Alwar",
+                    address: "Kandivli, Alwar",
                     photo: "https://via.placeholder.com/100",
                     brainFiles: [],
                     uploadProgress: {},
-                    notes: "",
+
+                    // Pre-set placeholders for notes object:
+                    notes: {
+                        medicalHistory: "Mild hypertension (2018). Family history of heart disease. No known allergies.",
+                        currentMedications: "Lisinopril 10mg daily, Vitamin D 2000 IU daily.",
+                        immunizations: "Up to date on tetanus, influenza, COVID-19 booster (2023).",
+                        labResults: "Cholesterol slightly elevated. Blood sugar normal.",
+                        lifestyleNotes: "Exercises 3x a week, non-smoker, moderate alcohol consumption.",
+                        lastVisitHistory: "Last visited on 2023-09-15 for annual check-up.",
+                    },
+
                     isFavorite: false,
                 },
             ];
@@ -209,14 +300,14 @@ function Dashboard() {
     const [notification, setNotification] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState("name");
-
-    // Show multi-step wizard?
     const [showAddWizard, setShowAddWizard] = useState(false);
-
     const [focusMode, setFocusMode] = useState(false);
     const [showPilotBanner, setShowPilotBanner] = useState(() => {
         return localStorage.getItem("dismissedPilotBanner") !== "true";
     });
+
+    // For editing a specific profile (through the "Edit" button)
+    const [editProfileId, setEditProfileId] = useState(null);
 
     const { width, height } = useWindowSize();
 
@@ -236,7 +327,7 @@ function Dashboard() {
             return (
                 p.name.toLowerCase().includes(q) ||
                 p.email.toLowerCase().includes(q) ||
-                p.dob.toLowerCase().includes(q) ||
+                (p.dob || "").toLowerCase().includes(q) ||
                 p.phone.toLowerCase().includes(q) ||
                 p.address.toLowerCase().includes(q)
             );
@@ -250,7 +341,7 @@ function Dashboard() {
             return 0;
         });
 
-    // (A) Handler for adding a new patient
+    // (A) Adding a patient
     const handleAddPatient = (newPatient) => {
         setPatients((prev) => [...prev, newPatient]);
         showNotificationMessage("Patient added via wizard!");
@@ -261,13 +352,13 @@ function Dashboard() {
         showNotificationMessage("Patient insights generated (simulated)!");
     };
 
-    // Dismiss pilot
+    // Dismiss pilot banner
     const dismissPilot = () => {
         setShowPilotBanner(false);
         localStorage.setItem("dismissedPilotBanner", "true");
     };
 
-    // (C) Inline editing logic
+    // (C) Inline editing logic for name/phone
     const [editingPatientId, setEditingPatientId] = useState(null);
     const [editingField, setEditingField] = useState("");
     const [tempValue, setTempValue] = useState("");
@@ -292,13 +383,29 @@ function Dashboard() {
         setTempValue("");
     };
 
-    // (D) Delete functionality
+    // (D) Delete patient
     const handleDeletePatient = (patientId) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this patient?");
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete this patient?"
+        );
         if (confirmDelete) {
             setPatients((prev) => prev.filter((p) => p.id !== patientId));
             showNotificationMessage("Patient deleted!");
         }
+    };
+
+    // (E) Edit Profile
+    const openEditProfile = (patientId) => {
+        setEditProfileId(patientId);
+    };
+    const closeEditProfile = () => {
+        setEditProfileId(null);
+    };
+    const handleSaveProfile = (updatedPatient) => {
+        setPatients((prev) =>
+            prev.map((p) => (p.id === updatedPatient.id ? updatedPatient : p))
+        );
+        showNotificationMessage("Patient profile updated!");
     };
 
     return (
@@ -309,6 +416,7 @@ function Dashboard() {
             {showPilotBanner && <PilotBanner onDismiss={dismissPilot} />}
 
             <div className="dashboard-content">
+                {/* Top Bar */}
                 <div className="top-bar">
                     <div className="search-bar-wrapper">
                         <AiOutlineSearch className="icon" />
@@ -347,15 +455,38 @@ function Dashboard() {
                     </Link>
                 </div>
 
+                {/* Patients List */}
                 <div className="patients-list">
                     {filteredPatients.length > 0 ? (
                         filteredPatients.map((patient) => (
-                            <div key={patient.id} className="patient-card">
+                            <div
+                                key={patient.id}
+                                className="patient-card"
+                                style={{ width: "380px" }} // Make the card wider
+                            >
+                                {/* Optional favorite toggle in top-right corner */}
+                                <button
+                                    className="favorite-toggle"
+                                    title="Mark as favorite"
+                                    onClick={() => {
+                                        setPatients((prev) =>
+                                            prev.map((p) =>
+                                                p.id === patient.id
+                                                    ? { ...p, isFavorite: !p.isFavorite }
+                                                    : p
+                                            )
+                                        );
+                                    }}
+                                >
+                                    {patient.isFavorite ? "★" : "☆"}
+                                </button>
+
                                 <img
                                     src={patient.photo || "https://via.placeholder.com/100"}
                                     alt={patient.name}
                                     className="patient-photo"
                                 />
+
                                 {!focusMode && (
                                     <div className="patient-info">
                                         {/* Inline editable name */}
@@ -374,12 +505,18 @@ function Dashboard() {
                                                 title="Double-click to edit name"
                                             >
                                                 <strong>{patient.name}</strong>
+                                                <AiOutlineEdit className="edit-icon" />
                                             </p>
                                         )}
 
+                                        {/* Clickable mailto link */}
                                         <p className="patient-detail">
-                                            <AiOutlineMail className="detail-icon" /> {patient.email}
+                                            <AiOutlineMail className="detail-icon" />{" "}
+                                            <a href={`mailto:${patient.email}`} style={{ color: "#333" }}>
+                                                {patient.email}
+                                            </a>
                                         </p>
+
                                         <p className="patient-detail">
                                             <AiOutlineCalendar className="detail-icon" /> {patient.dob}
                                         </p>
@@ -396,18 +533,23 @@ function Dashboard() {
                                         ) : (
                                             <p
                                                 className="patient-detail"
-                                                onDoubleClick={() => startInlineEdit(patient.id, "phone", patient.phone)}
+                                                onDoubleClick={() =>
+                                                    startInlineEdit(patient.id, "phone", patient.phone)
+                                                }
                                                 title="Double-click to edit phone"
                                             >
                                                 <AiOutlinePhone className="detail-icon" /> {patient.phone}
+                                                <AiOutlineEdit className="edit-icon" />
                                             </p>
                                         )}
 
                                         <p className="patient-detail">
-                                            <AiOutlineEnvironment className="detail-icon" /> {patient.address}
+                                            <AiOutlineEnvironment className="detail-icon" />{" "}
+                                            {patient.address}
                                         </p>
                                     </div>
                                 )}
+
                                 {focusMode && (
                                     <div className="patient-info">
                                         <p className="patient-name">
@@ -416,14 +558,19 @@ function Dashboard() {
                                     </div>
                                 )}
 
-                                {/* (D) Delete button */}
-                                <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+                                {/* Bottom Action Bar */}
+                                <div className="patient-actions">
+                                    <button
+                                        className="secondary-button"
+                                        onClick={() => openEditProfile(patient.id)}
+                                    >
+                                        Edit
+                                    </button>
                                     <Link to={`/patient/${patient.id}`} className="details-button">
                                         Details
                                     </Link>
                                     <button
-                                        className="secondary-button"
-                                        style={{ color: "#fff", background: "#e53935" }}
+                                        className="delete-button"
                                         onClick={() => handleDeletePatient(patient.id)}
                                     >
                                         Delete
@@ -441,6 +588,16 @@ function Dashboard() {
                 <MultiStepAddPatient
                     onClose={() => setShowAddWizard(false)}
                     onAdd={handleAddPatient}
+                    showNotification={showNotificationMessage}
+                />
+            )}
+
+            {/* If editing a profile, show the EditProfileModal */}
+            {editProfileId && (
+                <EditProfileModal
+                    patient={patients.find((p) => p.id === editProfileId)}
+                    onClose={closeEditProfile}
+                    onSave={handleSaveProfile}
                     showNotification={showNotificationMessage}
                 />
             )}

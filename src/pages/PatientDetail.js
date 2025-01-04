@@ -1,17 +1,12 @@
-import React, {
-    useState,
-    useRef,
-    useCallback,
-    useEffect,
-    useMemo
-} from "react";
+// src/pages/PatientDetail.jsx
+import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import BrainViewer from "./BrainViewer";
+import BrainViewer from "./BrainViewer"; // or wherever your BrainViewer is
 import ConfirmationDialog from "../components/ConfirmationDialog";
 import Notification from "../components/Notification";
 import useWindowSize from "../hooks/useWindowSize";
-import jsPDF from "jspdf"; // <-- new library for PDF
+import jsPDF from "jspdf";
 
 // Icons
 import { FaShare } from "react-icons/fa";
@@ -20,7 +15,7 @@ import { FiSearch } from "react-icons/fi";
 // Sections
 import UploadSection from "../sections/UploadSection";
 import BrainFilesSection from "../sections/BrainFileSection";
-import NotesSection from "../sections/NoteSection";
+import NotesSection from "../sections/NoteSection";  // <-- our new subfield notes
 import DiagnosisSection from "../sections/DiagnosisSection";
 
 // Signature Modal
@@ -36,7 +31,32 @@ function PatientDetail({ patients, setPatients }) {
     const [notification, setNotification] = useState(null);
     const [viewingBrainFile, setViewingBrainFile] = useState(null);
     const [uploading, setUploading] = useState(false);
-    const [notes, setNotes] = useState(patient ? patient.notes || "" : "");
+
+    // Instead of a single `notes` string, we store subfields in an object:
+    // If patient doesn't have `notes`, or it's empty, let's provide placeholders
+    const [notes, setNotes] = useState(() => {
+        if (!patient) return {};
+        if (patient.notes && typeof patient.notes === "object") {
+            return {
+                medicalHistory: patient.notes.medicalHistory || "No history yet...",
+                currentMedications: patient.notes.currentMedications || "No medications yet...",
+                immunizations: patient.notes.immunizations || "No immunizations yet...",
+                labResults: patient.notes.labResults || "No lab results yet...",
+                lifestyleNotes: patient.notes.lifestyleNotes || "No lifestyle notes yet...",
+                lastVisitHistory: patient.notes.lastVisitHistory || "No past visit history...",
+            };
+        }
+        // fallback if patient.notes doesn't exist
+        return {
+            medicalHistory: "No history yet...",
+            currentMedications: "No medications yet...",
+            immunizations: "No immunizations yet...",
+            labResults: "No lab results yet...",
+            lifestyleNotes: "No lifestyle notes yet...",
+            lastVisitHistory: "No past visit history...",
+        };
+    });
+
     const [isEditingNotes, setIsEditingNotes] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState({
         isOpen: false,
@@ -61,11 +81,10 @@ function PatientDetail({ patients, setPatients }) {
     const [showReportButton, setShowReportButton] = useState(false);
     const [showRetrainingButton, setShowRetrainingButton] = useState(false);
 
-    // (1) Larger viewer after upload
+    // Extended viewer after upload
     const [isExtendedViewer, setIsExtendedViewer] = useState(false);
 
     const dragCounter = useRef(0);
-
     const { width, height } = useWindowSize();
 
     // Filter brain files
@@ -147,10 +166,12 @@ function PatientDetail({ patients, setPatients }) {
         }, 1500);
     }, [showNotificationMessage]);
 
-    // Save notes
+    // Save notes (we store subfields back into the patient's record)
     const handleSaveNotes = useCallback(() => {
         setPatients((prev) =>
-            prev.map((p) => (p.id === id ? { ...p, notes: notes } : p))
+            prev.map((p) =>
+                p.id === id ? { ...p, notes: { ...notes } } : p
+            )
         );
         setIsEditingNotes(false);
         showNotificationMessage("Notes updated successfully!");
@@ -169,9 +190,28 @@ function PatientDetail({ patients, setPatients }) {
         );
     }, [id, isFavorite, setPatients, showNotificationMessage]);
 
-    // Export notes
+    // Export notes (combine subfields into a single text file)
     const handleExportNotes = useCallback(() => {
-        const blob = new Blob([notes || ""], { type: "text/plain;charset=utf-8" });
+        const combined = `
+Medical History:
+${notes.medicalHistory}
+
+Current Medications:
+${notes.currentMedications}
+
+Immunizations:
+${notes.immunizations}
+
+Lab Results:
+${notes.labResults}
+
+Lifestyle Notes:
+${notes.lifestyleNotes}
+
+Last Visit History:
+${notes.lastVisitHistory}
+`;
+        const blob = new Blob([combined], { type: "text/plain;charset=utf-8" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -210,12 +250,9 @@ function PatientDetail({ patients, setPatients }) {
         handleEmailFile();
     }, [id, handleEmailFile, showNotificationMessage]);
 
-    // Instead of print, let's generate a PDF
+    // Generate a PDF (instead of printing)
     const handleGeneratePDF = useCallback(() => {
-        // 1. Create a new jsPDF instance
         const doc = new jsPDF();
-
-        // 2. Add patient info
         doc.setFontSize(16);
         doc.text(`Patient: ${patient.name}`, 10, 20);
         doc.setFontSize(12);
@@ -224,19 +261,26 @@ function PatientDetail({ patients, setPatients }) {
         doc.text(`Phone: ${patient.phone}`, 10, 50);
         doc.text(`Address: ${patient.address}`, 10, 60);
 
-        // 3. Add notes
         doc.text("Notes:", 10, 80);
-        const splittedNotes = doc.splitTextToSize(notes || "No notes yet", 180);
+
+        // Combine subfields
+        const notesText = `
+Medical History: ${notes.medicalHistory}
+Current Medications: ${notes.currentMedications}
+Immunizations: ${notes.immunizations}
+Lab Results: ${notes.labResults}
+Lifestyle Notes: ${notes.lifestyleNotes}
+Last Visit History: ${notes.lastVisitHistory}
+`;
+
+        const splittedNotes = doc.splitTextToSize(notesText, 180);
         doc.text(splittedNotes, 10, 90);
 
-        // 4. If there's a signature, embed it
         if (signatureData) {
-            doc.text("Signature:", 10, 120);
-            // Insert image at position (x=10, y=130), scale it to (width=40, height=20)
-            doc.addImage(signatureData, "PNG", 10, 130, 40, 20);
+            doc.text("Signature:", 10, 130);
+            doc.addImage(signatureData, "PNG", 10, 140, 40, 20);
         }
 
-        // 5. Finalize & Download
         doc.save(`${patient.name}-report.pdf`);
         showNotificationMessage("PDF Report generated and downloaded!");
     }, [patient, notes, signatureData, showNotificationMessage]);
@@ -345,7 +389,9 @@ function PatientDetail({ patients, setPatients }) {
                 </button>
 
                 <div className="header-section">
-                    <h2 className="detail-header">{patient.name}&apos;s Detail Page</h2>
+                    <h2 className="detail-header">
+                        {patient.name}&apos;s Detail Page
+                    </h2>
                     <button
                         className="favorite-button"
                         onClick={handleFavoriteToggle}
@@ -362,18 +408,10 @@ function PatientDetail({ patients, setPatients }) {
                         className="patient-photo"
                     />
                     <div className="patient-details">
-                        <p>
-                            <strong>Email:</strong> {patient.email}
-                        </p>
-                        <p>
-                            <strong>Date of Birth:</strong> {patient.dob}
-                        </p>
-                        <p>
-                            <strong>Phone:</strong> {patient.phone}
-                        </p>
-                        <p>
-                            <strong>Address:</strong> {patient.address}
-                        </p>
+                        <p><strong>Email:</strong> {patient.email}</p>
+                        <p><strong>Date of Birth:</strong> {patient.dob}</p>
+                        <p><strong>Phone:</strong> {patient.phone}</p>
+                        <p><strong>Address:</strong> {patient.address}</p>
 
                         {signatureData && (
                             <div className="signature-preview">
@@ -386,6 +424,7 @@ function PatientDetail({ patients, setPatients }) {
                     </div>
                 </div>
 
+                {/* Our new subfields notes section */}
                 <NotesSection
                     notes={notes}
                     setNotes={setNotes}
@@ -393,7 +432,6 @@ function PatientDetail({ patients, setPatients }) {
                     setIsEditingNotes={setIsEditingNotes}
                     handleSaveNotes={handleSaveNotes}
                     handleExportNotes={handleExportNotes}
-                // No printing anymore, replaced by PDF
                 />
 
                 {!showDiagnosis && (
@@ -469,8 +507,6 @@ function PatientDetail({ patients, setPatients }) {
                     >
                         <FaShare /> Share Patient
                     </button>
-
-                    {/* Generate PDF button instead of a Print button */}
                     <button className="primary-button" onClick={handleGeneratePDF}>
                         Generate PDF
                     </button>
@@ -484,6 +520,7 @@ function PatientDetail({ patients, setPatients }) {
                 )}
             </div>
 
+            {/* Brain file viewer modal (if user clicks to view a .glb) */}
             {viewingBrainFile && (
                 <div
                     className="modal-overlay"
@@ -492,8 +529,7 @@ function PatientDetail({ patients, setPatients }) {
                     role="dialog"
                 >
                     <div
-                        className={`modal large-modal ${isExtendedViewer ? "viewer-extended" : ""
-                            }`}
+                        className={`modal large-modal ${isExtendedViewer ? "viewer-extended" : ""}`}
                         onClick={(e) => e.stopPropagation()}
                         role="document"
                     >
@@ -517,6 +553,7 @@ function PatientDetail({ patients, setPatients }) {
                 </div>
             )}
 
+            {/* Signature Modal */}
             {showSignatureModal && (
                 <SignatureModal
                     onClose={() => setShowSignatureModal(false)}

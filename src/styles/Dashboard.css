@@ -424,3 +424,156 @@
   transform: translateY(0);
   background: #aa0000;
 }
+/* -------------------------- */
+/* Improved Patient Card CSS  */
+/* -------------------------- */
+
+.patient-card {
+  background: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden; /* So hidden elements won't overflow */
+}
+
+/* Hover effect: Lift card slightly + shadow */
+.patient-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* "Favorite" star in top-right corner (optional) */
+.favorite-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  color: #ffc107; /* Gold or your brand color */
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.favorite-toggle:hover {
+  transform: scale(1.2);
+}
+
+/* Patient photo: slightly bigger + subtle border */
+.patient-photo {
+  width: 90px; 
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-color);
+  margin-bottom: 15px;
+  transition: transform 0.3s ease;
+}
+.patient-card:hover .patient-photo {
+  transform: scale(1.05);
+}
+
+/* Container for the text fields. 
+   You can do columns if you want: 
+   display: grid; grid-template-columns: 1fr 1fr; */
+.patient-info {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+/* Emphasize name more */
+.patient-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  position: relative;
+}
+
+/* Subtle "edit" icon, shown on hover */
+.edit-icon {
+  font-size: 16px;
+  color: #999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s;
+  cursor: pointer;
+}
+
+/* Show it when hovering over the .patient-name or .patient-detail */
+.patient-name:hover .edit-icon,
+.patient-detail:hover .edit-icon {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Additional formatting for details: slightly smaller, color-coded icon */
+.patient-detail {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  position: relative;
+}
+.detail-icon {
+  color: var(--primary-color);
+  font-size: 16px;
+}
+
+/* Hover highlight on details line - subtle background */
+.patient-detail:hover {
+  background: #f9f7ff;
+}
+
+/* Bottom row of action buttons (Details / Delete) */
+.patient-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: auto; /* push to bottom if using a fixed height card */
+}
+
+/* Details button (already styled) */
+.details-button {
+  background: var(--primary-color);
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+.details-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Delete button */
+.delete-button {
+  background: #ff4d4d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s;
+}
+.delete-button:hover {
+  background: #cc0000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
