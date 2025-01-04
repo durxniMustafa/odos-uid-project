@@ -1548,4 +1548,59 @@ body {
       height: 500px;
     }
   }
+  /* src/components/Chatbot.css (example styles) */
+
+.chatbot-container {
+    margin-top: 2rem;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .chatbox {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    background-color: #fafafa;
+    padding: 1rem;
+    border-radius: 4px;
+  }
+  
+  .message-bubble {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    display: inline-block;
+    max-width: 80%;
+  }
+  
+  .user-bubble {
+    text-align: right;
+    background-color: #007bff;
+    color: #fff;
+    margin-left: auto;
+    border-top-right-radius: 0;
+  }
+  
+  .assistant-bubble {
+    text-align: left;
+    background-color: #e9ecef;
+    color: #000;
+    border-top-left-radius: 0;
+  }
+  
+  .chatbox-form {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .chatbox-input {
+    flex: 1;
+    padding: 0.5rem;
+  }
+  
+  .chatbox-send-button {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
   

@@ -12,22 +12,23 @@ function App() {
   const [patients, setPatients] = useState(() => {
     // Retrieve patients from localStorage if available
     const savedPatients = localStorage.getItem("patients");
-    return savedPatients
-      ? JSON.parse(savedPatients)
-      : [
-          {
-            id: uuidv4(),
-            name: "Yamini Gowda",
-            email: "yamini_gowda@home.com",
-            dob: "2020-12-10",
-            phone: "+91 9788399999",
-            address:
-              "Kisan Vihar Ext, Nr Daharkar Wadi Bunder Pakhadi Rd, Kandivli, Alwar",
-            photo: "https://via.placeholder.com/100",
-            brainFiles: [],
-            uploadProgress: {},
-          },
-        ];
+    if (savedPatients && savedPatients !== "undefined") {
+      return JSON.parse(savedPatients);
+    }
+    return [
+      {
+        id: uuidv4(),
+        name: "Mustafa Durani",
+        email: "yamini_gowda@home.com",
+        dob: "2020-12-10",
+        phone: "+91 9788399999",
+        address:
+          "Kisan Vihar Ext, Nr Daharkar Wadi Bunder Pakhadi Rd, Kandivli, Alwar",
+        photo: "https://via.placeholder.com/100",
+        brainFiles: [],
+        uploadProgress: {},
+      },
+    ];
   });
 
   // Persist patients to localStorage whenever they change
