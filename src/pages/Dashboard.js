@@ -4,18 +4,16 @@ import { v4 as uuidv4 } from "uuid";
 import Navbar from "../components/Navbar";
 import "../styles/Dashboard.css";
 import Notification from "../components/Notification";
-import useWindowSize from "../hooks/useWindowSize";
+import dayjs from "dayjs"; // for consistent date formatting
+// import useWindowSize from "../hooks/useWindowSize"; // If you still need this
 
 // Icons
 import {
     AiOutlineSearch,
-    AiOutlineLineChart,
-    AiOutlineFilter,
     AiOutlineMail,
     AiOutlinePhone,
     AiOutlineEnvironment,
     AiOutlineCalendar,
-    AiOutlineEdit,
 } from "react-icons/ai";
 import { TiUserAddOutline } from "react-icons/ti";
 
@@ -55,11 +53,12 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
         const newPatient = {
             id: uuidv4(),
             name: basicInfo.name,
-            dob: basicInfo.dob,
+            // Convert to a consistent format, e.g. YYYY-MM-DD
+            dob: dayjs(basicInfo.dob).format("YYYY-MM-DD"),
             email: contactInfo.email,
             phone: contactInfo.phone,
             address: contactInfo.address,
-            photo: "https://via.placeholder.com/100",
+            photo: "", // intentionally empty to demonstrate default avatar
             notes: {
                 medicalHistory: "No history yet...",
                 currentMedications: "No current medications yet...",
@@ -76,7 +75,10 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
 
     return (
         <div className="modal-overlay" onClick={onClose}>
-            <div className="modal multi-step-modal" onClick={(e) => e.stopPropagation()}>
+            <div
+                className="modal multi-step-modal"
+                onClick={(e) => e.stopPropagation()}
+            >
                 <h2>Add New Patient</h2>
 
                 {/* Step Content */}
@@ -146,7 +148,8 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                             <strong>Name:</strong> {basicInfo.name}
                         </p>
                         <p>
-                            <strong>Date of Birth:</strong> {basicInfo.dob}
+                            <strong>Date of Birth:</strong>{" "}
+                            {dayjs(basicInfo.dob).format("YYYY-MM-DD")}
                         </p>
                         <p>
                             <strong>Email:</strong> {contactInfo.email}
@@ -186,14 +189,36 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
     );
 }
 
+// ---------------- HELPER FUNCTIONS ----------------
+
+// Example phone formatting: "123-456-7890" (US style). 
+// Adjust or remove if not applicable for your region.
+function formatPhoneNumber(phone) {
+    if (!phone) return "";
+    const cleaned = ("" + phone).replace(/\D/g, "");
+    if (cleaned.length === 10) {
+        // US pattern
+        return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+    }
+    return phone; // fallback if not 10 digits
+}
+
+// Highlight matching text in <span>, we’ll apply it to name only. 
+// You can also apply it to email, phone, address if you want.
+function highlightText(text, query) {
+    if (!query) return text;
+    const regex = new RegExp(`(${query})`, "gi");
+    return text.replace(regex, "<mark>$1</mark>");
+}
+
 // ---------------- Main Dashboard Component ----------------
 function Dashboard() {
     const [patients, setPatients] = useState(() => {
         const saved = localStorage.getItem("patients");
         return saved ? JSON.parse(saved) : [];
     });
-
     const [notification, setNotification] = useState(null);
+
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState("name");
     const [showAddWizard, setShowAddWizard] = useState(false);
@@ -217,11 +242,12 @@ function Dashboard() {
             const newRandomPatient = {
                 id: uuidv4(),
                 name: `${result.name.first} ${result.name.last}`,
-                dob: result.dob.date.split("T")[0], // e.g. "1980-05-20"
+                dob: dayjs(result.dob.date).format("YYYY-MM-DD"), // consistent date
                 email: result.email,
-                phone: result.phone,
+                // format phone (or keep it as is)
+                phone: formatPhoneNumber(result.phone),
                 address: `${result.location.street.name}, ${result.location.city}, ${result.location.country}`,
-                photo: result.picture.large || "https://via.placeholder.com/100",
+                photo: result.picture.large || "",
                 notes: {
                     medicalHistory: "Auto-generated patient. No prior medical records.",
                     currentMedications: "None reported.",
@@ -248,7 +274,7 @@ function Dashboard() {
             return (
                 p.name.toLowerCase().includes(q) ||
                 p.email.toLowerCase().includes(q) ||
-                p.phone.toLowerCase().includes(q) ||
+                (p.phone && p.phone.toLowerCase().includes(q)) ||
                 p.address.toLowerCase().includes(q)
             );
         })
@@ -280,6 +306,12 @@ function Dashboard() {
                         />
                     </div>
 
+                    {/* Show how many results found */}
+                    <div style={{ fontSize: "14px", color: "#555" }}>
+                        {filteredPatients.length} result
+                        {filteredPatients.length !== 1 ? "s" : ""} found
+                    </div>
+
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
@@ -293,7 +325,7 @@ function Dashboard() {
                         <TiUserAddOutline /> Add Patient
                     </button>
 
-                    {/* NEW: "Add Random Patient" button */}
+                    {/* "Add Random Patient" button */}
                     <button onClick={handleAddRandomPatient} className="secondary-button">
                         Generate Sample Patient
                     </button>
@@ -301,38 +333,56 @@ function Dashboard() {
 
                 <div className="patients-list">
                     {filteredPatients.length > 0 ? (
-                        filteredPatients.map((patient) => (
-                            <div key={patient.id} className="patient-card">
-                                <img
-                                    src={patient.photo}
-                                    alt={patient.name}
-                                    className="patient-photo"
-                                />
-                                <div className="patient-info">
-                                    <p className="patient-name">
-                                        <strong>{patient.name}</strong>
-                                    </p>
-                                    <p className="patient-detail">
-                                        <AiOutlineMail className="detail-icon" /> {patient.email}
-                                    </p>
-                                    <p className="patient-detail">
-                                        <AiOutlineCalendar className="detail-icon" /> {patient.dob}
-                                    </p>
-                                    <p className="patient-detail">
-                                        <AiOutlinePhone className="detail-icon" /> {patient.phone}
-                                    </p>
-                                    <p className="patient-detail">
-                                        <AiOutlineEnvironment className="detail-icon" />{" "}
-                                        {patient.address}
-                                    </p>
+                        filteredPatients.map((patient) => {
+                            // If photo is missing or empty, use a default
+                            const photoUrl = patient.photo
+                                ? patient.photo
+                                : "https://via.placeholder.com/80?text=No+Photo";
+
+                            return (
+                                <div key={patient.id} className="patient-card">
+                                    <img
+                                        src={photoUrl}
+                                        alt={patient.name}
+                                        className="patient-photo"
+                                        onError={(e) => {
+                                            // fallback if the remote image fails
+                                            e.target.src =
+                                                "https://via.placeholder.com/80?text=No+Photo";
+                                        }}
+                                    />
+                                    <div className="patient-info">
+                                        {/* Highlight search query in name */}
+                                        <p
+                                            className="patient-name"
+                                            dangerouslySetInnerHTML={{
+                                                __html: highlightText(patient.name, searchQuery),
+                                            }}
+                                        />
+                                        <p className="patient-detail">
+                                            <AiOutlineMail className="detail-icon" /> {patient.email}
+                                        </p>
+                                        <p className="patient-detail">
+                                            <AiOutlineCalendar className="detail-icon" />{" "}
+                                            {dayjs(patient.dob).format("YYYY-MM-DD")}
+                                        </p>
+                                        <p className="patient-detail">
+                                            <AiOutlinePhone className="detail-icon" />{" "}
+                                            {patient.phone || "No phone"}
+                                        </p>
+                                        <p className="patient-detail">
+                                            <AiOutlineEnvironment className="detail-icon" />
+                                            {patient.address}
+                                        </p>
+                                    </div>
+                                    <div className="patient-actions">
+                                        <Link to={`/patient/${patient.id}`} className="details-button">
+                                            Details
+                                        </Link>
+                                    </div>
                                 </div>
-                                <div className="patient-actions">
-                                    <Link to={`/patient/${patient.id}`} className="details-button">
-                                        Details
-                                    </Link>
-                                </div>
-                            </div>
-                        ))
+                            );
+                        })
                     ) : (
                         <p>No patients found.</p>
                     )}

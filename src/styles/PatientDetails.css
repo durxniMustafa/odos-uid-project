@@ -1603,4 +1603,30 @@ body {
     padding: 0.5rem 1rem;
     cursor: pointer;
   }
+  /* AI Explanation Popup */
+.ai-explanation-container {
+    margin-top: 8px;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    max-width: 400px;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .ai-explanation-container strong {
+    color: #800080;
+  }
+  
+  /* If you want to style the .step elements or .completed class, e.g.: */
+  .step {
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    background: #eee;
+  }
+  .step.completed {
+    background: #c0ffc0; /* light green background for completed step */
+  }
   

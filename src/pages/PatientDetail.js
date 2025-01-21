@@ -1,21 +1,21 @@
-// src/pages/PatientDetail.jsx
 import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import BrainViewer from "./BrainViewer"; // or wherever your BrainViewer is
+import BrainViewer from "./BrainViewer"; // or wherever your BrainViewer is located
 import ConfirmationDialog from "../components/ConfirmationDialog";
 import Notification from "../components/Notification";
-import useWindowSize from "../hooks/useWindowSize";
+// import useWindowSize from "../hooks/useWindowSize"; // If unused, can be removed
 import jsPDF from "jspdf";
 
 // Icons
 import { FaShare } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
+import { AiFillBilibili } from "react-icons/ai";
 
 // Sections
 import UploadSection from "../sections/UploadSection";
 import BrainFilesSection from "../sections/BrainFileSection";
-import NotesSection from "../sections/NoteSection";  // <-- our new subfield notes
+import NotesSection from "../sections/NoteSection";  // <-- subfield notes
 import DiagnosisSection from "../sections/DiagnosisSection";
 
 // Signature Modal
@@ -32,8 +32,10 @@ function PatientDetail({ patients, setPatients }) {
     const [viewingBrainFile, setViewingBrainFile] = useState(null);
     const [uploading, setUploading] = useState(false);
 
-    // Instead of a single `notes` string, we store subfields in an object:
-    // If patient doesn't have `notes`, or it's empty, let's provide placeholders
+    // ===== Fix: reintroduce the currentFileId state! =====
+    const [currentFileId, setCurrentFileId] = useState(null);
+
+    // Store the patient's subfield notes:
     const [notes, setNotes] = useState(() => {
         if (!patient) return {};
         if (patient.notes && typeof patient.notes === "object") {
@@ -46,7 +48,7 @@ function PatientDetail({ patients, setPatients }) {
                 lastVisitHistory: patient.notes.lastVisitHistory || "No past visit history...",
             };
         }
-        // fallback if patient.notes doesn't exist
+        // If patient.notes isn't defined or not an object
         return {
             medicalHistory: "No history yet...",
             currentMedications: "No medications yet...",
@@ -67,15 +69,15 @@ function PatientDetail({ patients, setPatients }) {
     const [isFavorite, setIsFavorite] = useState(patient?.isFavorite || false);
     const [brainFileFilter, setBrainFileFilter] = useState("");
 
-    // SIGNATURE MODAL
+    // Signature & Modal
     const [showSignatureModal, setShowSignatureModal] = useState(false);
     const [signatureData, setSignatureData] = useState(null);
 
-    // DIAGNOSIS
+    // Show or hide the final diagnosis section
     const [showDiagnosis, setShowDiagnosis] = useState(false);
 
+    // Steps to simulate a multi-stage upload
     const [uploadStep, setUploadStep] = useState(0);
-    const [currentFileId, setCurrentFileId] = useState(null);
 
     // Retraining / Reporting
     const [showReportButton, setShowReportButton] = useState(false);
@@ -84,17 +86,23 @@ function PatientDetail({ patients, setPatients }) {
     // Extended viewer after upload
     const [isExtendedViewer, setIsExtendedViewer] = useState(false);
 
+    // Drag & Drop
     const dragCounter = useRef(0);
-    const { width, height } = useWindowSize();
 
-    // Filter brain files
-    const filteredBrainFiles = useMemo(() => {
-        if (!patient || !patient.brainFiles) return [];
-        return patient.brainFiles.filter((file) =>
-            file.name.toLowerCase().includes(brainFileFilter.toLowerCase())
-        );
-    }, [patient, brainFileFilter]);
+    // If you’re not using these, you can remove them:
+    // const { width, height } = useWindowSize();
 
+    // =========================
+    // ** AI Explanation State **
+    // =========================
+    const [showAiExplanation, setShowAiExplanation] = useState(false);
+    const handleToggleAiExplanation = useCallback(() => {
+        setShowAiExplanation((prev) => !prev);
+    }, []);
+
+    // =====================
+    // **  CLOSE MODAL   **
+    // =====================
     const closeBrainImageModal = useCallback((e) => {
         if (e && e.type === "keydown" && e.key !== "Escape") return;
         setViewingBrainFile(null);
@@ -108,12 +116,37 @@ function PatientDetail({ patients, setPatients }) {
         return () => window.removeEventListener("keydown", handleEscape);
     }, [closeBrainImageModal]);
 
+    // =========================
+    // ** NOTIFICATION HELPER **
+    // =========================
     const showNotificationMessage = useCallback((message) => {
         setNotification(message);
         setTimeout(() => setNotification(null), 3000);
     }, []);
 
-    // File upload
+    // ======================================
+    // ** FILE UPLOAD & SIMULATED PROGRESS **
+    // ======================================
+    const startUploadSimulation = useCallback(() => {
+        let stepCount = 0;
+        setUploadStep(1);
+        setUploading(true);
+
+        const stepsInterval = setInterval(() => {
+            stepCount++;
+            if (stepCount <= 3) {
+                setUploadStep((prev) => prev + 1);
+            } else {
+                clearInterval(stepsInterval);
+                setUploading(false);
+                showNotificationMessage("File uploaded and processed successfully!");
+                setShowDiagnosis(true);
+                setShowReportButton(true);
+                setIsExtendedViewer(true);
+            }
+        }, 1500);
+    }, [showNotificationMessage]);
+
     const handleFileUpload = useCallback(
         (files) => {
             if (!files || files.length === 0) return;
@@ -143,30 +176,12 @@ function PatientDetail({ patients, setPatients }) {
 
             startUploadSimulation();
         },
-        [id, setPatients, showNotificationMessage]
+        [id, setPatients, showNotificationMessage, startUploadSimulation]
     );
 
-    const startUploadSimulation = useCallback(() => {
-        let stepCount = 0;
-        setUploadStep(1);
-        setUploading(true);
-
-        const stepsInterval = setInterval(() => {
-            stepCount++;
-            if (stepCount <= 3) {
-                setUploadStep((prev) => prev + 1);
-            } else {
-                clearInterval(stepsInterval);
-                setUploading(false);
-                showNotificationMessage("File uploaded and processed successfully!");
-                setShowDiagnosis(true);
-                setShowReportButton(true);
-                setIsExtendedViewer(true);
-            }
-        }, 1500);
-    }, [showNotificationMessage]);
-
-    // Save notes (we store subfields back into the patient's record)
+    // ====================
+    // ** SAVING NOTES   **
+    // ====================
     const handleSaveNotes = useCallback(() => {
         setPatients((prev) =>
             prev.map((p) =>
@@ -177,7 +192,9 @@ function PatientDetail({ patients, setPatients }) {
         showNotificationMessage("Notes updated successfully!");
     }, [id, notes, setPatients, showNotificationMessage]);
 
-    // Favorite toggle
+    // ====================
+    // ** TOGGLE FAVORITE**
+    // ====================
     const handleFavoriteToggle = useCallback(() => {
         setIsFavorite((prev) => !prev);
         setPatients((prev) =>
@@ -190,7 +207,9 @@ function PatientDetail({ patients, setPatients }) {
         );
     }, [id, isFavorite, setPatients, showNotificationMessage]);
 
-    // Export notes (combine subfields into a single text file)
+    // ========================
+    // ** EXPORT NOTES (TXT) **
+    // ========================
     const handleExportNotes = useCallback(() => {
         const combined = `
 Medical History:
@@ -223,7 +242,9 @@ ${notes.lastVisitHistory}
         showNotificationMessage("Notes exported successfully!");
     }, [notes, patient, showNotificationMessage]);
 
-    // Email file
+    // ==================
+    // ** EMAIL FILE   **
+    // ==================
     const handleEmailFile = useCallback(() => {
         if (!patient?.brainFiles || patient.brainFiles.length === 0) {
             showNotificationMessage("No file to send via email.");
@@ -238,7 +259,9 @@ ${notes.lastVisitHistory}
         showNotificationMessage("Email client opened to send file.");
     }, [patient, showNotificationMessage]);
 
-    // Share
+    // ====================
+    // ** SHARE FUNCTION **
+    // ====================
     const handleShare = useCallback(async () => {
         try {
             const shareLink = `https://example.com/patient/${id}`;
@@ -250,7 +273,9 @@ ${notes.lastVisitHistory}
         handleEmailFile();
     }, [id, handleEmailFile, showNotificationMessage]);
 
-    // Generate a PDF (instead of printing)
+    // =======================
+    // ** GENERATE PDF (jsPDF)
+    // =======================
     const handleGeneratePDF = useCallback(() => {
         const doc = new jsPDF();
         doc.setFontSize(16);
@@ -272,7 +297,6 @@ Lab Results: ${notes.labResults}
 Lifestyle Notes: ${notes.lifestyleNotes}
 Last Visit History: ${notes.lastVisitHistory}
 `;
-
         const splittedNotes = doc.splitTextToSize(notesText, 180);
         doc.text(splittedNotes, 10, 90);
 
@@ -285,17 +309,25 @@ Last Visit History: ${notes.lastVisitHistory}
         showNotificationMessage("PDF Report generated and downloaded!");
     }, [patient, notes, signatureData, showNotificationMessage]);
 
+    // ===================
+    // ** FEEDBACK BTN  **
+    // ===================
     const handleFeedback = useCallback((type) => {
         if (type === "dislike") {
             setShowRetrainingButton(true);
         }
     }, []);
 
+    // ===================
+    // ** REPORT BTN    **
+    // ===================
     const handleGenerateReport = useCallback(() => {
         showNotificationMessage("AI Report generated (simulated)!");
     }, [showNotificationMessage]);
 
-    // Drag & Drop
+    // =========================
+    // ** DRAG & DROP HANDLERS **
+    // =========================
     const handleDragEnter = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -333,7 +365,9 @@ Last Visit History: ${notes.lastVisitHistory}
         [handleFileUpload]
     );
 
-    // Signature
+    // ======================
+    // ** SIGNATURE MODAL  **
+    // ======================
     const handleAddSignature = useCallback(() => {
         setShowSignatureModal(true);
     }, []);
@@ -351,6 +385,15 @@ Last Visit History: ${notes.lastVisitHistory}
         [showNotificationMessage]
     );
 
+    // Filter brain files if multiple
+    const filteredBrainFiles = useMemo(() => {
+        if (!patient || !patient.brainFiles) return [];
+        return patient.brainFiles.filter((file) =>
+            file.name.toLowerCase().includes(brainFileFilter.toLowerCase())
+        );
+    }, [patient, brainFileFilter]);
+
+    // Return early if no patient found
     if (!patient) {
         return (
             <div className="no-patient-found">
@@ -365,10 +408,14 @@ Last Visit History: ${notes.lastVisitHistory}
         );
     }
 
+    // ==================
+    // ** MAIN RETURN  **
+    // ==================
     return (
         <div className="patient-detail-page">
             <Navbar />
 
+            {/* Notification / ConfirmationDialog */}
             {notification && <Notification message={notification} />}
             {confirmDialog.isOpen && (
                 <ConfirmationDialog
@@ -424,7 +471,7 @@ Last Visit History: ${notes.lastVisitHistory}
                     </div>
                 </div>
 
-                {/* Our new subfields notes section */}
+                {/* Notes Section */}
                 <NotesSection
                     notes={notes}
                     setNotes={setNotes}
@@ -434,6 +481,7 @@ Last Visit History: ${notes.lastVisitHistory}
                     handleExportNotes={handleExportNotes}
                 />
 
+                {/* Only show the UploadSection if the final diagnosis isn't shown yet */}
                 {!showDiagnosis && (
                     <UploadSection
                         patientId={patient.id}
@@ -446,6 +494,7 @@ Last Visit History: ${notes.lastVisitHistory}
                     />
                 )}
 
+                {/* Show the step-by-step uploading progress if "uploading" is true */}
                 {uploading && (
                     <div className="upload-steps">
                         <h3>Uploading &amp; Processing Steps</h3>
@@ -456,9 +505,32 @@ Last Visit History: ${notes.lastVisitHistory}
                             <div className={`step ${uploadStep >= 2 ? "completed" : ""}`}>
                                 Step 2: Data Preprocessing
                             </div>
+
+                            {/* Step 3: AI Inference with info icon */}
                             <div className={`step ${uploadStep >= 3 ? "completed" : ""}`}>
                                 Step 3: AI Inference
+                                <span
+                                    onClick={handleToggleAiExplanation}
+                                    style={{ cursor: "pointer", marginLeft: "8px" }}
+                                    title="How does the AI work?"
+                                >
+                                    <AiFillBilibili size={18} />
+                                </span>
+
+                                {/* Explanation Popup */}
+                                {showAiExplanation && (
+                                    <div className="ai-explanation-container">
+                                        <p>
+                                            <strong>How does the AI work?</strong><br />
+                                            Our AI model analyzes 3D MRI scans to detect patterns
+                                            that may indicate tumors or lesions. It compares your MRI
+                                            against a large set of annotated scans to flag potential
+                                            abnormalities for further review by medical experts.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
+
                             <div className={`step ${uploadStep >= 4 ? "completed" : ""}`}>
                                 Step 4: Finalizing
                             </div>
@@ -466,6 +538,7 @@ Last Visit History: ${notes.lastVisitHistory}
                     </div>
                 )}
 
+                {/* If multiple brain files exist, filter them */}
                 {patient.brainFiles.length > 1 && (
                     <div className="brain-files-filter">
                         <FiSearch className="search-icon" />
@@ -479,6 +552,7 @@ Last Visit History: ${notes.lastVisitHistory}
                     </div>
                 )}
 
+                {/* Once there's a diagnosis to show, render the BrainFilesSection */}
                 {showDiagnosis && (
                     <BrainFilesSection
                         filteredBrainFiles={filteredBrainFiles}
@@ -488,6 +562,7 @@ Last Visit History: ${notes.lastVisitHistory}
                     />
                 )}
 
+                {/* If user disliked the result, show a "simulate retraining" button */}
                 {showRetrainingButton && (
                     <div className="retraining-section">
                         <button
@@ -499,6 +574,7 @@ Last Visit History: ${notes.lastVisitHistory}
                     </div>
                 )}
 
+                {/* Sharing and PDF */}
                 <div className="share-section">
                     <button
                         className="share-button"
@@ -512,6 +588,7 @@ Last Visit History: ${notes.lastVisitHistory}
                     </button>
                 </div>
 
+                {/* Diagnosis Section */}
                 {showDiagnosis && (
                     <DiagnosisSection
                         patient={patient}
@@ -520,7 +597,7 @@ Last Visit History: ${notes.lastVisitHistory}
                 )}
             </div>
 
-            {/* Brain file viewer modal (if user clicks to view a .glb) */}
+            {/* BrainViewer Modal when a user clicks on a .glb file */}
             {viewingBrainFile && (
                 <div
                     className="modal-overlay"
