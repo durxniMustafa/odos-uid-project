@@ -26,7 +26,7 @@
 /* The Three.js canvas container */
 .brain-viewer-mount {
   width: 100%;
-  height: 100%;
+  height: 200%;
   position: relative;
   background: linear-gradient(to bottom, #ffffff, #f5f3ff);
   border-radius: inherit;
@@ -242,4 +242,25 @@
   background: #6a1b9a;
   border-radius: 3px 0 0 3px;
   transition: width 0.3s;
+}
+.brain-viewer-wrapper {
+  width: 100%;
+  /* Use aspect-ratio if you prefer a consistent shape. 
+     16/9 => a common ratio, or 4/3, etc. */
+  aspect-ratio: 16/9; 
+  position: relative;
+  /* This ensures a fluid, responsive container. 
+     If you want a max height, add: max-height: 600px; */
+  background: #f0f0f0; 
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.brain-viewer-mount {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Let the Three.js canvas fill this container. */
 }

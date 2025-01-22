@@ -38,9 +38,11 @@ export default function BrainViewer({
     const [regionMeshes, setRegionMeshes] = useState([]);
     const [annotationSpheres, setAnnotationSpheres] = useState([]);
 
-    // Setup scene
     useEffect(() => {
         const scene = new THREE.Scene();
+        // **Change background** from default black to a neutral color:
+        scene.background = new THREE.Color("#f9f9f9");
+
         sceneRef.current = scene;
 
         const camera = new THREE.PerspectiveCamera(
@@ -77,6 +79,23 @@ export default function BrainViewer({
                 file,
                 (gltf) => {
                     scene.add(gltf.scene);
+                    // Optional: auto-center model using bounding box
+                    const box = new THREE.Box3().setFromObject(gltf.scene);
+                    const size = box.getSize(new THREE.Vector3());
+                    const center = box.getCenter(new THREE.Vector3());
+
+                    // Reposition the model so it's centered at (0,0,0) or near target
+                    gltf.scene.position.x -= center.x;
+                    gltf.scene.position.y -= center.y;
+                    gltf.scene.position.z -= center.z;
+
+                    // Move camera to fit the bounding box
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const fov = camera.fov * (Math.PI / 180);
+                    let cameraZ = Math.abs(maxDim / Math.sin(fov / 2));
+                    cameraZ *= 1.2; // padding
+                    camera.position.set(0, 0, cameraZ);
+                    camera.lookAt(0, 0, 0);
                 },
                 undefined,
                 (err) => {
@@ -85,7 +104,7 @@ export default function BrainViewer({
             );
         }
 
-        // Render loop
+        // Animation loop
         const animate = () => {
             requestAnimationFrame(animate);
             controls.update();
@@ -93,8 +112,22 @@ export default function BrainViewer({
         };
         animate();
 
+        // Handle resizing
+        const handleResize = () => {
+            if (!rendererRef.current || !cameraRef.current || !mountRef.current) return;
+            const width = mountRef.current.clientWidth;
+            const height = mountRef.current.clientHeight;
+            rendererRef.current.setSize(width, height);
+            cameraRef.current.aspect = width / height;
+            cameraRef.current.updateProjectionMatrix();
+        };
+        window.addEventListener("resize", handleResize);
+        // Call once to sync on initial load
+        handleResize();
+
         // Cleanup
         return () => {
+            window.removeEventListener("resize", handleResize);
             if (rendererRef.current) {
                 rendererRef.current.dispose();
                 if (rendererRef.current.domElement && mountRef.current) {
@@ -104,14 +137,12 @@ export default function BrainViewer({
         };
     }, [file]);
 
-    // Draw color-coded bounding boxes for regionData
+    // Render bounding boxes (pseudo heatmap)
     useEffect(() => {
         if (!showAIHighlights || !sceneRef.current) return;
-        // Remove old
         regionMeshes.forEach((m) => sceneRef.current.remove(m));
         setRegionMeshes([]);
 
-        // Add new
         const newMeshes = regionData.map((r) => {
             const geo = new THREE.BoxGeometry(r.size.x, r.size.y, r.size.z);
             const color = getBoxColor(r.confidence);
@@ -129,7 +160,7 @@ export default function BrainViewer({
         setRegionMeshes(newMeshes);
     }, [regionData, showAIHighlights]);
 
-    // Manage annotation spheres
+    // Render annotation spheres
     useEffect(() => {
         if (!sceneRef.current) return;
         annotationSpheres.forEach((s) => sceneRef.current.remove(s));
@@ -171,7 +202,6 @@ export default function BrainViewer({
         [annotationPoints, setAnnotationPoints]
     );
 
-    // Attach click listener for annotation
     useEffect(() => {
         const domEl = rendererRef.current?.domElement;
         if (!domEl) return;
@@ -184,17 +214,7 @@ export default function BrainViewer({
     return (
         <div className="brain-viewer-root">
             <div className="brain-viewer-mount" ref={mountRef} />
-            <div className="heatmap-legend">
-                <div className="legend-item">
-                    <span className="color-box" style={{ background: "#ff0000" }}></span>
-                    <span>90+% (Critical)</span>
-                </div>
-                <div className="legend-item">
-                    <span className="color-box" style={{ background: "#ff8c00" }}></span>
-                    <span>80-90% (High)</span>
-                </div>
-                {/* etc. */}
-            </div>
+            {/* Optionally: Add a small overlay or legend here */}
         </div>
     );
 }
