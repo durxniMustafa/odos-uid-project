@@ -577,3 +577,13 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
+.brain-viewer-container {
+  height: auto;     /* or remove this line altogether */
+  overflow: visible; /* so the viewer is not clipped */
+  /* keep the rest of your styles... */
+}
+.brain-viewer-container {
+height: 70vh;      /* scales with viewport */
+overflow: visible; 
+/* rest of your styles */
+}

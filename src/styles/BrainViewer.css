@@ -1,257 +1,245 @@
-/********************************************
-  Container Styles
-********************************************/
+/* BrainViewer.css */
 
+/* The main container for the 3D viewer */
 .brain-viewer-root {
-    position: relative;
-    width: 100%;
-    height: 500px;
-    background: linear-gradient(to bottom right, #fafaff, #ffffff);
-    border-radius: 16px;
-    overflow: hidden;
-    font-family: 'Poppins', sans-serif;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
-    border: 2px solid #eee;
-    transition: transform 0.3s ease, background 0.3s ease;
-  }
-  
-  .brain-viewer-root.fullscreen {
-    position: fixed;
-    top: 0; 
-    left: 0;
-    width: 100vw; 
-    height: 100vh;
-    z-index: 3000;
-    border: none;
-    border-radius: 0;
-    background: #fff;
-  }
-  
-  .brain-viewer-mount {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    border-radius: inherit;
-    background: linear-gradient(to bottom, #ffffff, #f5f3ff);
-  }
-  
-  /********************************************
-    Toolbar
-  ********************************************/
-  
-  .viewer-toolbar {
-    position: absolute;
-    top: 15px; 
-    right: 15px;
-    display: flex;
-    flex-direction: column; /* vertical column of buttons */
-    gap: 10px;
-    z-index: 10;
-    opacity: 0.9;
-    transition: opacity 0.3s ease;
-  }
-  
-  .viewer-toolbar:hover {
-    opacity: 1;
-  }
-  
-  .toolbar-button {
-    background: #7c3aed; /* Purple accent */
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 35px; 
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
-  }
-  
-  .toolbar-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    background: #6931c1;
-  }
-  
-  /********************************************
-    Feedback Buttons
-  ********************************************/
-  
-  .feedback-buttons {
-    position: absolute;
-    bottom: 15px; 
-    right: 15px;
-    display: flex;
-    gap: 10px;
-    z-index: 10;
-  }
-  
-  .like-button, 
-  .dislike-button {
-    color: #fff;
-    border-radius: 20px;
-    padding: 8px 14px;
-    font-size: 14px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
-  }
-  
-  .like-button {
-    background: #4caf50;
-  }
-  
-  .like-button:hover {
-    background: #449d48;
-    transform: translateY(-2px);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-  }
-  
-  .dislike-button {
-    background: #f44336;
-  }
-  
-  .dislike-button:hover {
-    background: #e53935;
-    transform: translateY(-2px);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-  }
-  
-  /********************************************
-    AI Report Button
-  ********************************************/
-  
-  .generate-report-button {
-    position: absolute;
-    bottom: 65px; 
-    right: 15px;
-    z-index: 10;
-  }
-  
-  .primary-button {
-    background: #7c3aed;
-    color: #fff;
-    border-radius: 20px;
-    padding: 8px 16px;
-    font-size: 14px;
-    transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
-  }
-  
-  .primary-button:hover {
-    background: #6931c1;
-    transform: translateY(-2px);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-  }
-  
-  /********************************************
-    Info Overlay
-  ********************************************/
-  
-  .info-overlay {
-    position: absolute;
-    bottom: 15px; 
-    left: 15px;
-    background: rgba(255, 255, 255, 0.94);
-    padding: 12px 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    font-size: 14px;
-    z-index: 50;
-    animation: fadeIn 0.3s ease forwards;
-  }
-  
-  .info-overlay h4 {
-    margin-bottom: 10px;
-    color: #7c3aed;
-    font-size: 16px;
-    font-weight: 600;
-    border-bottom: 1px solid rgba(124, 58, 237, 0.3);
-    padding-bottom: 5px;
-  }
-  
-  /********************************************
-    Notifications
-  ********************************************/
-  
-  .loading-spinner {
-    position: absolute;
-    top: 50%; 
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.94);
-    padding: 20px 30px;
-    border-radius: 10px;
-    font-size: 14px;
-    color: #333;
-    z-index: 50;
-    animation: fadeIn 0.3s ease forwards;
-  }
-  
-  .brain-viewer-error {
-    position: absolute;
-    top: 50%; 
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.94);
-    padding: 20px 30px;
-    border-radius: 10px;
-    font-size: 14px;
-    color: #c00;
-    z-index: 50;
-    animation: fadeIn 0.3s ease forwards;
-  }
-  
-  .viewer-notification {
-    position: absolute;
-    top: 15px; 
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    max-width: 80%;
-    text-align: center;
-    z-index: 60;
-    animation: fadeInOut 3s ease forwards;
-  }
-  
-  /********************************************
-    Animations
-  ********************************************/
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0; 
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1; 
-      transform: translateY(0);
-    }
-  }
-  
-  @keyframes fadeInOut {
-    0% {
-      opacity: 0; 
-      transform: translateY(-10px);
-    }
-    10% {
-      opacity: 1; 
-      transform: translateY(0);
-    }
-    90% {
-      opacity: 1; 
-      transform: translateY(0);
-    }
-    100% {
-      opacity: 0; 
-      transform: translateY(-10px);
-    }
-  }
-  
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  overflow: visible; /* ensure nothing is clipped */
+}
+
+/* Fullscreen variant (optional) */
+.brain-viewer-root.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 3000;
+  border: none;
+  border-radius: 0;
+  background: #fff;
+}
+
+/* The Three.js canvas container */
+.brain-viewer-mount {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: linear-gradient(to bottom, #ffffff, #f5f3ff);
+  border-radius: inherit;
+}
+
+/* Toolbar */
+.viewer-toolbar {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+.viewer-toolbar:hover {
+  opacity: 1;
+}
+.toolbar-button {
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
+}
+.toolbar-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  background: #6931c1;
+}
+
+/* Feedback Buttons (Like / Dislike) */
+.feedback-buttons {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+.like-button,
+.dislike-button {
+  color: #fff;
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+.like-button {
+  background: #4caf50;
+}
+.like-button:hover {
+  background: #449d48;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+.dislike-button {
+  background: #f44336;
+}
+.dislike-button:hover {
+  background: #e53935;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Optional "Generate Report" Button */
+.generate-report-button {
+  position: absolute;
+  bottom: 60px;
+  right: 15px;
+  z-index: 10;
+}
+.primary-button {
+  background: #7c3aed;
+  color: #fff;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+.primary-button:hover {
+  background: #6931c1;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading & Error Overlays */
+.loading-spinner,
+.brain-viewer-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.94);
+  padding: 20px 30px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #333;
+  z-index: 50;
+  animation: fadeIn 0.3s ease forwards;
+}
+.brain-viewer-error {
+  color: #c00;
+}
+
+/* Notification Toast in Viewer */
+.viewer-notification {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  max-width: 80%;
+  text-align: center;
+  z-index: 60;
+  animation: fadeInOut 3s ease forwards;
+}
+
+/* Overlays like Info & Region box */
+.info-overlay,
+.region-overlay,
+.confidence-overlay {
+  position: absolute;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 12px 16px;
+  font-size: 14px;
+}
+.info-overlay h4,
+.region-overlay h4 {
+  margin-bottom: 6px;
+  color: #7c3aed;
+  font-weight: 600;
+}
+.confidence-overlay {
+  bottom: 15px;
+  right: 15px;
+  background: #6a1b9a;
+  color: #fff;
+  padding: 8px 12px;
+  font-weight: 600;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(10px);}
+  to   {opacity: 1; transform: translateY(0);}
+}
+@keyframes fadeInOut {
+  0%   {opacity: 0; transform: translateY(-10px);}
+  10%  {opacity: 1; transform: translateY(0);}
+  90%  {opacity: 1; transform: translateY(0);}
+  100% {opacity: 0; transform: translateY(-10px);}
+}
+.large-brain-viewer {
+  width: 100%;
+  max-width: 1200px;  /* or 80vw */
+  height: 600px;      /* or 70vh */
+  /* etc. */
+}
+.brain-viewer-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #f9f9f9;
+}
+.brain-viewer-mount {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.graph-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+.graph-bar-container {
+  margin: 6px 0;
+}
+.graph-bar {
+  width: 150px;
+  height: 6px;
+  background: #eee;
+  border-radius: 3px;
+  margin-top: 2px;
+  position: relative;
+}
+.graph-bar-fill {
+  height: 100%;
+  background: #6a1b9a;
+  border-radius: 3px 0 0 3px;
+  transition: width 0.3s;
+}

@@ -1,0 +1,57 @@
+import React from "react";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement
+} from "chart.js";
+
+ChartJS.register(Tooltip, Legend, CategoryScale, LinearScale, BarElement);
+
+function DiagnosticMetrics({ data = [] }) {
+  const chartData = {
+    labels: data.map((item) => item.label),
+    datasets: [
+      {
+        label: "Value",
+        data: data.map((item) => item.value),
+        backgroundColor: data.map((item) =>
+          item.value > item.threshold
+            ? "rgba(255, 99, 132, 0.6)" // red-ish
+            : "rgba(75, 192, 192, 0.6)" // green-ish
+        )
+      }
+    ]
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const item = data[context.dataIndex];
+            return `${item.label}: ${item.value} (Threshold: ${item.threshold})`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  };
+
+  return (
+    <div className="diagnosis-charts-container">
+      <h4>Diagnostic Metrics</h4>
+      <Bar data={chartData} options={chartOptions} />
+    </div>
+  );
+}
+
+export default DiagnosticMetrics;

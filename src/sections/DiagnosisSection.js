@@ -1,5 +1,5 @@
 import React from "react";
-
+import "../styles/DiagnosisSection.css";
 const DiagnosisSection = ({ patient, handleAddSignature }) => {
     return (
         <>

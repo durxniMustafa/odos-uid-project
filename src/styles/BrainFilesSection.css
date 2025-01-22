@@ -1,0 +1,197 @@
+.brain-files-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 20px auto;
+  }
+  
+  .brain-file-card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .brain-file-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Critical highlight if overall confidence > 90 */
+  .critical-card {
+    border-left: 6px solid #f44336;
+    background-color: #fff5f5;
+  }
+  
+  .brain-file-card-left {
+    flex: 3;
+    min-width: 300px;
+  }
+  .brain-viewer-wrapper {
+    width: 100%;
+    height: 400px;
+    background: #f0f0f0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .brain-file-card-right {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .brain-file-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #6a1b9a;
+  }
+  .confidence-hint {
+    font-size: 14px;
+    color: #666;
+  }
+  .confidence-score {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+  }
+  .critical-flag {
+    margin-left: 8px;
+    color: #f44336;
+    font-weight: 600;
+  }
+  
+  .analyze-btn,
+  .ask-ai-btn {
+    background: #6a1b9a;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+    cursor: pointer;
+    border: none;
+    outline: none;
+  }
+  .analyze-btn:hover,
+  .ask-ai-btn:hover {
+    background-color: #5e1480;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Region details with mini bar graphs */
+  .detected-regions h5 {
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: #333;
+    font-weight: 600;
+  }
+  .detected-regions ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .detected-regions li {
+    margin-bottom: 8px;
+  }
+  .region-critical {
+    color: #f44336;
+    font-weight: bold;
+    margin-left: 6px;
+  }
+  .region-confidence-bar {
+    background: #eee;
+    border-radius: 4px;
+    width: 150px;
+    height: 6px;
+    margin-top: 4px;
+    position: relative;
+  }
+  .region-confidence-fill {
+    background: #6a1b9a;
+    border-radius: 4px;
+    height: 6px;
+    width: 0%;
+    transition: width 0.3s;
+  }
+  
+  /* AI Container */
+  .ask-ai-container {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ask-ai-status {
+    font-size: 14px;
+    color: #999;
+  }
+  .ai-status {
+    font-size: 14px;
+    color: #777;
+  }
+  .ai-error {
+    color: #c00;
+    background: #ffe6e6;
+    border: 1px solid #f44336;
+    border-radius: 4px;
+    padding: 6px 8px;
+    margin-top: 6px;
+  }
+  .ask-ai-result {
+    margin-top: 8px;
+    background: #fafafa;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px;
+    color: #333;
+    font-size: 14px;
+  }
+  .ask-ai-result strong {
+    color: #6a1b9a;
+  }
+  .ai-feedback-buttons {
+    margin-top: 8px;
+    display: flex;
+    gap: 10px;
+  }
+  .ai-feedback-confirm {
+    font-size: 14px;
+    color: #444;
+  }
+  
+  /* BrainViewer root & mount (if you want separate styling) */
+  .brain-viewer-root {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .brain-viewer-mount {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  
+  /* Optional: pointer/hand icon if you want user to know they can click */
+  .brain-viewer-mount {
+    cursor: crosshair;
+  }
+  
+  /* Overlays, if you want a confidence graph, etc. (not used here) */
+  
+  /* Responsive smaller screens */
+  @media (max-width: 768px) {
+    .brain-file-card {
+      flex-direction: column; 
+    }
+    .brain-viewer-wrapper {
+      height: 300px; 
+    }
+  }
+  
