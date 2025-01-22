@@ -4,14 +4,21 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import "../styles/BrainViewer.css";
 
-// Simple function to color bounding boxes based on confidence
+/**
+ * Color bounding boxes by confidence (pseudo heatmap):
+ * - 90+ => red
+ * - 80+ => orange
+ * - 70+ => yellow
+ * - 60+ => lime green
+ * - else => gray
+ */
 function getBoxColor(confString) {
-    if (!confString) return 0x999999; // no data => gray
-    const val = parseInt(confString, 10); // "75%" => 75
-    if (val >= 90) return 0xff0000; // red
-    if (val >= 80) return 0xff8c00; // dark orange
-    if (val >= 70) return 0xffff00; // yellow
-    if (val >= 60) return 0x32cd32; // limegreen
+    if (!confString) return 0x999999;
+    const val = parseInt(confString, 10);
+    if (val >= 90) return 0xff0000;
+    if (val >= 80) return 0xff8c00;
+    if (val >= 70) return 0xffff00;
+    if (val >= 60) return 0x32cd32;
     return 0x999999;
 }
 
@@ -31,7 +38,7 @@ export default function BrainViewer({
     const [regionMeshes, setRegionMeshes] = useState([]);
     const [annotationSpheres, setAnnotationSpheres] = useState([]);
 
-    // Initialize Three.js
+    // Setup scene
     useEffect(() => {
         const scene = new THREE.Scene();
         sceneRef.current = scene;
@@ -78,7 +85,7 @@ export default function BrainViewer({
             );
         }
 
-        // Animate
+        // Render loop
         const animate = () => {
             requestAnimationFrame(animate);
             controls.update();
@@ -97,7 +104,7 @@ export default function BrainViewer({
         };
     }, [file]);
 
-    // Heatmap bounding boxes for regionData
+    // Draw color-coded bounding boxes for regionData
     useEffect(() => {
         if (!showAIHighlights || !sceneRef.current) return;
         // Remove old
@@ -112,7 +119,7 @@ export default function BrainViewer({
                 color,
                 wireframe: true,
                 transparent: true,
-                opacity: 0.8,
+                opacity: 0.85,
             });
             const mesh = new THREE.Mesh(geo, mat);
             mesh.position.set(r.position.x, r.position.y, r.position.z);
@@ -122,16 +129,17 @@ export default function BrainViewer({
         setRegionMeshes(newMeshes);
     }, [regionData, showAIHighlights]);
 
-    // Update annotation spheres whenever annotationPoints changes
+    // Manage annotation spheres
     useEffect(() => {
         if (!sceneRef.current) return;
         annotationSpheres.forEach((s) => sceneRef.current.remove(s));
         setAnnotationSpheres([]);
 
         const newSpheres = annotationPoints.map((pos) => {
-            const sphereGeo = new THREE.SphereGeometry(0.01, 16, 16);
-            const sphereMat = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-            const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+            const sphere = new THREE.Mesh(
+                new THREE.SphereGeometry(0.01, 16, 16),
+                new THREE.MeshBasicMaterial({ color: 0x0000ff })
+            );
             sphere.position.set(pos.x, pos.y, pos.z);
             sceneRef.current.add(sphere);
             return sphere;
@@ -139,7 +147,7 @@ export default function BrainViewer({
         setAnnotationSpheres(newSpheres);
     }, [annotationPoints]);
 
-    // Let user add annotation by clicking on the scene
+    // Click to add annotation
     const handleSceneClick = useCallback(
         (e) => {
             if (!rendererRef.current || !cameraRef.current || !sceneRef.current) return;
@@ -163,6 +171,7 @@ export default function BrainViewer({
         [annotationPoints, setAnnotationPoints]
     );
 
+    // Attach click listener for annotation
     useEffect(() => {
         const domEl = rendererRef.current?.domElement;
         if (!domEl) return;
@@ -175,7 +184,17 @@ export default function BrainViewer({
     return (
         <div className="brain-viewer-root">
             <div className="brain-viewer-mount" ref={mountRef} />
-            {/* (Optional) You could add a small overlay for a "confidence graph" or instructions */}
+            <div className="heatmap-legend">
+                <div className="legend-item">
+                    <span className="color-box" style={{ background: "#ff0000" }}></span>
+                    <span>90+% (Critical)</span>
+                </div>
+                <div className="legend-item">
+                    <span className="color-box" style={{ background: "#ff8c00" }}></span>
+                    <span>80-90% (High)</span>
+                </div>
+                {/* etc. */}
+            </div>
         </div>
     );
 }

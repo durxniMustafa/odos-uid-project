@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import BrainViewer from "../pages/BrainViewer";
-import "../styles/BrainFilesSection.css"; // Adjust path as needed
+import "../styles/BrainFilesSection.css"; // Adjust if needed
 
 // Example bounding box data
 const defaultRegions = [
@@ -20,7 +20,7 @@ const defaultRegions = [
     },
 ];
 
-// Additional context for the AI prompt (could come from patient record, etc.)
+// Additional context for the AI prompt (like patient data)
 const patientContext = {
     age: 55,
     gender: "Male",
@@ -34,18 +34,19 @@ export default function BrainFilesSection({
     handleFeedback,
     handleGenerateReport,
 }) {
-    // Keep local state per-file
+    // Keep local state for each file
     const [fileStates, setFileStates] = useState(() =>
         filteredBrainFiles.map((bf) => ({
             fileId: bf.id,
             confidence: null,
             regionData: JSON.parse(JSON.stringify(defaultRegions)),
-            annotationPoints: [], // always an array
+            annotationPoints: [],
             openAiResult: null,
             isLoadingAi: false,
             aiStatus: "",
             aiError: null,
             aiFeedback: null, // "like" or "dislike"
+            showConfidencePopup: false, // toggles the "explanation" popup
         }))
     );
 
@@ -63,17 +64,14 @@ export default function BrainFilesSection({
         );
     };
 
-    /** 
-     * 1) Analyze MRI => random 60-100% confidence, region data. 
-     *    Mark region as "critical" if confidence > 90%. 
-     */
+    /** 1) Analyze MRI => random 60-100 confidence + region data */
     const handleAnalyzeMRI = (fileId) => {
         const st = getFileState(fileId);
         if (!st) return;
 
         const randomOverall = Math.floor(Math.random() * 41) + 60; // 60-100
         const updatedRegions = st.regionData.map((r) => {
-            const regionConf = Math.floor(Math.random() * 41) + 60; // 60-100
+            const regionConf = Math.floor(Math.random() * 41) + 60;
             const isCritical = regionConf > 90;
             return {
                 ...r,
@@ -88,9 +86,7 @@ export default function BrainFilesSection({
         });
     };
 
-    /**
-     * 2) Ask AI => Extra context in the prompt + structured response.
-     */
+    /** 2) Ask AI => structured response */
     const handleAskAI = async (fileId) => {
         const st = getFileState(fileId);
         if (!st) return;
@@ -167,7 +163,7 @@ Please provide a structured summary with:
         }
     };
 
-    // Naive parser for "Key Findings," "Recommendations," "Further Evaluations"
+    // Parse GPT output for (1) findings, (2) recs, (3) further eval
     const parseStructuredAi = (rawText) => {
         const findingsMatch = rawText.match(/1\)([\s\S]*?)(?=\n2\)|$)/);
         const recsMatch = rawText.match(/2\)([\s\S]*?)(?=\n3\)|$)/);
@@ -181,10 +177,19 @@ Please provide a structured summary with:
         };
     };
 
-    /** 3) User AI feedback => Like/Dislike the AI response. */
+    /** 3) AI Feedback => like/dislike */
     const handleAiFeedback = (fileId, feedback) => {
         updateFileState(fileId, { aiFeedback: feedback });
         console.log(`Feedback on file ${fileId}: ${feedback}`);
+    };
+
+    /** Confidence Explanation popup toggler */
+    const toggleConfidenceExplanation = (fileId) => {
+        const st = getFileState(fileId);
+        if (!st) return;
+        updateFileState(fileId, {
+            showConfidencePopup: !st.showConfidencePopup,
+        });
     };
 
     return (
@@ -200,7 +205,7 @@ Please provide a structured summary with:
                         key={bf.id}
                         className={`brain-file-card ${isCriticalOverall ? "critical-card" : ""}`}
                     >
-                        {/* Left: BrainViewer with heatmaps, annotations */}
+                        {/* Left: BrainViewer with pseudo heatmaps & annotations */}
                         <div className="brain-file-card-left">
                             <div className="brain-viewer-wrapper">
                                 <BrainViewer
@@ -210,7 +215,7 @@ Please provide a structured summary with:
                                     onGenerateReport={handleGenerateReport}
                                     regionData={st.regionData}
                                     showAIHighlights={true}
-                                    annotationPoints={st.annotationPoints} // always an array
+                                    annotationPoints={st.annotationPoints}
                                     setAnnotationPoints={(pts) =>
                                         updateFileState(bf.id, { annotationPoints: pts || [] })
                                     }
@@ -218,7 +223,7 @@ Please provide a structured summary with:
                             </div>
                         </div>
 
-                        {/* Right: Confidence + AI */}
+                        {/* Right: Confidence + AI info */}
                         <div className="brain-file-card-right">
                             <h4 className="brain-file-name">File: {bf.name}</h4>
 
@@ -228,7 +233,7 @@ Please provide a structured summary with:
                                 </p>
                             ) : (
                                 <p className="confidence-score">
-                                    <strong>AI Confidence: </strong> {st.confidence}%
+                                    <strong>AI Confidence:</strong> {st.confidence}%
                                     {isCriticalOverall && <span className="critical-flag"> CRITICAL</span>}
                                 </p>
                             )}
@@ -237,7 +242,7 @@ Please provide a structured summary with:
                                 Analyze MRI
                             </button>
 
-                            {/* Region details with "graphs" or at least some formatting */}
+                            {/* Region details + mini graph bars */}
                             {st.regionData.some((r) => r.confidence) && (
                                 <div className="detected-regions">
                                     <h5>Detected Regions</h5>
@@ -248,7 +253,6 @@ Please provide a structured summary with:
                                                 <li key={r.id}>
                                                     {r.name}: {r.confidence || "??"}
                                                     {r.critical && <span className="region-critical"> (Critical)</span>}
-                                                    {/* A mini bar or meter to visualize confidence */}
                                                     <div className="region-confidence-bar">
                                                         <div
                                                             className="region-confidence-fill"
@@ -262,7 +266,41 @@ Please provide a structured summary with:
                                 </div>
                             )}
 
-                            {/* AI Interactions */}
+                            {/* Confidence Explanation Button */}
+                            {st.confidence !== null && (
+                                <button
+                                    className="explanation-btn"
+                                    onClick={() => toggleConfidenceExplanation(bf.id)}
+                                >
+                                    Confidence Explanation
+                                </button>
+                            )}
+                            {/* Popup for explanation */}
+                            {st.showConfidencePopup && (
+                                <div className="explanation-popup">
+                                    <div className="explanation-popup-content">
+                                        <h4>Confidence Score Explanation</h4>
+                                        <p>
+                                            The AI confidence score is based on comparing detected
+                                            abnormalities to a large dataset of known cases, factoring in lesion
+                                            shape, intensity, and location. Higher percentages indicate a stronger
+                                            likelihood of abnormal findings.
+                                        </p>
+                                        <p>
+                                            Any score above <strong>90%</strong> is flagged as “critical”
+                                            and may warrant urgent medical review.
+                                        </p>
+                                        <button
+                                            className="close-popup-btn"
+                                            onClick={() => toggleConfidenceExplanation(bf.id)}
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* AI Section */}
                             <div className="ask-ai-container">
                                 <button className="ask-ai-btn" onClick={() => handleAskAI(bf.id)}>
                                     Ask AI
@@ -291,7 +329,7 @@ Please provide a structured summary with:
                                         )}
                                         {st.openAiResult.furtherEvaluations && (
                                             <p>
-                                                <strong>Further Evaluations:</strong>
+                                                <strong>Further Evaluations:</strong>{" "}
                                                 {st.openAiResult.furtherEvaluations}
                                             </p>
                                         )}

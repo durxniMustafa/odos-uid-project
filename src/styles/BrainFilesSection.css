@@ -69,7 +69,7 @@
   .ask-ai-btn {
     background: #6a1b9a;
     color: #fff;
-    padding: 8px 14px;
+    padding: 10px 16px;
     border-radius: 20px;
     font-size: 14px;
     font-weight: 600;
@@ -81,8 +81,14 @@
   .analyze-btn:hover,
   .ask-ai-btn:hover {
     background-color: #5e1480;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  .analyze-btn:active,
+  .ask-ai-btn:active {
+    background-color: #4b1069;
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
   
   /* Region details with mini bar graphs */
@@ -126,47 +132,178 @@
     margin-top: 10px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    padding: 12px;
+    background: linear-gradient(135deg, #fbfaff, #ffffff);
+    border: 1px solid #eee;
+    border-radius: 8px;
+  }
+  
+  .ai-status {
+    font-size: 14px;
+    color: #777;
+    padding: 6px 10px;
+    background: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 4px;
   }
   .ask-ai-status {
     font-size: 14px;
     color: #999;
-  }
-  .ai-status {
-    font-size: 14px;
-    color: #777;
+    margin-left: 4px;
   }
   .ai-error {
     color: #c00;
     background: #ffe6e6;
     border: 1px solid #f44336;
     border-radius: 4px;
-    padding: 6px 8px;
+    padding: 8px 10px;
     margin-top: 6px;
+    font-size: 14px;
   }
+  
+  /* AI result box with mini header for clarity */
   .ask-ai-result {
     margin-top: 8px;
     background: #fafafa;
     border: 1px solid #ccc;
     border-radius: 6px;
-    padding: 8px;
+    padding: 12px;
     color: #333;
     font-size: 14px;
+    position: relative;
+  }
+  .ask-ai-result::before {
+    content: "AI Summary";
+    position: absolute;
+    top: -12px;
+    left: 10px;
+    background: #6a1b9a;
+    color: #fff;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
   }
   .ask-ai-result strong {
     color: #6a1b9a;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 4px;
   }
+  
+  /* AI feedback buttons */
   .ai-feedback-buttons {
-    margin-top: 8px;
+    margin-top: 10px;
     display: flex;
-    gap: 10px;
+    gap: 12px;
+  }
+  .ai-feedback-buttons button {
+    background: #6a1b9a;
+    color: white;
+    border: none;
+    border-radius: 20px;
+
+    padding: 6px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .ai-feedback-buttons button:hover {
+    background: #d5d5d5;
+    transform: translateY(-2px);
+  }
+  .ai-feedback-buttons button:active {
+    background: #c9c9c9;
+    transform: translateY(0);
   }
   .ai-feedback-confirm {
     font-size: 14px;
     color: #444;
+    margin-top: 6px;
   }
   
-  /* BrainViewer root & mount (if you want separate styling) */
+  /* Explanation button (NEW) */
+  .explanation-btn {
+    margin-top: 4px;
+    background: #6a1b9a;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+  }
+  .explanation-btn:hover {
+    background: #0293d6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  .explanation-btn:active {
+    background: #027bb0;
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Explanation Popup (NEW) */
+  .explanation-popup {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 100vw; 
+    height: 100vh;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+  }
+  .explanation-popup-content {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    text-align: left;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    animation: fadeInDialog 0.3s ease forwards;
+  }
+  .explanation-popup-content h4 {
+    margin-bottom: 10px;
+    color: #6a1b9a;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .explanation-popup-content p {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.4;
+  }
+  .close-popup-btn {
+    background: #f44336;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  .close-popup-btn:hover {
+    background: #c62828;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+  }
+  
+  @keyframes fadeInDialog {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* BrainViewer root & mount */
   .brain-viewer-root {
     position: relative;
     width: 100%;
@@ -176,22 +313,52 @@
     width: 100%;
     height: 100%;
     position: relative;
-  }
-  
-  /* Optional: pointer/hand icon if you want user to know they can click */
-  .brain-viewer-mount {
     cursor: crosshair;
   }
-  
-  /* Overlays, if you want a confidence graph, etc. (not used here) */
   
   /* Responsive smaller screens */
   @media (max-width: 768px) {
     .brain-file-card {
-      flex-direction: column; 
+      flex-direction: column;
     }
     .brain-viewer-wrapper {
-      height: 300px; 
+      height: 300px;
     }
+  }
+  /* .brain-viewer-root, .brain-viewer-mount remain the same */
+.brain-viewer-root {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .brain-viewer-mount {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    cursor: crosshair;
+  }
+  
+  /* Example legend overlay */
+  .heatmap-legend {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255,255,255,0.8);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .heatmap-legend .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .heatmap-legend .color-box {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    display: inline-block;
   }
   
