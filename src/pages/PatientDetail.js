@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import BrainViewer from "./BrainViewer"; // or wherever your BrainViewer is located
+import BrainViewer from "./BrainViewer"; // adjust path as needed
 import ConfirmationDialog from "../components/ConfirmationDialog";
 import Notification from "../components/Notification";
 import jsPDF from "jspdf";
@@ -29,36 +29,32 @@ import SignatureModal from "../components/SignatureModal";
 import "../styles/PatientDetails.css";
 
 function PatientDetail({ patients, setPatients }) {
-  // Router
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // 1) First, find the patient. We'll need it for the hooks below.
+  // 1) Find the patient by id.
   const patient = patients.find((p) => p.id === id);
 
-  // 2) Now declare all Hooks **unconditionally** at the top:
+  // 2) Declare hooks unconditionally:
   const [notification, setNotification] = useState(null);
   const [viewingBrainFile, setViewingBrainFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-
-  // We keep track of the currently uploaded file ID:
   const [currentFileId, setCurrentFileId] = useState(null);
 
-  // Store the patient’s subfield notes:
   const [notes, setNotes] = useState(() => {
-    // If patient is not found, just default to empty object
     if (!patient) return {};
     if (patient.notes && typeof patient.notes === "object") {
       return {
         medicalHistory: patient.notes.medicalHistory || "No history yet...",
-        currentMedications: patient.notes.currentMedications || "No medications yet...",
+        currentMedications:
+          patient.notes.currentMedications || "No medications yet...",
         immunizations: patient.notes.immunizations || "No immunizations yet...",
         labResults: patient.notes.labResults || "No lab results yet...",
         lifestyleNotes: patient.notes.lifestyleNotes || "No lifestyle notes yet...",
-        lastVisitHistory: patient.notes.lastVisitHistory || "No past visit history...",
+        lastVisitHistory:
+          patient.notes.lastVisitHistory || "No past visit history...",
       };
     }
-    // If patient.notes isn’t defined or not an object
     return {
       medicalHistory: "No history yet...",
       currentMedications: "No medications yet...",
@@ -73,42 +69,27 @@ function PatientDetail({ patients, setPatients }) {
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     message: "",
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
   const [isDraggingOver, setIsDraggingOver] = useState(false);
-
-  // We reference patient?.isFavorite here, which requires `patient` to be defined above.
   const [isFavorite, setIsFavorite] = useState(patient?.isFavorite || false);
-
   const [brainFileFilter, setBrainFileFilter] = useState("");
-
-  // Signature & Modal
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [signatureData, setSignatureData] = useState(null);
-
-  // Show or hide the final diagnosis section
   const [showDiagnosis, setShowDiagnosis] = useState(false);
-
-  // Simulated multi-stage upload steps
   const [uploadStep, setUploadStep] = useState(0);
-
-  // Retraining / Reporting
   const [showReportButton, setShowReportButton] = useState(false);
   const [showRetrainingButton, setShowRetrainingButton] = useState(false);
-
-  // Extended viewer after upload
   const [isExtendedViewer, setIsExtendedViewer] = useState(false);
-
-  // Drag & Drop
   const dragCounter = useRef(0);
-
-  // AI Explanation
   const [showAiExplanation, setShowAiExplanation] = useState(false);
+
+  // Toggle AI explanation popup
   const handleToggleAiExplanation = useCallback(() => {
     setShowAiExplanation((prev) => !prev);
   }, []);
 
-  // Close Brain Image Modal
+  // Close Brain Image Modal (with keyboard support)
   const closeBrainImageModal = useCallback((e) => {
     if (e && e.type === "keydown" && e.key !== "Escape") return;
     setViewingBrainFile(null);
@@ -122,7 +103,7 @@ function PatientDetail({ patients, setPatients }) {
     return () => window.removeEventListener("keydown", handleEscape);
   }, [closeBrainImageModal]);
 
-  // Notification helper
+  // Notification helper with ARIA-friendly timeout
   const showNotificationMessage = useCallback((message) => {
     setNotification(message);
     setTimeout(() => setNotification(null), 3000);
@@ -170,10 +151,10 @@ function PatientDetail({ patients, setPatients }) {
         prev.map((p) =>
           p.id === id
             ? {
-                ...p,
-                brainFiles: [{ id: fileId, url: fileURL, name: file.name }],
-                uploadProgress: { [fileId]: 0 },
-              }
+              ...p,
+              brainFiles: [{ id: fileId, url: fileURL, name: file.name }],
+              uploadProgress: { [fileId]: 0 },
+            }
             : p
         )
       );
@@ -213,7 +194,7 @@ function PatientDetail({ patients, setPatients }) {
   // EXPORT NOTES (TXT)
   // ========================
   const handleExportNotes = useCallback(() => {
-    if (!patient) return; // Safety check
+    if (!patient) return;
     const combined = `
 Medical History:
 ${notes.medicalHistory}
@@ -292,7 +273,6 @@ ${notes.lastVisitHistory}
 
     doc.text("Notes:", 10, 80);
 
-    // Combine subfields
     const notesText = `
 Medical History: ${notes.medicalHistory}
 Current Medications: ${notes.currentMedications}
@@ -314,7 +294,7 @@ Last Visit History: ${notes.lastVisitHistory}
   }, [patient, notes, signatureData, showNotificationMessage]);
 
   // ===================
-  // FEEDBACK BTN
+  // FEEDBACK BUTTON
   // ===================
   const handleFeedback = useCallback((type) => {
     if (type === "dislike") {
@@ -323,7 +303,7 @@ Last Visit History: ${notes.lastVisitHistory}
   }, []);
 
   // ===================
-  // REPORT BTN
+  // REPORT BUTTON
   // ===================
   const handleGenerateReport = useCallback(() => {
     showNotificationMessage("AI Report generated (simulated)!");
@@ -370,7 +350,7 @@ Last Visit History: ${notes.lastVisitHistory}
   );
 
   // ======================
-  // SIGNATURE MODAL
+  // SIGNATURE MODAL HANDLERS
   // ======================
   const handleAddSignature = useCallback(() => {
     setShowSignatureModal(true);
@@ -389,7 +369,9 @@ Last Visit History: ${notes.lastVisitHistory}
     [showNotificationMessage]
   );
 
-  // Filter brain files if multiple
+  // ======================
+  // FILTER BRAIN FILES
+  // ======================
   const filteredBrainFiles = useMemo(() => {
     if (!patient || !patient.brainFiles) return [];
     return patient.brainFiles.filter((file) =>
@@ -397,14 +379,18 @@ Last Visit History: ${notes.lastVisitHistory}
     );
   }, [patient, brainFileFilter]);
 
-  // 3) Now that hooks are declared, we can do an early return if patient not found:
+  // 3) Early return if patient is not found.
   if (!patient) {
     return (
-      <div className="no-patient-found">
+      <div className="no-patient-found" role="alert">
         <Navbar />
         <div className="no-patient-content">
           <h2>Patient not found</h2>
-          <button className="back-button" onClick={() => navigate("/")}>
+          <button
+            className="back-button"
+            onClick={() => navigate("/")}
+            aria-label="Back to Dashboard"
+          >
             &larr; Back to Dashboard
           </button>
         </div>
@@ -419,28 +405,34 @@ Last Visit History: ${notes.lastVisitHistory}
     <div className="patient-detail-page">
       <Navbar />
 
-      {/* Notification / ConfirmationDialog */}
-      {notification && <Notification message={notification} />}
+      {/* Notification and Confirmation Dialog */}
+      {notification && <Notification message={notification} role="status" />}
       {confirmDialog.isOpen && (
         <ConfirmationDialog
           message={confirmDialog.message}
           onConfirm={() => {
             confirmDialog.onConfirm();
-            setConfirmDialog({ isOpen: false, message: "", onConfirm: () => {} });
+            setConfirmDialog({ isOpen: false, message: "", onConfirm: () => { } });
           }}
           onCancel={() =>
-            setConfirmDialog({ isOpen: false, message: "", onConfirm: () => {} })
+            setConfirmDialog({ isOpen: false, message: "", onConfirm: () => { } })
           }
         />
       )}
 
       <div className="container">
-        <button className="back-button" onClick={() => navigate(-1)}>
+        <button
+          className="back-button"
+          onClick={() => navigate(-1)}
+          aria-label="Go back"
+        >
           &larr; Back
         </button>
 
         <div className="header-section">
-          <h2 className="detail-header">{patient.name}&apos;s Detail Page</h2>
+          <h2 className="detail-header">
+            {patient.name}&apos;s Detail Page
+          </h2>
           <button
             className="favorite-button"
             onClick={handleFavoriteToggle}
@@ -491,7 +483,7 @@ Last Visit History: ${notes.lastVisitHistory}
           handleExportNotes={handleExportNotes}
         />
 
-        {/* Only show the UploadSection if final diagnosis isn't shown */}
+        {/* Upload Section is hidden when final diagnosis is shown */}
         {!showDiagnosis && (
           <UploadSection
             patientId={patient.id}
@@ -504,9 +496,9 @@ Last Visit History: ${notes.lastVisitHistory}
           />
         )}
 
-        {/* Show step-by-step upload progress if uploading */}
+        {/* Display upload progress steps when uploading */}
         {uploading && (
-          <div className="upload-steps">
+          <div className="upload-steps" aria-live="polite">
             <h3>Uploading & Processing Steps</h3>
             <div className="steps-container">
               <div className={`step ${uploadStep >= 1 ? "completed" : ""}`}>
@@ -515,33 +507,34 @@ Last Visit History: ${notes.lastVisitHistory}
               <div className={`step ${uploadStep >= 2 ? "completed" : ""}`}>
                 Step 2: Data Preprocessing
               </div>
-
-              {/* Step 3: AI Inference */}
               <div className={`step ${uploadStep >= 3 ? "completed" : ""}`}>
                 Step 3: AI Inference
                 <span
                   onClick={handleToggleAiExplanation}
                   style={{ cursor: "pointer", marginLeft: "8px" }}
                   title="How does the AI work?"
+                  tabIndex={0}
+                  role="button"
+                  aria-label="Explain AI process"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleToggleAiExplanation();
+                  }}
                 >
                   <AiFillBilibili size={18} />
                 </span>
-
-                {/* Explanation Popup */}
                 {showAiExplanation && (
                   <div className="ai-explanation-container">
                     <p>
                       <strong>How does the AI work?</strong>
                       <br />
-                      Our AI model analyzes 3D MRI scans to detect patterns that may
-                      indicate tumors or lesions. It compares your MRI against a large set
+                      Our AI model analyzes 3D MRI scans to detect patterns that
+                      may indicate tumors or lesions. It compares your MRI against a large set
                       of annotated scans to flag potential abnormalities for further
                       review by medical experts.
                     </p>
                   </div>
                 )}
               </div>
-
               <div className={`step ${uploadStep >= 4 ? "completed" : ""}`}>
                 Step 4: Finalizing
               </div>
@@ -549,7 +542,7 @@ Last Visit History: ${notes.lastVisitHistory}
           </div>
         )}
 
-        {/* If multiple brain files exist, show a filter */}
+        {/* Brain Files Filter */}
         {patient.brainFiles.length > 1 && (
           <div className="brain-files-filter">
             <FiSearch className="search-icon" />
@@ -559,11 +552,12 @@ Last Visit History: ${notes.lastVisitHistory}
               value={brainFileFilter}
               onChange={(e) => setBrainFileFilter(e.target.value)}
               className="brain-file-search-input"
+              aria-label="Search brain files"
             />
           </div>
         )}
 
-        {/* Once there's a diagnosis, render the BrainFilesSection */}
+        {/* Render Brain Files Section once diagnosis is available */}
         {showDiagnosis && (
           <BrainFilesSection
             filteredBrainFiles={filteredBrainFiles}
@@ -573,64 +567,80 @@ Last Visit History: ${notes.lastVisitHistory}
           />
         )}
 
-        {/* If user disliked the result, show a "simulate retraining" button */}
+        {/* If user disliked the result, show retraining simulation */}
         {showRetrainingButton && (
           <div className="retraining-section">
             <button
               className="primary-button"
-              onClick={() => showNotificationMessage("Retraining simulated!")}
+              onClick={() =>
+                showNotificationMessage("Retraining simulated!")
+              }
+              aria-label="Simulate retraining"
             >
               Simulate Retraining
             </button>
           </div>
         )}
 
-        {/* Sharing and PDF */}
+        {/* Sharing and PDF generation */}
         <div className="share-section">
           <button
             className="share-button"
             onClick={handleShare}
-            aria-label="Copy share link"
+            aria-label="Share patient"
           >
             <FaShare /> Share Patient
           </button>
-          <button className="primary-button" onClick={handleGeneratePDF}>
+          <button
+            className="primary-button"
+            onClick={handleGeneratePDF}
+            aria-label="Generate PDF report"
+          >
             Generate PDF
           </button>
         </div>
 
         {/* Diagnosis Section */}
         {showDiagnosis && (
-          <DiagnosisSection patient={patient} handleAddSignature={handleAddSignature} />
+          <DiagnosisSection
+            patient={patient}
+            handleAddSignature={handleAddSignature}
+          />
         )}
       </div>
 
-      {/* BrainViewer Modal (only if user clicks on a .glb file in your actual usage) */}
+      {/* BrainViewer Modal */}
       {viewingBrainFile && (
         <div
           className="modal-overlay"
           onClick={closeBrainImageModal}
           aria-modal="true"
           role="dialog"
+          aria-labelledby="brain-modal-title"
         >
           <div
             className={`modal large-modal ${isExtendedViewer ? "viewer-extended" : ""}`}
             onClick={(e) => e.stopPropagation()}
             role="document"
+            tabIndex={-1}
           >
             <button
               className="close-modal-button"
               onClick={closeBrainImageModal}
               aria-label="Close modal"
             >
-              ×
+              &times;
             </button>
-            <h2>{viewingBrainFile.name}</h2>
+            <h2 id="brain-modal-title">{viewingBrainFile.name}</h2>
             <div className="large-brain-viewer">
               <BrainViewer file={viewingBrainFile.url} />
             </div>
             <div className="modal-actions">
-              <button onClick={closeBrainImageModal} className="cancel-button">
+              <button
+                onClick={closeBrainImageModal}
+                className="cancel-button"
+                aria-label="Close viewer"
+              >
                 Close
               </button>
             </div>
