@@ -1,14 +1,15 @@
-/* Overall layout */
-/* src/styles/Login.css */
-
+/* Base Font */
 body {
   font-family: 'Poppins', sans-serif;
 }
 
+/* -------------------------------------
+   Container & Layout
+-------------------------------------*/
 .login-container {
   display: flex;
   height: 100vh;
-  background-color: #f5f5f5;
+  background: linear-gradient(135deg, #f5f5f5 0%, #eeeafc 100%);
   font-family: Arial, sans-serif;
 }
 
@@ -17,11 +18,11 @@ body {
 -------------------------------------*/
 :root {
   --primary-color: #8a2be2; /* Main purple */
-  --primary-hover: #7c27cb; /* Slightly darker variant for hover states */
+  --primary-hover: #7c27cb; /* Darker shade for hover */
   --secondary-bg: #eeeafc;
-  --text-color: #8a2be2; /* Using primary color for text */
+  --text-color: #8a2be2;
   --card-bg: #fff;
-  --border-color: #8a2be2; /* Use primary color for borders */
+  --border-color: #8a2be2;
   --shadow-color: rgba(0, 0, 0, 0.1);
   --transition-speed: 0.3s;
   --ease-out: cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -46,26 +47,36 @@ body {
 }
 
 /* -------------------------------------
-   Left Section - Logo / Image
+   Left Section - Logo & Tagline
 -------------------------------------*/
 .login-image {
   flex: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: #ffffff;  /* White background */
+  background: #ffffff;
   overflow: hidden;
+  padding: 20px;
 }
 
 .login-image img {
-  width: 250px;      /* Set size for a more prominent logo */
+  width: 250px;
   height: 250px;
-  object-fit: contain; /* Ensures the full image is visible */
-  /* Removed border-radius to eliminate the circular effect */
+  object-fit: contain;
+}
+
+.tagline {
+  margin-top: 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #555;
+  text-align: center;
+  max-width: 80%;
 }
 
 /* -------------------------------------
-   Right Section - Form
+   Right Section - Login Form
 -------------------------------------*/
 .login-form {
   flex: 1;
@@ -75,12 +86,15 @@ body {
   align-items: center;
   padding: 40px;
   background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .login-form h1 {
   margin-bottom: 20px;
-  font-size: 24px;
+  font-size: 28px;
   color: var(--primary-color);
+  font-weight: 600;
 }
 
 form {
@@ -103,11 +117,13 @@ input {
   font-size: 16px;
   border: 1px solid var(--primary-color);
   border-radius: 4px;
+  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 
 input:focus {
   outline: none;
   border-color: var(--primary-color);
+  box-shadow: 0 0 8px var(--primary-color);
 }
 
 .error-message {
@@ -135,15 +151,17 @@ input:focus {
   color: #fff;
   border: none;
   border-radius: 4px;
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
   cursor: pointer;
   font-weight: bold;
-  transition: background-color var(--transition-speed) var(--ease-out);
+  transition: background-color var(--transition-speed) var(--ease-out),
+              transform var(--transition-speed) var(--ease-out);
 }
 
 .login-button:hover {
   background-color: var(--primary-hover);
+  transform: translateY(-2px);
 }
 
 .signup-link {
