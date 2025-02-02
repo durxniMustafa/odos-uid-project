@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import BrainViewer from "../pages/BrainViewer";
-import "../styles/BrainFilesSection.css"; // Use your existing CSS (see additional CSS below)
-
-/* Example bounding box data */
+import "../styles/BrainFilesSection.css"; // Ensure this file includes the CSS enhancements
+// Example bounding box data for regions:
 const defaultRegions = [
   {
     id: 1,
@@ -20,7 +19,7 @@ const defaultRegions = [
   },
 ];
 
-/* Short patient context (for system prompt) */
+// Patient context for the AI system prompt
 const patientContext = {
   age: 55,
   gender: "Male",
@@ -34,7 +33,7 @@ export default function BrainFilesSection({
   handleFeedback,
   handleGenerateReport,
 }) {
-  // State for each file (with extra fields)
+  // Initialize file states based on filtered brain files.
   const [fileStates, setFileStates] = useState(() =>
     filteredBrainFiles.map((bf) => ({
       fileId: bf.id,
@@ -54,32 +53,27 @@ export default function BrainFilesSection({
       followUpQuestion: "",
     }))
   );
-
-  // State for controlling the detailed report modal
   const [showReportModal, setShowReportModal] = useState(false);
-  // Track the file ID for which the detailed report is being edited
   const [currentReportFileId, setCurrentReportFileId] = useState(null);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
 
-  if (filteredBrainFiles.length === 0) {
-    return <p>No brain files found.</p>;
-  }
-
-  // Helper to fetch file's state
+  // Helper: get file state by id.
   const getFileState = (fileId) =>
     fileStates.find((s) => s.fileId === fileId) || null;
 
-  // Helper to update file's state
+  // Helper: update file state by id.
   const updateFileState = (fileId, newData) => {
     setFileStates((prev) =>
       prev.map((f) => (f.fileId === fileId ? { ...f, ...newData } : f))
     );
   };
 
-  /* 1) AI-based Pre-Analysis (simulate random confidence & region scores) */
+  /* 1) AI-based Pre-Analysis */
   const handleAiPreAnalysis = (fileId) => {
     const st = getFileState(fileId);
     if (!st) return;
-    const randomOverall = Math.floor(Math.random() * 41) + 60; // 60–100%
+    // Generate overall confidence randomly between 60 and 100.
+    const randomOverall = Math.floor(Math.random() * 41) + 60;
     const updatedRegions = st.regionData.map((r) => {
       const regionConf = Math.floor(Math.random() * 41) + 60;
       return {
@@ -95,7 +89,7 @@ export default function BrainFilesSection({
     });
   };
 
-  /* 2) AI Consultation (short summary from GPT) */
+  /* 2) AI Consultation (simulate a consultation request) */
   const handleAiConsultation = async (fileId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -113,7 +107,7 @@ export default function BrainFilesSection({
       followUpQuestion: "",
     });
     const regionText = st.regionData
-      .map((r) => `${r.name}(${r.confidence || "?"})`)
+      .map((r) => `${r.name} (${r.confidence || "?"})`)
       .join(", ");
     const systemPrompt = {
       role: "system",
@@ -124,7 +118,7 @@ Previous note: ${patientContext.prevScanNote}.
 AI Confidence: ${st.confidence}%.
 Regions: ${regionText}.
 Provide a concise clinical summary, recommendations, and next steps.
-(Demo only; not real medical advice)`,
+(This is a demo; not real medical advice.)`,
     };
     const userPrompt = {
       role: "user",
@@ -147,9 +141,7 @@ Provide a concise clinical summary, recommendations, and next steps.
       });
       if (!response.ok) {
         let errorMsg = "Network Error or Invalid API Key.";
-        if (response.status === 401) {
-          errorMsg = "Unauthorized (check your OpenAI API key).";
-        }
+        if (response.status === 401) errorMsg = "Unauthorized (check your API key).";
         throw new Error(errorMsg);
       }
       const data = await response.json();
@@ -168,7 +160,7 @@ Provide a concise clinical summary, recommendations, and next steps.
     }
   };
 
-  /* 3) Follow-up Question (continue conversation) */
+  /* 3) Follow-up Question */
   const handleFollowUp = async (fileId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -199,9 +191,7 @@ Provide a concise clinical summary, recommendations, and next steps.
       });
       if (!response.ok) {
         let errorMsg = "Network Error or Invalid API Key.";
-        if (response.status === 401) {
-          errorMsg = "Unauthorized (check your OpenAI API key).";
-        }
+        if (response.status === 401) errorMsg = "Unauthorized (check your API key).";
         throw new Error(errorMsg);
       }
       const data = await response.json();
@@ -276,9 +266,7 @@ Provide the report in a clear, structured format.
       });
       if (!response.ok) {
         let errorMsg = "Network Error or Invalid API Key.";
-        if (response.status === 401) {
-          errorMsg = "Unauthorized (check your OpenAI API key).";
-        }
+        if (response.status === 401) errorMsg = "Unauthorized (check your API key).";
         throw new Error(errorMsg);
       }
       const data = await response.json();
@@ -288,7 +276,6 @@ Provide the report in a clear, structured format.
         aiStatus: "Detailed Report Generated",
         detailedReport,
       });
-      // Set the current file for the modal and then open it.
       setCurrentReportFileId(fileId);
       setShowReportModal(true);
     } catch (err) {
@@ -300,7 +287,7 @@ Provide the report in a clear, structured format.
     }
   };
 
-  /* 5) Explain Region (Show-Off Feature) */
+  /* 5) Explain Region (Show Explanation for a Region) */
   const handleExplainRegion = async (fileId, regionId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -328,9 +315,7 @@ Provide the report in a clear, structured format.
       });
       if (!response.ok) {
         let errorMsg = "Network Error or Invalid API Key.";
-        if (response.status === 401) {
-          errorMsg = "Unauthorized (check your OpenAI API key).";
-        }
+        if (response.status === 401) errorMsg = "Unauthorized (check your API key).";
         throw new Error(errorMsg);
       }
       const data = await response.json();
@@ -346,7 +331,7 @@ Provide the report in a clear, structured format.
     }
   };
 
-  /* 6) Generate Differential Diagnosis (Additional Functionality) */
+  /* 6) Generate Differential Diagnosis */
   const handleGenerateDifferentialDiagnosis = async (fileId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -392,9 +377,7 @@ Please list 3-5 possible diagnoses with brief explanations.
       });
       if (!response.ok) {
         let errorMsg = "Network Error or Invalid API Key.";
-        if (response.status === 401) {
-          errorMsg = "Unauthorized (check your OpenAI API key).";
-        }
+        if (response.status === 401) errorMsg = "Unauthorized (check your API key).";
         throw new Error(errorMsg);
       }
       const data = await response.json();
@@ -414,7 +397,7 @@ Please list 3-5 possible diagnoses with brief explanations.
     }
   };
 
-  /* 7) Suggest Treatment Options (Additional Functionality) */
+  /* 7) Suggest Treatment Options */
   const handleSuggestTreatment = async (fileId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -432,11 +415,14 @@ Please list 3-5 possible diagnoses with brief explanations.
       .join(", ");
     const systemPrompt = {
       role: "system",
-      content: `You are an AI Radiology Assistant. Based on the MRI findings provided, suggest a list of potential treatment options or next steps. Consider:
-- Patient Data: Age ${patientContext.age}, Gender ${patientContext.gender}
-- Symptoms: ${patientContext.symptoms.join(", ")}
-- Previous scan note: ${patientContext.prevScanNote}
-- AI Analysis: Overall Confidence ${st.confidence}%; Regions: ${regionText}
+      content: `You are an AI Radiology Assistant. Based on the MRI findings provided, suggest a list of potential treatment options or next steps.
+Patient Data:
+Age: ${patientContext.age}, Gender: ${patientContext.gender}
+Symptoms: ${patientContext.symptoms.join(", ")}
+Previous scan note: ${patientContext.prevScanNote}
+AI Analysis:
+Overall Confidence: ${st.confidence}%
+Regions: ${regionText}
 Please provide 3-5 treatment suggestions in a bullet list format.
 (This is a demo only; do not use as real medical advice.)`,
     };
@@ -457,9 +443,7 @@ Please provide 3-5 treatment suggestions in a bullet list format.
       });
       if (!response.ok) {
         let errorMsg = "Network Error or Invalid API Key.";
-        if (response.status === 401) {
-          errorMsg = "Unauthorized (check your OpenAI API key).";
-        }
+        if (response.status === 401) errorMsg = "Unauthorized (check your API key).";
         throw new Error(errorMsg);
       }
       const data = await response.json();
@@ -479,12 +463,12 @@ Please provide 3-5 treatment suggestions in a bullet list format.
     }
   };
 
-  /* 8) Handle Print Report Functionality */
+  /* 8) Print Report */
   const handlePrintReport = () => {
     window.print();
   };
 
-  /* 9) Handle AI Feedback (like/dislike) */
+  /* 9) AI Feedback (like/dislike) */
   const handleAiFeedback = (fileId, feedback) => {
     updateFileState(fileId, { aiFeedback: feedback });
   };
@@ -498,24 +482,36 @@ Please provide 3-5 treatment suggestions in a bullet list format.
     });
   };
 
+  if (filteredBrainFiles.length === 0) {
+    return <p>No brain files found.</p>;
+  }
+
   return (
     <div className="brain-files-section">
       {/* Introductory Guidelines */}
       <div className="intro-box">
         <h3>Clear Roles & Guidelines</h3>
         <ul>
-          <li><strong>Doctor’s Role:</strong> Final clinical judgment, treatment decisions, and patient communication.</li>
-          <li><strong>AI’s Role:</strong> Provide data-driven insights (pre-analysis, consultation, detailed reports, differential diagnosis, and treatment suggestions) to assist your diagnosis.</li>
-          <li><strong>Confidence Threshold:</strong> Scores above 90% indicate potential urgency.</li>
-          <li><strong>AI Reusability:</strong> Historical data can be compared on future scans or used to improve the mode. For more information, please contact the ODOS specialists. </li>
+          <li>
+            <strong>Doctor’s Role:</strong> Final clinical judgment, treatment decisions, and patient communication.
+          </li>
+          <li>
+            <strong>AI’s Role:</strong> Provide data-driven insights (pre-analysis, consultation, detailed reports, differential diagnosis, and treatment suggestions) to assist your diagnosis.
+          </li>
+          <li>
+            <strong>Confidence Threshold:</strong> Scores above 90% indicate potential urgency.
+          </li>
+          <li>
+            <strong>AI Reusability:</strong> Historical data can be compared on future scans or used to improve the model. Contact ODOS specialists for more information.
+          </li>
         </ul>
       </div>
 
       {filteredBrainFiles.map((bf) => {
         const st = getFileState(bf.id);
         if (!st) return null;
-        const isCriticalOverall =
-          st.confidence !== null && Number(st.confidence) > 90;
+        // Determine if overall confidence is critical (>90%)
+        const isCriticalOverall = st.confidence !== null && Number(st.confidence) > 90;
         return (
           <div
             key={bf.id}
@@ -543,7 +539,9 @@ Please provide 3-5 treatment suggestions in a bullet list format.
 
               {/* Doctor's Manual Notes */}
               <div className="doctor-section">
-                <p><strong>Doctor’s Observations:</strong></p>
+                <p>
+                  <strong>Doctor’s Observations:</strong>
+                </p>
                 <textarea
                   rows={3}
                   placeholder="(Optional) Enter your notes here..."
@@ -553,12 +551,16 @@ Please provide 3-5 treatment suggestions in a bullet list format.
 
               {/* AI Pre-Analysis */}
               {st.confidence === null ? (
-                <p><i>No AI pre-analysis has been run yet.</i></p>
+                <p>
+                  <i>No AI pre-analysis has been run yet.</i>
+                </p>
               ) : (
                 <div className="ai-confidence">
                   <strong>
                     ODOS Med Confidence: {st.confidence}%{" "}
-                    {isCriticalOverall && <span className="critical-flag">CRITICAL</span>}
+                    {isCriticalOverall && (
+                      <span className="critical-flag">CRITICAL</span>
+                    )}
                   </strong>
                   <button
                     className="info-link"
@@ -566,17 +568,24 @@ Please provide 3-5 treatment suggestions in a bullet list format.
                   >
                     (What does this mean?)
                   </button>
+                  {isCriticalOverall && (
+                    <div className="ai-confidence critical">
+                      {st.confidence}% Critical
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* Confidence Explanation Popup */}
               {st.showConfidenceExplanation && (
-                <div className="explanation-popup">
-                  <div className="explanation-popup-content">
+                <div
+                  className="explanation-popup"
+                  onClick={() => toggleConfidenceExplanation(bf.id)}
+                >
+                  <div className="explanation-popup-content" onClick={(e) => e.stopPropagation()}>
                     <h4>Confidence Score Explanation</h4>
                     <p>
-                      This score is based on an automated analysis of lesion shape, intensity,
-                      and location relative to large MRI datasets.
+                      This score is based on an automated analysis of lesion shape, intensity, and location relative to large MRI datasets.
                     </p>
                     <p>
                       Scores above <strong>90%</strong> indicate potential urgency.
@@ -592,27 +601,32 @@ Please provide 3-5 treatment suggestions in a bullet list format.
               )}
 
               {/* AI Pre-Analysis & Detailed Report Buttons */}
-              <button className="pre-analysis-btn" onClick={() => handleAiPreAnalysis(bf.id)}>
+              <button
+                className="pre-analysis-btn"
+                onClick={() => handleAiPreAnalysis(bf.id)}
+              >
                 Preliminary Intelligent Analysis
               </button>
-              <button className="pre-analysis-btn" onClick={() => handleGenerateDetailedReport(bf.id)}>
+              <button
+                className="pre-analysis-btn"
+                onClick={() => handleGenerateDetailedReport(bf.id)}
+              >
                 Generate Detailed Radiology Report
               </button>
 
-              {/* Print Report Button (for files with a detailed report, if desired elsewhere) */}
-              {st.detailedReport && (
-                <div style={{ marginTop: "10px" }}>
-                  {/* You could also place a small print icon here if needed */}
-                </div>
-              )}
-
               {/* Differential Diagnosis Button */}
-              <button className="consultation-btn" onClick={() => handleGenerateDifferentialDiagnosis(bf.id)}>
+              <button
+                className="consultation-btn"
+                onClick={() => handleGenerateDifferentialDiagnosis(bf.id)}
+              >
                 Generate Differential Diagnosis
               </button>
 
               {/* Treatment Suggestions Button */}
-              <button className="consultation-btn" onClick={() => handleSuggestTreatment(bf.id)}>
+              <button
+                className="consultation-btn"
+                onClick={() => handleSuggestTreatment(bf.id)}
+              >
                 Suggest Treatment Options
               </button>
 
@@ -626,11 +640,24 @@ Please provide 3-5 treatment suggestions in a bullet list format.
                       return (
                         <li key={r.id}>
                           {r.name}: {r.confidence || "??"}
-                          {r.critical && <span className="critical-flag"> (Critical)</span>}
+                          {r.critical && (
+                            <span className="critical-flag"> (Critical)</span>
+                          )}
                           <div className="region-confidence-bar">
-                            <div className="region-confidence-fill" style={{ width: `${conf}%` }} />
+                            <div
+                              className={`region-confidence-fill ${conf < 70
+                                  ? "low"
+                                  : conf < 90
+                                    ? "medium"
+                                    : "high"
+                                }`}
+                              style={{ width: `${conf}%` }}
+                            />
                           </div>
-                          <button className="info-link" onClick={() => handleExplainRegion(bf.id, r.id)}>
+                          <button
+                            className="info-link"
+                            onClick={() => handleExplainRegion(bf.id, r.id)}
+                          >
                             Explain Region
                           </button>
                         </li>
@@ -642,11 +669,19 @@ Please provide 3-5 treatment suggestions in a bullet list format.
 
               {/* AI Consultation Section */}
               <div className="ai-consultation-section">
-                <button className="consultation-btn" onClick={() => handleAiConsultation(bf.id)}>
+                <button
+                  className="consultation-btn"
+                  onClick={() => handleAiConsultation(bf.id)}
+                >
                   ODOS Med Consultation
                 </button>
                 {st.aiStatus && (
-                  <p className={`ai-status ${st.aiStatus === "AI Consultation Complete" ? "completed" : ""}`}>
+                  <p
+                    className={`ai-status ${st.aiStatus === "AI Consultation Complete"
+                        ? "completed"
+                        : ""
+                      }`}
+                  >
                     Status: {st.aiStatus}
                   </p>
                 )}
@@ -659,17 +694,25 @@ Please provide 3-5 treatment suggestions in a bullet list format.
                 {st.conversation.length > 0 && (
                   <div className="ai-conversation">
                     <h5>ODOS Med Consultation</h5>
-                    {st.conversation.filter(msg => msg.role !== "system").map((msg, idx) => (
-                      <div key={idx} className={`chat-message ${msg.role === "assistant" ? "assistant" : "user"}`}>
-                        <strong>{msg.role === "assistant" ? "AI" : "You"}:</strong> <span>{msg.content}</span>
-                      </div>
-                    ))}
-                    {st.conversation[st.conversation.length - 1]?.role === "assistant" && !st.aiFeedback && (
-                      <div className="feedback-buttons">
-                        <button onClick={() => handleAiFeedback(bf.id, "like")}>👍 Like</button>
-                        <button onClick={() => handleAiFeedback(bf.id, "dislike")}>👎 Dislike</button>
-                      </div>
-                    )}
+                    {st.conversation
+                      .filter((msg) => msg.role !== "system")
+                      .map((msg, idx) => (
+                        <div
+                          key={idx}
+                          className={`chat-message ${msg.role === "assistant" ? "assistant" : "user"
+                            }`}
+                        >
+                          <strong>{msg.role === "assistant" ? "AI" : "You"}:</strong>{" "}
+                          <span>{msg.content}</span>
+                        </div>
+                      ))}
+                    {st.conversation[st.conversation.length - 1]?.role === "assistant" &&
+                      !st.aiFeedback && (
+                        <div className="feedback-buttons">
+                          <button onClick={() => handleAiFeedback(bf.id, "like")}>👍 Like</button>
+                          <button onClick={() => handleAiFeedback(bf.id, "dislike")}>👎 Dislike</button>
+                        </div>
+                      )}
                     {st.aiFeedback && (
                       <p className="ai-feedback-confirm">
                         <em>You marked this AI response as: {st.aiFeedback}</em>
@@ -681,9 +724,16 @@ Please provide 3-5 treatment suggestions in a bullet list format.
                         type="text"
                         placeholder="Ask follow-up..."
                         value={st.followUpQuestion}
-                        onChange={(e) => updateFileState(bf.id, { followUpQuestion: e.target.value })}
+                        onChange={(e) =>
+                          updateFileState(bf.id, { followUpQuestion: e.target.value })
+                        }
                       />
-                      <button onClick={() => handleFollowUp(bf.id)}>Send</button>
+                      <button
+                        className="follow-up-button"
+                        onClick={() => handleFollowUp(bf.id)}
+                      >
+                        Send
+                      </button>
                     </div>
                   </div>
                 )}
@@ -693,33 +743,49 @@ Please provide 3-5 treatment suggestions in a bullet list format.
         );
       })}
 
-      {/* Disclaimer */}
+      {/* Disclaimer Section */}
       <div className="disclaimer-section">
         <h4>Important Notes & Next Steps</h4>
         <ul>
-          <li><strong>Actionable Follow-Up:</strong> Urgency is required when lesions are flagged as 'critical'.</li>
-          <li><strong>Ongoing Monitoring:</strong> Schedule periodic scans to monitor changes over time.</li>
-          <li><strong>Disclaimer:</strong> This AI tool is for informational purposes only. Final decisions must be made by a licensed professional.</li>
-          <li><strong>Guidelines:</strong> Always follow clinical guidelines and local regulations when interpreting AI outputs.</li>
+          <li>
+            <strong>Actionable Follow-Up:</strong> Urgency is required when lesions are flagged as 'critical'.
+          </li>
+          <li>
+            <strong>Ongoing Monitoring:</strong> Schedule periodic scans to monitor changes over time.
+          </li>
+          <li>
+            <strong>Disclaimer:</strong> This AI tool is for informational purposes only. Final decisions must be made by a licensed professional.
+          </li>
+          <li>
+            <strong>Guidelines:</strong> Always follow clinical guidelines and local regulations when interpreting AI outputs.
+          </li>
         </ul>
       </div>
 
       {/* Detailed Report Modal */}
       {showReportModal && currentReportFileId !== null && (() => {
-        // Get the state for the current report
         const currentFileState = fileStates.find((f) => f.fileId === currentReportFileId);
         return (
-          <div className="modal-overlay" onClick={() => { setShowReportModal(false); setCurrentReportFileId(null); }}>
+          <div
+            className="modal-overlay"
+            onClick={() => {
+              setShowReportModal(false);
+              setCurrentReportFileId(null);
+            }}
+          >
             <div className="modal" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <h2>Detailed Radiology Report</h2>
-                {/* Smaller, less noticeable print link in the header */}
-                <button className="print-report-link" onClick={handlePrintReport}>Print</button>
+                <button className="print-report-link" onClick={handlePrintReport}>
+                  Print
+                </button>
               </div>
               <div style={{ textAlign: "left", maxHeight: "600px", overflowY: "auto" }}>
                 <textarea
                   value={currentFileState?.detailedReport || ""}
-                  onChange={(e) => updateFileState(currentReportFileId, { detailedReport: e.target.value })}
+                  onChange={(e) =>
+                    updateFileState(currentReportFileId, { detailedReport: e.target.value })
+                  }
                   style={{
                     width: "100%",
                     height: "500px",
@@ -731,7 +797,13 @@ Please provide 3-5 treatment suggestions in a bullet list format.
                 />
               </div>
               <div className="modal-actions">
-                <button className="close-modal-button" onClick={() => { setShowReportModal(false); setCurrentReportFileId(null); }}>
+                <button
+                  className="close-modal-button"
+                  onClick={() => {
+                    setShowReportModal(false);
+                    setCurrentReportFileId(null);
+                  }}
+                >
                   Close
                 </button>
               </div>

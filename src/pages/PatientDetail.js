@@ -529,7 +529,7 @@ Last Visit History: ${notes.lastVisitHistory}
                 Step 2: Data Preprocessing
               </div>
               <div className={`step ${uploadStep >= 3 ? "completed" : ""}`}>
-                Step 3:
+                Step 3: ODOS AI Analysis
 
                 {showAiExplanation && (
                   <div className="ai-explanation">

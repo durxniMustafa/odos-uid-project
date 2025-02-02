@@ -1,0 +1,187 @@
+/* ============================
+   NotesSection.css
+============================ */
+
+/* Container for the entire notes card */
+.notes-card {
+    background: var(--card-bg);               /* Clean white or theme-defined background */
+    border: 1px solid var(--border-color);      /* Subtle border */
+    border-radius: 12px;
+    padding: var(--spacing-medium);
+    margin-bottom: var(--spacing-large);
+    box-shadow: 0 4px 10px var(--shadow-color);
+    transition: transform var(--transition-speed) var(--ease-out);
+    overflow: hidden;
+    position: relative;
+  }
+  
+  /* When collapsed, hide the inner content */
+  .notes-card.collapsed .notes-content {
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+  }
+  
+  /* When expanded, the content is visible */
+  .notes-card .notes-content {
+    max-height: 1000px; /* high enough to show all content */
+    opacity: 1;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+  }
+  
+  /* Header: Title, Toggle Button & Actions */
+  .notes-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-medium);
+  }
+  
+  .notes-header h3 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  /* Toggle Button for open/close */
+  .notes-toggle {
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    margin-right: 0.5rem;
+  }
+  
+  /* Rotate the toggle icon when collapsed */
+  .notes-toggle.collapsed {
+    transform: rotate(180deg);
+  }
+  
+  /* Actions Bar (e.g. Edit, Export) in Header */
+  .notes-actions-bar {
+    display: flex;
+    gap: var(--spacing-small);
+  }
+  
+  .notes-actions-bar button {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background var(--transition-speed) var(--ease-out),
+                transform 0.2s var(--ease-out);
+  }
+  
+  .notes-actions-bar button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+  }
+  
+  /* Read‑Only Notes View */
+  .view-notes p {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    color: var(--text-color);
+  }
+  
+  .view-notes strong {
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+  
+  /* Editing Mode: Form Styles */
+  .edit-notes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-medium);
+  }
+  
+  .edit-notes label {
+    display: block;
+    font-size: 1rem;
+    color: var(--text-color);
+    margin-bottom: var(--spacing-small);
+  }
+  
+  .edit-notes label textarea {
+    width: 100%;
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    resize: vertical;
+    transition: border var(--transition-speed) var(--ease-out),
+                box-shadow var(--transition-speed) var(--ease-out);
+  }
+  
+  .edit-notes label textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 4px rgba(29, 29, 31, 0.3);
+    outline: none;
+  }
+  
+  /* Actions Bar for Editing (Save / Cancel Buttons) */
+  .notes-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-small);
+    margin-top: var(--spacing-medium);
+  }
+  
+  .notes-actions .save-button {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background var(--transition-speed) var(--ease-out),
+                transform 0.2s var(--ease-out);
+  }
+  
+  .notes-actions .save-button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+  }
+  
+  .notes-actions .cancel-button {
+    background: #ccc;
+    color: #333;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background var(--transition-speed) var(--ease-out),
+                transform 0.2s var(--ease-out);
+  }
+  
+  .notes-actions .cancel-button:hover {
+    background: #b3b3b3;
+    transform: translateY(-2px);
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 600px) {
+    .notes-card {
+      padding: var(--spacing-medium);
+    }
+    .notes-header h3 {
+      font-size: 1.25rem;
+    }
+    .notes-actions-bar button,
+    .notes-actions button {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
+    }
+  }
+  

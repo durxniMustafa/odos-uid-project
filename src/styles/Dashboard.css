@@ -1,42 +1,36 @@
-/* =============================================
-   Root Variables & Global Styles
-============================================= */
+/* =============================================================================
+   Global Variables & Base Styles
+============================================================================= */
 :root {
   /* Colors & Theme */
-  --primary-color: #8a2be2;
-  --primary-hover: #7a1be1; /* Slight darkening for hover */
-  --secondary-bg: #edf2f7;
-  --text-color: #333;
+  --primary-color: #222227;
+  --primary-hover: #2c2c2e;
+  --secondary-bg: #f5f5f7;
+  --text-color: #333333;
   --card-bg: #ffffff;
   --border-color: #e0e0e0;
 
   /* Shadows */
-  --shadow-small: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --shadow-large: 0 8px 20px rgba(0, 0, 0, 0.2);
+  --shadow-small: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-large: 0 8px 20px rgba(0, 0, 0, 0.12);
 
   /* Transitions & Timing */
   --transition-speed: 0.3s;
   --ease-out: cubic-bezier(0.25, 0.8, 0.25, 1);
 
   /* Typography */
-  --font-family: 'Inter', sans-serif;
+  /* Make sure to load Inter from Google Fonts or locally */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --line-height: 1.5;
 
-  /* Spacing */
+  /* Spacing & Border Radii */
   --spacing-small: 0.5rem;
   --spacing-medium: 1rem;
   --spacing-large: 1.5rem;
-}
-
-/* Dark Mode Overrides */
-.dark-mode {
-  --primary-color: #8a2be2;
-  --primary-hover: #7a1be1;
-  --secondary-bg: #2e2e2e;
-  --text-color: #eaeaea;
-  --card-bg: #333;
-  --border-color: #444;
-  background: #1c1c1c;
+  --border-radius-small: 4px;
+  --border-radius-medium: 8px;
+  --border-radius-large: 16px;
 }
 
 /* Global Reset & Transitions */
@@ -55,39 +49,21 @@ html {
 
 body {
   font-family: var(--font-family);
-  background: linear-gradient(135deg, #ece9e6, #ffffff);
+  line-height: var(--line-height);
+  background: var(--secondary-bg);
   color: var(--text-color);
-  line-height: 1.6;
-  position: relative;
   padding: var(--spacing-medium);
 }
 
-/* Enhanced Focus States for Accessibility */
-:focus {
-  outline: 3px solid var(--primary-color);
-  outline-offset: 2px;
-}
-
-/* Subtle texture overlay */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: url('https://www.transparenttextures.com/patterns/diagmonds.png');
-  opacity: 0.05;
-  z-index: -1;
-}
-
-/* =============================================
+/* =============================================================================
    Dashboard Layout
-============================================= */
+============================================================================= */
 .dashboard-fullscreen {
   width: 100vw;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  background: linear-gradient(135deg, #ece9e6, #ffffff);
+  background: var(--secondary-bg);
   padding: var(--spacing-medium);
 }
 
@@ -97,39 +73,25 @@ body::before {
   max-width: 1600px;
   margin: var(--spacing-large) auto;
   background: var(--card-bg);
-  border-radius: 16px;
+  border-radius: var(--border-radius-large);
   box-shadow: var(--shadow-medium);
   padding: 40px;
   overflow-y: auto;
 }
 
-/* Custom Scrollbar */
-.dashboard-content::-webkit-scrollbar {
-  width: 8px;
-}
-.dashboard-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-.dashboard-content::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-  border-radius: 4px;
-}
-
-/* =============================================
+/* =============================================================================
    Header Banner ("Hello Doctor")
-============================================= */
+============================================================================= */
 .hello-doctor-banner {
-  background: linear-gradient(135deg, #2c2c2c, #4a4a4a);
-
-  color: #fff;
+  background: var(--card-bg);
+  color: var(--text-color);
   text-align: center;
-  padding: 40px 50px;
-  border-radius: 16px;
+  padding: 20px 30px;
+  border-radius: var(--border-radius-large);
   margin: var(--spacing-medium) auto var(--spacing-large);
   width: 90%;
   max-width: 1600px;
-  box-shadow: var(--shadow-large);
-  animation: fadeInBanner 0.6s var(--ease-out) forwards;
+  box-shadow: var(--shadow-medium);
 }
 
 .hello-doctor-banner h1 {
@@ -140,30 +102,19 @@ body::before {
 
 .hello-doctor-banner p {
   font-size: 1.25rem;
-  opacity: 0.95;
+  opacity: 0.9;
 }
 
-@keyframes fadeInBanner {
-  from { opacity: 0; transform: translateY(-0.625rem); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* =============================================
-   Top Bar: Search, Sort & Action Buttons
-============================================= */
+/* =============================================================================
+   Top Bar: Search, Sort, Filter & Action Buttons
+============================================================================= */
 .top-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-medium);
   margin-bottom: var(--spacing-large);
-  flex-wrap: nowrap;
-}
-
-.top-bar > * {
-  display: flex;
-  align-items: center;
-  will-change: transform;
 }
 
 .search-bar-wrapper {
@@ -178,7 +129,6 @@ body::before {
   min-width: 220px;
   max-width: 400px;
   box-shadow: var(--shadow-small);
-  transition: box-shadow 0.3s var(--ease-out);
   cursor: text;
 }
 
@@ -201,35 +151,33 @@ body::before {
 
 .icon {
   font-size: 1.375rem;
-  margin-right: 350px;
+  margin-right: 10px;
   color: var(--primary-color);
 }
 
-.sort-select {
+.sort-select,
+.filter-select {
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: none;
   border-radius: 20px;
-  padding: 10px 40px 10px 18px;
+  padding: 10px 18px;
   font-size: 0.9375rem;
   font-weight: 500;
   background: var(--primary-color);
   color: #fff;
   cursor: pointer;
   box-shadow: var(--shadow-small);
-  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'16'%20height%3D'16'%20viewBox%3D'0%200%2016%2016'%20xmlns%3D'http://www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M4.646%206.646a.5.5%200%2001.708%200L8%208.293l2.646-2.647a.5.5%200%2001.708.708l-3%203a.5.5%200%2001-.708%200l-3-3a.5.5%200%2001%200-.708z'%20fill%3D'%23fff'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  margin-right: 10px;
 }
 
 .sort-select:hover,
-.sort-select:focus {
+.sort-select:focus,
+.filter-select:hover,
+.filter-select:focus {
   background: var(--primary-hover);
   box-shadow: var(--shadow-medium);
   transform: translateY(-0.125rem);
@@ -247,7 +195,6 @@ body::before {
   gap: var(--spacing-small);
   text-decoration: none;
   box-shadow: var(--shadow-small);
-  will-change: transform;
 }
 
 .primary-button {
@@ -262,60 +209,93 @@ body::before {
 }
 
 .secondary-button {
-  background: var(--secondary-bg);
+  background: var(--card-bg);
   color: var(--text-color);
 }
 
 .secondary-button:hover {
-  background: #ded3fa;
+  background: #f0f0f5;
   transform: translateY(-0.125rem);
   box-shadow: var(--shadow-medium);
 }
 
-/* =============================================
+/* =============================================================================
    Dashboard Insights & Insight Cards
-   (Modern & Sleek Version)
-============================================= */
+============================================================================= */
 .dashboard-insights {
   width: 100%;
   max-width: 1600px;
   margin: var(--spacing-medium) auto;
   padding: var(--spacing-small);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--spacing-medium);
-  scroll-behavior: smooth;
 }
 
+/* Base Insight Card with Glassmorphism Effect */
 .insight-card {
-  background: linear-gradient(135deg, #ffffff, #f8f8f8);
-  border-radius: 12px;
-  padding: var(--spacing-medium);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  position: relative;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  background: rgba(28, 28, 30, 0.8);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .insight-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Variants for Different Urgency Levels */
+
+/* Critical Warnings (Red) */
+.insight-card.critical {
+  background: linear-gradient(135deg, #d32f2f, #b71c1c);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Updates (Yellow) */
+.insight-card.updates {
+  background: linear-gradient(135deg, #fdd835, #fbc02d);
+  color: #333;
+  border: 1px solid rgba(0, 0, 0, 0.15);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* General Insights (Blue) */
+.insight-card.insights {
+  background: linear-gradient(135deg, #007aff, #0051a8);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Predicted Risks (Gold) */
+.insight-card.predicted {
+  background: linear-gradient(135deg, #fbc02d, #ffb300);
+  color: #333;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Headings and Text */
 .insight-card h3 {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   margin-bottom: var(--spacing-small);
-  color: var(--primary-color);
   font-weight: 600;
+  display: flex;
+  align-items: center;
 }
 
 .insight-card p,
-.insight-card ul {
-  font-size: 0.95rem;
-  color: var(--text-color);
+.insight-card ul,
+.insight-card li {
+  font-size: 1rem;
   margin: 0.5rem 0;
 }
 
@@ -325,13 +305,9 @@ body::before {
   margin: 0;
 }
 
-.insight-card li {
-  margin-bottom: 0.25rem;
-}
-
-/* =============================================
-   Patients List & Cards (Auto-fill Layout)
-============================================= */
+/* =============================================================================
+   Patient Cards
+============================================================================= */
 .patients-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -341,154 +317,125 @@ body::before {
 
 .patient-card {
   background: var(--card-bg);
-  border-radius: 16px;
-  box-shadow: var(--shadow-medium);
-  padding: var(--spacing-large) var(--spacing-medium);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--shadow-small);
+  padding: var(--spacing-medium);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  gap: var(--spacing-medium);
   position: relative;
-  overflow: hidden;
   cursor: pointer;
-  transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
-  margin-bottom: var(--spacing-large);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* Default accent: soft green */
+  border-left: 4px solid #9dc8a8;
 }
 
 .patient-card:hover {
   transform: translateY(-4px) scale(1.02);
-  box-shadow: var(--shadow-large);
+  box-shadow: var(--shadow-medium);
+}
+
+.patient-card.high-risk {
+  border-left-color: #ff3b30;
 }
 
 .patient-photo {
-  width: 120px;
-  height: 120px;
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid var(--primary-color);
-  margin-bottom: var(--spacing-medium);
-  transition: transform var(--transition-speed) var(--ease-out), box-shadow var(--transition-speed) var(--ease-out);
+  border: 3px solid var(--primary-color);
 }
 
-.patient-card:hover .patient-photo {
-  transform: scale(1.05);
-}
-
-/* =============================================
-   Patient Information (Enhanced Workflow)
-============================================= */
 .patient-info {
-  width: 100%;
-  text-align: center;
-  padding: var(--spacing-small);
-  background: linear-gradient(135deg, #f9f9f9, #ffffff);
-  border-radius: 8px;
-  margin-bottom: var(--spacing-small);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .patient-basic-info {
-  margin-bottom: var(--spacing-small);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .patient-name {
   font-size: 1.3rem;
   font-weight: 600;
   color: var(--primary-color);
-  margin-bottom: var(--spacing-small);
+  margin: 0;
 }
 
-/* Risk Badge Styles – Using Forced Colors for Visibility */
-.risk-badge {
-  display: inline-block;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  margin-bottom: var(--spacing-small);
+.patient-additional-info {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.risk-badge.low {
-  background-color: #3ead1d !important;  /* Green */
-  color: #fff !important;
-}
-
-.risk-badge.medium {
-  background-color: #ffa500 !important;  /* Yellow */
-  color: #fff !important;
-}
-
-.risk-badge.high {
-  background-color: #ff4d4d !important;   /* Red */
-  color: #fff !important;
-}
-
-/* Group contact details */
-.patient-contact-info {
-  text-align: left;
-  padding: var(--spacing-small);
-  margin-top: var(--spacing-small);
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  font-size: 0.95rem;
-  box-shadow: var(--shadow-small);
-}
-
-.patient-detail {
+.patient-additional-info p {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: var(--spacing-small);
-  color: #555;
+  margin: 0;
 }
 
-.patient-detail:hover {
-  background: rgba(138, 43, 226, 0.1);
-  border-radius: 4px;
-  padding: 0.2rem 0.5rem;
+/* =============================================================================
+   Favorite Toggle (Star Icon)
+============================================================================= */
+@keyframes bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
 }
 
-.patient-actions {
-  margin-top: var(--spacing-medium);
-  display: flex;
-  justify-content: center;
-}
-
-.details-button {
-  background: var(--primary-color);
-  color: #fff;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  text-decoration: none;
-  transition: background var(--transition-speed);
-}
-
-.details-button:hover {
-  background: var(--primary-hover);
-}
-
-/* ---------------------------------------------
-   Favorite Toggle
---------------------------------------------- */
 .favorite-toggle {
   position: absolute;
   top: var(--spacing-small);
   right: var(--spacing-small);
   background: transparent;
-  color: #ffc107;
+  color: #ffd700; /* Gold accent for favorites */
   font-size: 1.625rem;
   border: none;
   cursor: pointer;
-  transition: transform var(--transition-speed);
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .favorite-toggle:hover {
-  transform: scale(1.2);
+  animation: bounce 0.3s;
+  color: #ffc107;
 }
 
-/* =============================================
+/* =============================================================================
+   Patient Add Button
+============================================================================= */
+.patient-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-color);
+  color: #fff;
+  padding: var(--spacing-small) var(--spacing-medium);
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: var(--shadow-small);
+}
+
+.patient-add:hover,
+.patient-add:focus {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+/* =============================================================================
    Modals (Add Patient Wizard)
-============================================= */
+============================================================================= */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -500,29 +447,17 @@ body::before {
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  animation: fadeInOverlay 0.3s var(--ease-out) forwards;
-}
-
-@keyframes fadeInOverlay {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 .modal {
   background: var(--card-bg);
-  border-radius: 16px;
+  border-radius: var(--border-radius-large);
   padding: 30px 35px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
   text-align: left;
   max-width: 420px;
   width: 90%;
   position: relative;
-  animation: fadeInDialog 0.3s var(--ease-out) forwards;
-}
-
-@keyframes fadeInDialog {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .modal h2 {
@@ -548,16 +483,15 @@ body::before {
 .modal-content textarea {
   padding: 10px 14px;
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: var(--border-radius-small);
   font-size: 0.9375rem;
-  outline: none;
   background: #fff;
 }
 
 .modal-content input:focus,
 .modal-content textarea:focus {
   border-color: var(--primary-color);
-  box-shadow: 0 0 6px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 0 6px rgba(29, 29, 31, 0.3);
 }
 
 .modal-actions {
@@ -581,17 +515,21 @@ body::before {
   transform: scale(1.1);
 }
 
-/* =============================================
-   Final Touches & Micro-Interactions
-============================================= */
-a:hover,
-button:hover {
-  transform: scale(1.02);
+/* =============================================================================
+   Notifications – Slide-in Animation
+============================================================================= */
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-/* =============================================
+.notification {
+  animation: slideIn 0.5s ease-out;
+}
+
+/* =============================================================================
    Responsive Design
-============================================= */
+============================================================================= */
 @media (max-width: 1024px) {
   .dashboard-content,
   .hello-doctor-banner,
@@ -612,7 +550,8 @@ button:hover {
   }
   .search-bar-wrapper,
   .sort-select,
-  .primary-button,
+  .filter-select,
+  .patient-add,
   .secondary-button {
     width: 100%;
     text-align: center;
@@ -641,31 +580,88 @@ button:hover {
   }
 }
 
-/* --------------------------------------------
-   Patient Add Button
---------------------------------------------- */
-.patient-add {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-color);
-  color: #fff;
-  padding: var(--spacing-small) var(--spacing-medium);
-  font-size: 1rem;
-  font-weight: 500;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background var(--transition-speed) var(--ease-out),
-              transform 0.2s var(--ease-out),
-              box-shadow var(--transition-speed) var(--ease-out);
-  box-shadow: var(--shadow-small);
-  will-change: transform;
+/* =============================================================================
+   Disclaimer / Next Steps Section – Enhanced
+============================================================================= */
+.disclaimer-section {
+  background: #f7f7f7;
+  border-left: 4px solid #202021;
+  padding: 1rem 1.5rem;
+  margin: 2rem 0;
+  border-radius: var(--border-radius-small);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.patient-add:hover,
-.patient-add:focus {
+.disclaimer-section:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.disclaimer-section h4 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1d1d1f;
+  margin-bottom: 0.75rem;
+}
+
+.disclaimer-section ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  list-style: disc;
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+.disclaimer-section ul li {
+  margin-bottom: 0.5rem;
+}
+/* -----------------------------------------------------------------------------
+   Patient Actions & Details Button
+----------------------------------------------------------------------------- */
+.patient-actions {
+  margin-top: var(--spacing-medium);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.details-button {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: var(--shadow-small);
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.details-button:hover {
   background: var(--primary-hover);
   transform: translateY(-2px);
   box-shadow: var(--shadow-medium);
+}
+@media (max-width: 1024px) {
+  .patients-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .patients-list {
+    grid-template-columns: 1fr;
+  }
+}
+/* =============================================================================
+   Patient Cards – 3-Column Grid Format
+============================================================================= */
+.patients-list {
+  display: grid;
+  /* Force exactly 3 columns */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  /* Optionally center the grid and limit its overall width */
+  max-width: 1200px;  /* Adjust as needed for your layout */
+  margin: 0 auto 40px auto;
 }

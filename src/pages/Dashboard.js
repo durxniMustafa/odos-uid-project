@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import Navbar from "../components/Navbar";
 import "../styles/Dashboard.css";
@@ -9,14 +9,26 @@ import {
     AiOutlineSearch,
     AiOutlineMail,
     AiOutlinePhone,
-    AiOutlineEnvironment,
-    AiOutlineCalendar,
     AiFillStar,
     AiOutlineStar,
 } from "react-icons/ai";
 import { TiUserAddOutline } from "react-icons/ti";
 
+// -----------------------------------------------------------------------------
+// Default profile pictures to choose from
+// -----------------------------------------------------------------------------
+const defaultProfilePictures = [
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZfCKBi-3GZULvA9eCg89H4zmP4QT-ENoKNCeWyEigWhPqj80xuYKvys1W7d6CRbZjKgG4L25wl1iuLEyZZjoEDQ",
+    "https://randomuser.me/api/portraits/women/1.jpg",
+    "https://randomuser.me/api/portraits/men/2.jpg",
+    "https://randomuser.me/api/portraits/women/2.jpg",
+    "https://randomuser.me/api/portraits/men/3.jpg",
+    "https://randomuser.me/api/portraits/women/3.jpg",
+];
+
+// -----------------------------------------------------------------------------
 // Multi-step wizard for adding new patients with accessibility improvements
+// -----------------------------------------------------------------------------
 function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
     const [step, setStep] = useState(1);
     const [basicInfo, setBasicInfo] = useState({ name: "", dob: "" });
@@ -26,7 +38,6 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
         address: "",
     });
 
-    // Close modal on Escape key press for improved keyboard support
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === "Escape") onClose();
@@ -69,7 +80,11 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
             email: contactInfo.email,
             phone: contactInfo.phone,
             address: contactInfo.address,
-            photo: "/Users/durxnii/Downloads/Vector.png",
+            // Use a random default profile picture
+            photo:
+                defaultProfilePictures[
+                Math.floor(Math.random() * defaultProfilePictures.length)
+                ],
             notes: {
                 medicalHistory: "No history yet...",
                 currentMedications: "No current medications yet...",
@@ -87,7 +102,11 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose} aria-label="Close Add Patient Modal">
+        <div
+            className="modal-overlay"
+            onClick={onClose}
+            aria-label="Close Add Patient Modal"
+        >
             <div
                 className="modal multi-step-modal"
                 onClick={(e) => e.stopPropagation()}
@@ -108,7 +127,9 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                                 id="patient-name"
                                 type="text"
                                 value={basicInfo.name}
-                                onChange={(e) => setBasicInfo({ ...basicInfo, name: e.target.value })}
+                                onChange={(e) =>
+                                    setBasicInfo({ ...basicInfo, name: e.target.value })
+                                }
                             />
                         </label>
                         <label htmlFor="patient-dob">
@@ -117,7 +138,9 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                                 id="patient-dob"
                                 type="date"
                                 value={basicInfo.dob}
-                                onChange={(e) => setBasicInfo({ ...basicInfo, dob: e.target.value })}
+                                onChange={(e) =>
+                                    setBasicInfo({ ...basicInfo, dob: e.target.value })
+                                }
                             />
                         </label>
                     </div>
@@ -131,7 +154,9 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                                 id="patient-email"
                                 type="email"
                                 value={contactInfo.email}
-                                onChange={(e) => setContactInfo({ ...contactInfo, email: e.target.value })}
+                                onChange={(e) =>
+                                    setContactInfo({ ...contactInfo, email: e.target.value })
+                                }
                             />
                         </label>
                         <label htmlFor="patient-phone">
@@ -140,7 +165,9 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                                 id="patient-phone"
                                 type="tel"
                                 value={contactInfo.phone}
-                                onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
+                                onChange={(e) =>
+                                    setContactInfo({ ...contactInfo, phone: e.target.value })
+                                }
                             />
                         </label>
                         <label htmlFor="patient-address">
@@ -148,7 +175,9 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                             <textarea
                                 id="patient-address"
                                 value={contactInfo.address}
-                                onChange={(e) => setContactInfo({ ...contactInfo, address: e.target.value })}
+                                onChange={(e) =>
+                                    setContactInfo({ ...contactInfo, address: e.target.value })
+                                }
                             />
                         </label>
                     </div>
@@ -200,7 +229,9 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
     );
 }
 
+// -----------------------------------------------------------------------------
 // Helper Functions
+// -----------------------------------------------------------------------------
 function formatPhoneNumber(phone) {
     if (!phone) return "";
     const cleaned = ("" + phone).replace(/\D/g, "");
@@ -208,6 +239,10 @@ function formatPhoneNumber(phone) {
         return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
     }
     return phone;
+}
+
+function calculateAge(dob) {
+    return dayjs().diff(dayjs(dob), "year");
 }
 
 function highlightText(text, query) {
@@ -223,6 +258,9 @@ function getGreetingMessage() {
     return "Good evening, Dr. Max Mustermann!";
 }
 
+// -----------------------------------------------------------------------------
+// Main Dashboard Component
+// -----------------------------------------------------------------------------
 function Dashboard() {
     const [patients, setPatients] = useState(() => {
         const saved = localStorage.getItem("patients");
@@ -231,7 +269,9 @@ function Dashboard() {
     const [notification, setNotification] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState("name");
+    const [filterBy, setFilterBy] = useState("all");
     const [showAddWizard, setShowAddWizard] = useState(false);
+    const navigate = useNavigate();
 
     const greetingMessage = getGreetingMessage();
 
@@ -261,7 +301,12 @@ function Dashboard() {
                 email: result.email,
                 phone: formatPhoneNumber(result.phone),
                 address: `${result.location.street.name}, ${result.location.city}, ${result.location.country}`,
-                photo: result.picture.large || "",
+                // Use the API-provided picture if available; otherwise, choose a random default
+                photo:
+                    result.picture.large ||
+                    defaultProfilePictures[
+                    Math.floor(Math.random() * defaultProfilePictures.length)
+                    ],
                 notes: {
                     medicalHistory: "Auto-generated patient. No prior medical records.",
                     currentMedications: "None reported.",
@@ -283,17 +328,20 @@ function Dashboard() {
         }
     };
 
-    // Filter and sort patients based on search and sort criteria
     function filteredPatients() {
         return patients
             .filter((p) => {
                 const q = searchQuery.toLowerCase();
-                return (
+                const matchesQuery =
                     p.name.toLowerCase().includes(q) ||
                     p.email.toLowerCase().includes(q) ||
                     (p.phone && p.phone.toLowerCase().includes(q)) ||
-                    p.address.toLowerCase().includes(q)
-                );
+                    p.address.toLowerCase().includes(q);
+                const matchesFilter =
+                    filterBy === "all" ||
+                    (filterBy === "highRisk" && p.riskLevel === "high") ||
+                    (filterBy === "favorites" && p.isFavorite);
+                return matchesQuery && matchesFilter;
             })
             .sort((a, b) => {
                 if (sortBy === "name") {
@@ -305,7 +353,6 @@ function Dashboard() {
             });
     }
 
-    // Compute insights (for demonstration)
     const criticalPatients = patients.filter((p) => p.riskLevel === "high");
 
     const toggleFavorite = (patientId) => {
@@ -334,9 +381,16 @@ function Dashboard() {
                 <div className="top-bar">
                     <div className="search-bar-wrapper">
                         <AiOutlineSearch className="icon" />
+                        <input
+                            type="text"
+                            placeholder="Search patients..."
+                            className="search-input"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                     </div>
 
-                    <div style={{ fontSize: "14px", color: "#555" }}>
+                    <div className="result-count">
                         {filteredPatients().length} result
                         {filteredPatients().length !== 1 ? "s" : ""} found
                     </div>
@@ -349,6 +403,17 @@ function Dashboard() {
                     >
                         <option value="name">Sort by Name</option>
                         <option value="dob">Sort by Date of Birth</option>
+                    </select>
+
+                    <select
+                        aria-label="Filter patients"
+                        value={filterBy}
+                        onChange={(e) => setFilterBy(e.target.value)}
+                        className="filter-select"
+                    >
+                        <option value="all">All Patients</option>
+                        <option value="highRisk">High Risk</option>
+                        <option value="favorites">Favorites</option>
                     </select>
 
                     <button
@@ -404,16 +469,26 @@ function Dashboard() {
                                 ? patient.photo
                                 : "https://via.placeholder.com/80?text=No+Photo";
                             return (
-                                <div key={patient.id} className="patient-card">
+                                <div
+                                    key={patient.id}
+                                    className={`patient-card ${patient.riskLevel === "high" ? "high-risk" : ""
+                                        }`}
+                                    onClick={() => navigate(`/patient/${patient.id}`)}
+                                >
+                                    {/* Favorite Toggle */}
                                     <button
                                         className="favorite-toggle"
-                                        onClick={() => toggleFavorite(patient.id)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            toggleFavorite(patient.id);
+                                        }}
                                         title={patient.isFavorite ? "Unfavorite" : "Mark as Favorite"}
                                         aria-pressed={patient.isFavorite}
                                     >
                                         {patient.isFavorite ? <AiFillStar /> : <AiOutlineStar />}
                                     </button>
 
+                                    {/* Patient Photo */}
                                     <img
                                         src={photoUrl}
                                         alt={patient.name}
@@ -424,9 +499,10 @@ function Dashboard() {
                                         }}
                                     />
 
+                                    {/* Patient Details */}
                                     <div className="patient-info">
                                         <div className="patient-basic-info">
-                                            <p
+                                            <h2
                                                 className="patient-name"
                                                 dangerouslySetInnerHTML={{
                                                     __html: highlightText(patient.name, searchQuery),
@@ -438,29 +514,29 @@ function Dashboard() {
                                                 {patient.riskLevel === "high" && "Needs Check"}
                                             </div>
                                         </div>
-
-                                        <div className="patient-contact-info">
-                                            <p className="patient-detail">
+                                        <div className="patient-additional-info">
+                                            <p>
                                                 <AiOutlineMail className="detail-icon" /> {patient.email}
                                             </p>
-                                            <p className="patient-detail">
-                                                <AiOutlineCalendar className="detail-icon" />{" "}
-                                                {dayjs(patient.dob).format("YYYY-MM-DD")}
-                                            </p>
-                                            <p className="patient-detail">
+                                            <p>
                                                 <AiOutlinePhone className="detail-icon" />{" "}
-                                                {patient.phone || "No phone"}
+                                                {formatPhoneNumber(patient.phone)}
                                             </p>
-                                            <p className="patient-detail">
-                                                <AiOutlineEnvironment className="detail-icon" /> {patient.address}
-                                            </p>
+                                            <p>Age: {calculateAge(patient.dob)}</p>
                                         </div>
                                     </div>
 
+                                    {/* Details Button */}
                                     <div className="patient-actions">
-                                        <Link to={`/patient/${patient.id}`} className="details-button">
+                                        <button
+                                            className="details-button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate(`/patient/${patient.id}`);
+                                            }}
+                                        >
                                             Details
-                                        </Link>
+                                        </button>
                                     </div>
                                 </div>
                             );

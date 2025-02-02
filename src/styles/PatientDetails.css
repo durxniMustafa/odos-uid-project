@@ -14,16 +14,17 @@
 }
 
 :root {
-  --primary-color: #8a2be2;
-  --primary-hover: #8a2be2;
-  --secondary-bg: #eeeafc;
-  --text-color: #333;
-  --card-bg: #fff;
-  --border-color: #ddd;
-  --shadow-color: rgba(0, 0, 0, 0.1);
+  /* Color Palette Inspired by Apple's Minimalism */
+  --primary-color: #1d1d1f;           /* Primary accent (text, buttons, etc.) */
+  --primary-hover: #2c2c2e;           /* Slightly adjusted for hover effects */
+  --secondary-bg: #f5f5f7;            /* Light background for overall page */
+  --text-color: #333333;              /* Readable, dark gray text */
+  --card-bg: #ffffff;                 /* Clean white cards and panels */
+  --border-color: #e0e0e0;            /* Subtle borders */
+  --shadow-color: rgba(0, 0, 0, 0.1);   /* Soft, minimal shadows */
   --transition-speed: 0.3s;
   --ease-out: cubic-bezier(0.25, 0.8, 0.25, 1);
-  --font-base: "Poppins", sans-serif;
+  --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
   /* Spacing (using rem units) */
   --spacing-small: 0.5rem;
@@ -33,14 +34,14 @@
 
 /* Dark Mode Overrides (enable by adding .dark-mode to body) */
 .dark-mode {
-  --primary-color: #8a2be2;
-  --primary-hover: #8a2be2;
-  --secondary-bg: #2e2e2e;
-  --text-color: #eaeaea;
-  --card-bg: #333;
-  --border-color: #444;
+  --primary-color: #ffffff;
+  --primary-hover: #f0f0f0;
+  --secondary-bg: #1d1d1f;
+  --text-color: #ffffff;
+  --card-bg: #1d1d1f;
+  --border-color: #333333;
   --shadow-color: rgba(0, 0, 0, 0.5);
-  background-color: #1c1c1c;
+  background-color: var(--card-bg);
 }
 
 html {
@@ -49,11 +50,13 @@ html {
 
 body {
   font-family: var(--font-base);
-  background-color: #f9f9f9;
+  background-color: var(--secondary-bg);
   color: var(--text-color);
   line-height: 1.6;
   padding-bottom: 40px;
   position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Subtle texture overlay for depth */
@@ -99,7 +102,7 @@ body::before {
   font-size: 14px;
   font-weight: 600;
   border: none;
-  border-radius: 50px; /* Pill-shaped appearance */
+  border-radius: 50px;
   cursor: pointer;
   margin-bottom: 20px;
   transition: background var(--transition-speed) var(--ease-out),
@@ -131,7 +134,7 @@ body::before {
 .favorite-button {
   background: transparent;
   border: none;
-  color: #ff9800; /* Accent color remains */
+  color: #ffc107; /* Accent color remains */
   font-size: 24px;
   cursor: pointer;
   padding: 8px;
@@ -184,7 +187,7 @@ body::before {
 .patient-details p {
   margin: var(--spacing-small) 0;
   font-size: 14px;
-  color: #555;
+  color: var(--text-color);
 }
 
 .patient-details strong {
@@ -198,7 +201,7 @@ body::before {
 }
 .signature-preview .signature-wrapper img {
   max-width: 200px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   transition: transform 0.3s var(--ease-out);
 }
@@ -209,7 +212,7 @@ body::before {
 /* Notes Section */
 .notes-card {
   background: var(--card-bg);
-  border: 1px solid var(--primary-color);  /* Using primary color for a modern look */
+  border: 1px solid var(--primary-color);
   border-radius: 10px;
   background-clip: padding-box;
   padding: var(--spacing-medium);
@@ -272,18 +275,18 @@ body::before {
   border-radius: 10px;
   border: 1px solid var(--border-color);
   font-size: 14px;
-  background: #f9f9f9;
+  background: var(--card-bg);
   transition: border var(--transition-speed) var(--ease-out),
               box-shadow var(--transition-speed) var(--ease-out);
 }
 .edit-notes textarea:focus {
   border: 1px solid var(--primary-color);
-  box-shadow: 0 0 4px rgba(138, 43, 226, 0.3);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
 }
 
-/* File Upload Section (Wider) */
+/* File Upload Section */
 .file-upload-section {
-  width: 100%; /* Make the section take the full width of its container */
+  width: 100%;
   background: var(--card-bg);
   border-radius: 15px;
   padding: 20px 25px;
@@ -297,7 +300,7 @@ body::before {
 }
 .file-upload-section.drag-over {
   border: 2px dashed var(--primary-color);
-  background: rgba(138, 43, 226, 0.05);
+  background: rgba(29, 29, 31, 0.05);
 }
 .file-upload-label {
   font-size: 14px;
@@ -312,7 +315,7 @@ body::before {
   color: var(--primary-hover);
 }
 
-/* ---------- UPLOAD CONTROLS (New) ---------- */
+/* UPLOAD CONTROLS */
 .upload-controls {
   display: flex;
   flex-direction: column;
@@ -337,21 +340,19 @@ body::before {
   padding: 0 var(--spacing-medium);
   font-size: 1rem;
   font-weight: 500;
-  font-family: var(--font-base);
   border: none;
   border-radius: 50px;
   cursor: pointer;
   transition: background var(--transition-speed) var(--ease-out),
               transform 0.2s var(--ease-out),
               box-shadow 0.3s var(--ease-out);
-  box-shadow: var(--shadow-small);
-  will-change: transform;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .upload-button:hover,
 .upload-button:focus {
   background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-medium);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .cancel-button {
@@ -364,930 +365,17 @@ body::before {
   padding: 0 var(--spacing-medium);
   font-size: 1rem;
   font-weight: 500;
-  font-family: var(--font-base);
   border: none;
   border-radius: 50px;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  box-shadow: var(--shadow-small);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .cancel-button:hover,
 .cancel-button:focus {
   background: #b3b3b3;
   transform: translateY(-2px);
-  box-shadow: var(--shadow-medium);
-}
-
-/* AI Upload Steps */
-.upload-steps {
-  background: var(--card-bg);
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 10px var(--shadow-color);
-  margin: 20px 0;
-  text-align: center;
-  transition: transform 0.3s var(--ease-out);
-}
-.upload-steps h3 {
-  margin-bottom: 20px;
-  font-size: 18px;
-  color: #333;
-  font-weight: 600;
-}
-.steps-container {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.step {
-  flex: 1;
-  background: #f0f0f0;
-  padding: 10px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 14px;
-  color: #555;
-  transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out);
-}
-.step.completed {
-  background: var(--primary-color);
-  color: #fff;
-  font-weight: 600;
-}
-
-/* Brain Files Filter */
-.brain-files-filter {
-  display: flex;
-  align-items: center;
-  background: var(--card-bg);
-  border-radius: 20px;
-  box-shadow: 0 4px 10px var(--shadow-color);
-  padding: 8px 15px;
-  margin-bottom: 30px;
-  max-width: 400px;
-  transition: background 0.3s var(--ease-out);
-}
-.search-icon {
-  font-size: 14px;
-  margin-right: 8px;
-  color: var(--primary-color);
-}
-.brain-file-search-input {
-  border: none;
-  outline: none;
-  font-size: 14px;
-  width: 100%;
-}
-
-/* Retraining, Share & PDF Section */
-.retraining-section {
-  margin: 20px 0;
-  text-align: center;
-}
-.share-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 40px;
-}
-.share-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-color);
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background var(--transition-speed) var(--ease-out),
-              transform 0.2s var(--ease-out),
-              box-shadow 0.3s var(--ease-out);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-.share-button:hover,
-.share-button:focus {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-.share-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-.print-button {
-  background: var(--primary-color);
-  color: #fff;
-  border-radius: 20px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: background 0.3s var(--ease-out), transform 0.2s var(--ease-out);
-  box-shadow: 0 3px 6px var(--shadow-color);
-}
-.print-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-.print-button:active {
-  background: var(--primary-hover);
-  transform: translateY(0);
-  box-shadow: 0 3px 6px var(--shadow-color);
-}
-.print-button:focus {
-  outline: 2px solid rgba(138, 43, 226, 0.5);
-  outline-offset: 2px;
-}
-
-/* =============================================
-   Modal Overlay & Confirmation Dialog
-============================================= */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  animation: fadeInOverlay 0.4s var(--ease-out) forwards;
-}
-.modal {
-  background: var(--card-bg);
-  border-radius: 20px;
-  width: 80%;
-  max-width: 800px;
-  padding: 30px;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-  text-align: center;
-  position: relative;
-  animation: fadeInDialog 0.3s var(--ease-out) forwards;
-}
-@keyframes fadeInDialog {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.close-modal-button {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: #ff4d4d;
-  color: #fff;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  transition: background 0.3s var(--ease-out);
-}
-.close-modal-button:hover {
-  background-color: #cc0000;
-}
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-/* Confirmation Dialog */
-.confirmation-dialog-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3000;
-}
-.confirmation-dialog {
-  background: var(--card-bg);
-  border-radius: 20px;
-  padding: 30px;
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  animation: fadeInDialog 0.3s var(--ease-out) forwards;
-}
-.confirmation-dialog p {
-  margin-bottom: 20px;
-  font-size: 14px;
-  color: #555;
-  line-height: 1.4;
-}
-.dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-}
-.dialog-actions .cancel-button,
-.dialog-actions .save-button {
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  transition: background-color 0.3s var(--ease-out),
-              transform 0.2s var(--ease-out);
-}
-.dialog-actions .cancel-button {
-  background-color: #ff4d4d;
-}
-.dialog-actions .cancel-button:hover {
-  background-color: #cc0000;
-  transform: translateY(-1px);
-  box-shadow: 0 3px 6px var(--shadow-color);
-}
-.dialog-actions .save-button {
-  background-color: var(--primary-color);
-}
-.dialog-actions .save-button:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 3px 6px var(--shadow-color);
-}
-
-/* Notification Toast */
-.notification {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background-color: #4caf50;
-  color: #fff;
-  padding: 12px 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px var(--shadow-color);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  animation: slideIn 0.5s var(--ease-out) forwards;
-  z-index: 4000;
-}
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(100%); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-/* No Patient Found */
-.no-patient-found {
-  text-align: center;
-  margin-top: 50px;
-}
-.no-patient-content {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
-}
-
-/* Print Styles */
-@media print {
-  body {
-    background: #fff;
-  }
-  .back-button,
-  .favorite-button,
-  .notes-actions-bar button,
-  .share-button,
-  .upload-button,
-  .brain-files-filter,
-  .remove-brain-file-button,
-  .view-brain-file-button,
-  .cancel-button,
-  .confirmation-dialog-overlay,
-  .notification,
-  .modal-overlay {
-    display: none !important;
-  }
-  .patient-detail-page {
-    background: #fff;
-  }
-}
-
-/* =============================================
-   Responsive Design
-============================================= */
-@media (max-width: 992px) {
-  .patient-info-card {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .patient-photo {
-    margin-bottom: 20px;
-  }
-}
-
-@media (max-width: 576px) {
-  .modal {
-    padding: 30px 20px;
-  }
-}
-
-/* --------------------------------------------
-   PDF Generate Button
---------------------------------------------- */
-.pdf-generate {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-color);
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 50px; /* Pill-shaped */
-  cursor: pointer;
-  transition: background var(--transition-speed) var(--ease-out),
-              transform 0.2s var(--ease-out),
-              box-shadow 0.3s var(--ease-out);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-.pdf-generate:hover,
-.pdf-generate:focus {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-.pdf-generate:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* --------------------------------------------
-   Share Section
---------------------------------------------- */
-.share-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: var(--spacing-medium) 0;
-}
-.share-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-color);
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background var(--transition-speed) var(--ease-out),
-              transform 0.2s var(--ease-out),
-              box-shadow 0.3s var(--ease-out);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-.share-button:hover,
-.share-button:focus {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-.share-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* --------------------------------------------
-   Upload & Cancel Button Styles (New)
---------------------------------------------- */
-.upload-controls {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-small);
-  margin-top: var(--spacing-medium);
-  align-items: center;
-}
-
-.upload-button-group {
-  display: flex;
-  gap: var(--spacing-medium);
-  margin-top: var(--spacing-small);
-}
-
-.upload-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-color);
-  color: #fff;
-  height: 32px;
-  padding: 0 var(--spacing-medium);
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: var(--font-base);
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background var(--transition-speed) var(--ease-out),
-              transform 0.2s var(--ease-out),
-              box-shadow 0.3s var(--ease-out);
-  box-shadow: var(--shadow-small);
-  will-change: transform;
-}
-.upload-button:hover,
-.upload-button:focus {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-medium);
-}
-
-.cancel-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #ccc;
-  color: #333;
-  height: 32px;
-  padding: 0 var(--spacing-medium);
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: var(--font-base);
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  box-shadow: var(--shadow-small);
-}
-.cancel-button:hover,
-.cancel-button:focus {
-  background: #b3b3b3;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-medium);
-}
-
-/* AI Upload Steps */
-.upload-steps {
-  background: var(--card-bg);
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 10px var(--shadow-color);
-  margin: 20px 0;
-  text-align: center;
-  transition: transform 0.3s var(--ease-out);
-}
-.upload-steps h3 {
-  margin-bottom: 20px;
-  font-size: 18px;
-  color: #333;
-  font-weight: 600;
-}
-.steps-container {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.step {
-  flex: 1;
-  background: #f0f0f0;
-  padding: 10px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 14px;
-  color: #555;
-  transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out);
-}
-.step.completed {
-  background: var(--primary-color);
-  color: #fff;
-  font-weight: 600;
-}
-
-/* Brain Files Filter */
-.brain-files-filter {
-  display: flex;
-  align-items: center;
-  background: var(--card-bg);
-  border-radius: 20px;
-  box-shadow: 0 4px 10px var(--shadow-color);
-  padding: 8px 15px;
-  margin-bottom: 30px;
-  max-width: 400px;
-  transition: background 0.3s var(--ease-out);
-}
-.search-icon {
-  font-size: 14px;
-  margin-right: 8px;
-  color: var(--primary-color);
-}
-.brain-file-search-input {
-  border: none;
-  outline: none;
-  font-size: 14px;
-  width: 100%;
-}
-
-/* Retraining, Share & PDF Section */
-.retraining-section {
-  margin: 20px 0;
-  text-align: center;
-}
-.share-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 40px;
-}
-.share-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-color);
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background var(--transition-speed) var(--ease-out),
-              transform 0.2s var(--ease-out),
-              box-shadow 0.3s var(--ease-out);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-.share-button:hover,
-.share-button:focus {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-.share-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-.print-button {
-  background: var(--primary-color);
-  color: #fff;
-  border-radius: 20px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: background 0.3s var(--ease-out), transform 0.2s var(--ease-out);
-  box-shadow: 0 3px 6px var(--shadow-color);
-}
-.print-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-.print-button:active {
-  background: var(--primary-hover);
-  transform: translateY(0);
-  box-shadow: 0 3px 6px var(--shadow-color);
-}
-.print-button:focus {
-  outline: 2px solid rgba(138, 43, 226, 0.5);
-  outline-offset: 2px;
-}
-
-/* =============================================
-   Modal Overlay & Confirmation Dialog
-============================================= */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  animation: fadeInOverlay 0.4s var(--ease-out) forwards;
-}
-.modal {
-  background: var(--card-bg);
-  border-radius: 20px;
-  width: 80%;
-  max-width: 800px;
-  padding: 30px;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-  text-align: center;
-  position: relative;
-  animation: fadeInDialog 0.3s var(--ease-out) forwards;
-}
-@keyframes fadeInDialog {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.close-modal-button {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: #ff4d4d;
-  color: #fff;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  transition: background 0.3s var(--ease-out);
-}
-.close-modal-button:hover {
-  background-color: #cc0000;
-}
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-/* Confirmation Dialog */
-.confirmation-dialog-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3000;
-}
-.confirmation-dialog {
-  background: var(--card-bg);
-  border-radius: 20px;
-  padding: 30px;
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  animation: fadeInDialog 0.3s var(--ease-out) forwards;
-}
-.confirmation-dialog p {
-  margin-bottom: 20px;
-  font-size: 14px;
-  color: #555;
-  line-height: 1.4;
-}
-.dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-}
-.dialog-actions .cancel-button,
-.dialog-actions .save-button {
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  transition: background-color 0.3s var(--ease-out),
-              transform 0.2s var(--ease-out);
-}
-.dialog-actions .cancel-button {
-  background-color: #ff4d4d;
-}
-.dialog-actions .cancel-button:hover {
-  background-color: #cc0000;
-  transform: translateY(-1px);
-  box-shadow: 0 3px 6px var(--shadow-color);
-}
-.dialog-actions .save-button {
-  background-color: var(--primary-color);
-}
-.dialog-actions .save-button:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 3px 6px var(--shadow-color);
-}
-
-/* Notification Toast */
-.notification {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background-color: #4caf50;
-  color: #fff;
-  padding: 12px 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px var(--shadow-color);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  animation: slideIn 0.5s var(--ease-out) forwards;
-  z-index: 4000;
-}
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(100%); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-/* No Patient Found */
-.no-patient-found {
-  text-align: center;
-  margin-top: 50px;
-}
-.no-patient-content {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
-}
-
-/* Print Styles */
-@media print {
-  body {
-    background: #fff;
-  }
-  .back-button,
-  .favorite-button,
-  .notes-actions-bar button,
-  .share-button,
-  .upload-button,
-  .brain-files-filter,
-  .remove-brain-file-button,
-  .view-brain-file-button,
-  .cancel-button,
-  .confirmation-dialog-overlay,
-  .notification,
-  .modal-overlay {
-    display: none !important;
-  }
-  .patient-detail-page {
-    background: #fff;
-  }
-}
-
-/* =============================================
-   Responsive Design
-============================================= */
-@media (max-width: 992px) {
-  .patient-info-card {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .patient-photo {
-    margin-bottom: 20px;
-  }
-}
-
-@media (max-width: 576px) {
-  .modal {
-    padding: 30px 20px;
-  }
-}
-
-/* --------------------------------------------
-   PDF Generate Button
---------------------------------------------- */
-.pdf-generate {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-color);
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 50px; /* Pill-shaped */
-  cursor: pointer;
-  transition: background var(--transition-speed) var(--ease-out),
-              transform 0.2s var(--ease-out),
-              box-shadow 0.3s var(--ease-out);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-.pdf-generate:hover,
-.pdf-generate:focus {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-.pdf-generate:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* --------------------------------------------
-   Share Section
---------------------------------------------- */
-.share-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: var(--spacing-medium) 0;
-}
-.share-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-color);
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background var(--transition-speed) var(--ease-out),
-              transform 0.2s var(--ease-out),
-              box-shadow 0.3s var(--ease-out);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-.share-button:hover,
-.share-button:focus {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-.share-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* --------------------------------------------
-   Upload & Cancel Button Styles (New)
---------------------------------------------- */
-.upload-controls {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-small);
-  margin-top: var(--spacing-medium);
-  align-items: center;
-}
-
-.upload-button-group {
-  display: flex;
-  gap: var(--spacing-medium);
-  margin-top: var(--spacing-small);
-}
-
-.upload-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--primary-color);
-  color: #fff;
-  height: 32px;
-  padding: 0 var(--spacing-medium);
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: var(--font-base);
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background var(--transition-speed) var(--ease-out),
-              transform 0.2s var(--ease-out),
-              box-shadow 0.3s var(--ease-out);
-  box-shadow: var(--shadow-small);
-  will-change: transform;
-}
-.upload-button:hover,
-.upload-button:focus {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-medium);
-}
-
-.cancel-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #ccc;
-  color: #333;
-  height: 32px;
-  padding: 0 var(--spacing-medium);
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: var(--font-base);
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  box-shadow: var(--shadow-small);
-}
-.cancel-button:hover,
-.cancel-button:focus {
-  background: #b3b3b3;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-medium);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* =============================================
@@ -1302,349 +390,19 @@ button:hover {
   align-items: center;
   justify-content: center;
   margin-bottom: 40px;
-  gap: var(--spacing-medium); /* Adds space between child elements */
+  gap: var(--spacing-medium);
 }
-/* Headers (using a bolder weight, which resembles SF Pro Display) */
+
+/* Headers */
 h1, h2, h3, h4, h5, h6 {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
                Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   font-weight: bold;
-  /* Optionally, adjust letter spacing or size as needed */
 }
-
-/* Body text (using regular weight, resembling SF Pro Text) */
 p, span, li {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
                Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   font-weight: normal;
-}
-/* =============================================
-   Root Variables & Global Styles
-============================================= */
-:root {
-  /* Colors & Theme */
-  --primary-color: #8a2be2;
-  --primary-hover: #7a1be1; /* Slight darkening for hover */
-  --secondary-bg: #edf2f7;
-  --text-color: #333;
-  --card-bg: #ffffff;
-  --border-color: #e0e0e0;
-
-  /* Shadows */
-  --shadow-small: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
-  --shadow-large: 0 8px 20px rgba(0, 0, 0, 0.2);
-
-  /* Transitions & Timing */
-  --transition-speed: 0.3s;
-  --ease-out: cubic-bezier(0.25, 0.8, 0.25, 1);
-
-  /* Typography */
-  --font-family: 'Inter', sans-serif;
-
-  /* Spacing */
-  --spacing-small: 0.5rem;
-  --spacing-medium: 1rem;
-  --spacing-large: 1.5rem;
-}
-
-/* Dark Mode Overrides */
-.dark-mode {
-  --primary-color: #8a2be2;
-  --primary-hover: #7a1be1;
-  --secondary-bg: #2e2e2e;
-  --text-color: #eaeaea;
-  --card-bg: #333;
-  --border-color: #444;
-  background: #1c1c1c;
-}
-
-/* Global Reset & Transitions */
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  transition: all var(--transition-speed) var(--ease-out);
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: var(--font-family);
-  background: linear-gradient(135deg, #ece9e6, #ffffff);
-  color: var(--text-color);
-  line-height: 1.6;
-  position: relative;
-  padding: var(--spacing-medium);
-}
-
-/* Enhanced Focus States for Accessibility */
-:focus {
-  outline: 3px solid var(--primary-color);
-  outline-offset: 2px;
-}
-
-/* Subtle texture overlay */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: url('https://www.transparenttextures.com/patterns/diagmonds.png');
-  opacity: 0.05;
-  z-index: -1;
-}
-
-/* =============================================
-   Dashboard Layout
-============================================= */
-.dashboard-fullscreen {
-  width: 100vw;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: linear-gradient(135deg, #ece9e6, #ffffff);
-  padding: var(--spacing-medium);
-}
-
-.dashboard-content {
-  flex: 1;
-  width: 90%;
-  max-width: 1600px;
-  margin: var(--spacing-large) auto;
-  background: var(--card-bg);
-  border-radius: 16px;
-  box-shadow: var(--shadow-medium);
-  padding: 40px;
-  overflow-y: auto;
-}
-
-/* Custom Scrollbar */
-.dashboard-content::-webkit-scrollbar {
-  width: 8px;
-}
-.dashboard-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-.dashboard-content::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-  border-radius: 4px;
-}
-
-/* =============================================
-   Header Banner ("Hello Doctor")
-============================================= */
-.hello-doctor-banner {
-  background: linear-gradient(135deg, #2c2c2c, #4a4a4a);
-  color: #fff;
-  text-align: center;
-  padding: 40px 50px;
-  border-radius: 16px;
-  margin: var(--spacing-medium) auto var(--spacing-large);
-  width: 90%;
-  max-width: 1600px;
-  box-shadow: var(--shadow-large);
-  animation: fadeInBanner 0.6s var(--ease-out) forwards;
-}
-
-.hello-doctor-banner h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-}
-
-.hello-doctor-banner p {
-  font-size: 1.25rem;
-  opacity: 0.95;
-}
-
-@keyframes fadeInBanner {
-  from { opacity: 0; transform: translateY(-0.625rem); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* =============================================
-   Top Bar: Search, Sort & Action Buttons
-============================================= */
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-medium);
-  margin-bottom: var(--spacing-large);
-  flex-wrap: nowrap;
-}
-
-.top-bar > * {
-  display: flex;
-  align-items: center;
-  will-change: transform;
-}
-
-.search-bar-wrapper {
-  display: inline-flex;
-  align-items: center;
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 50px;
-  padding: 10px 18px;
-  gap: var(--spacing-small);
-  flex: 1;
-  min-width: 220px;
-  max-width: 400px;
-  box-shadow: var(--shadow-small);
-  transition: box-shadow 0.3s var(--ease-out);
-  cursor: text;
-}
-
-.search-bar-wrapper:focus-within {
-  box-shadow: 0 0 8px var(--primary-color);
-}
-
-.search-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 1rem;
-  color: var(--text-color);
-}
-
-.search-input::placeholder {
-  color: #888;
-}
-
-.icon {
-  font-size: 1.375rem;
-  margin-right: 350px;
-  color: var(--primary-color);
-}
-
-.sort-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 40px 10px 18px;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  background: var(--primary-color);
-  color: #fff;
-  cursor: pointer;
-  box-shadow: var(--shadow-small);
-  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'16'%20height%3D'16'%20viewBox%3D'0%200%2016%2016'%20xmlns%3D'http://www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M4.646%206.646a.5.5%200%2001.708%200L8%208.293l2.646-2.647a.5.5%200%2001.708.708l-3%203a.5.5%200%2001-.708%200l-3-3a.5.5%200%2001%200-.708z'%20fill%3D'%23fff'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px;
-}
-
-.sort-select:hover,
-.sort-select:focus {
-  background: var(--primary-hover);
-  box-shadow: var(--shadow-medium);
-  transform: translateY(-0.125rem);
-}
-
-.primary-button,
-.secondary-button {
-  border: none;
-  border-radius: 50px;
-  padding: 10px 22px;
-  font-size: 1rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-small);
-  text-decoration: none;
-  box-shadow: var(--shadow-small);
-  will-change: transform;
-}
-
-.primary-button {
-  background: var(--primary-color);
-  color: #fff;
-}
-
-.primary-button:hover {
-  background: var(--primary-hover);
-  transform: translateY(-0.125rem);
-  box-shadow: var(--shadow-medium);
-}
-
-.secondary-button {
-  background: var(--secondary-bg);
-  color: var(--text-color);
-}
-
-.secondary-button:hover {
-  background: #ded3fa;
-  transform: translateY(-0.125rem);
-  box-shadow: var(--shadow-medium);
-}
-
-/* =============================================
-   Dashboard Insights & Insight Cards
-============================================= */
-.dashboard-insights {
-  width: 100%;
-  max-width: 1600px;
-  margin: var(--spacing-medium) auto;
-  padding: var(--spacing-small);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-medium);
-  scroll-behavior: smooth;
-}
-
-.insight-card {
-  background: linear-gradient(135deg, #ffffff, #f8f8f8);
-  border-radius: 12px;
-  padding: var(--spacing-medium);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.insight-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.insight-card h3 {
-  font-size: 1.2rem;
-  margin-bottom: var(--spacing-small);
-  color: var(--primary-color);
-  font-weight: 600;
-}
-
-.insight-card p,
-.insight-card ul {
-  font-size: 0.95rem;
-  color: var(--text-color);
-  margin: 0.5rem 0;
-}
-
-.insight-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.insight-card li {
-  margin-bottom: 0.25rem;
 }
 
 /* =============================================
@@ -1660,7 +418,7 @@ body::before {
 .patient-card {
   background: var(--card-bg);
   border-radius: 16px;
-  box-shadow: var(--shadow-medium);
+  box-shadow: 0 4px 8px var(--shadow-color);
   padding: var(--spacing-large) var(--spacing-medium);
   display: flex;
   flex-direction: column;
@@ -1674,7 +432,7 @@ body::before {
 
 .patient-card:hover {
   transform: translateY(-4px) scale(1.02);
-  box-shadow: var(--shadow-large);
+  box-shadow: 0 8px 16px var(--shadow-color);
 }
 
 .patient-photo {
@@ -1749,7 +507,7 @@ body::before {
   border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 0.95rem;
-  box-shadow: var(--shadow-small);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .patient-detail {
@@ -1977,12 +735,11 @@ button:hover {
   transition: background var(--transition-speed) var(--ease-out),
               transform 0.2s var(--ease-out),
               box-shadow var(--transition-speed) var(--ease-out);
-  box-shadow: var(--shadow-small);
-  will-change: transform;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* =============================================
-   Print Report Link (small and subtle)
+   Print Report Link
 ============================================= */
 .print-report-link {
   font-size: 12px;
@@ -2007,9 +764,994 @@ button:hover {
   margin-bottom: 12px;
 }
 
+/* Additional Styles for Patient Cards and Others can be appended below */
 /* =============================================
-   Additional Styles for Patient Cards and Others
-   (Refer to your existing sections if needed)
+   Share Section & Button Adjustments
 ============================================= */
+.share-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-medium);
+  margin: var(--spacing-large) 0;
+}
 
-/* (Your additional CSS for patients, dashboard insights, etc. can remain here.) */
+/* Share Button */
+.share-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background var(--transition-speed) var(--ease-out),
+              transform 0.2s var(--ease-out),
+              box-shadow var(--transition-speed) var(--ease-out);
+}
+
+.share-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* PDF Generate Button */
+.pdf-generate {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background var(--transition-speed) var(--ease-out),
+              transform 0.2s var(--ease-out),
+              box-shadow var(--transition-speed) var(--ease-out);
+}
+
+.pdf-generate:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+/* Upload Steps Section */
+.upload-steps {
+  background: var(--card-bg);                /* White card background */
+  border: 1px solid var(--border-color);       /* Subtle border */
+  border-radius: 10px;
+  padding: var(--spacing-medium);
+  margin-bottom: var(--spacing-large);
+  box-shadow: 0 4px 10px var(--shadow-color);   /* Soft shadow */
+}
+
+.upload-steps h3 {
+  font-size: 1.25rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: var(--spacing-medium);
+}
+
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+}
+
+.step {
+  background: var(--secondary-bg);            /* Light background for steps */
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: var(--spacing-small);
+  font-size: 0.95rem;
+  color: var(--text-color);
+  transition: background var(--transition-speed) var(--ease-out),
+              transform var(--transition-speed) var(--ease-out);
+}
+
+.step.completed {
+  background: var(--primary-color);           /* Dark accent for completed steps */
+  color: #fff;
+}
+
+.step:not(.completed):hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.ai-explanation {
+  background: #f0f0f0;                         /* Slightly darker than card-bg */
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: var(--spacing-small);
+  margin-top: var(--spacing-small);
+  font-size: 0.875rem;
+  color: var(--text-color);
+}
+/* Upload Steps Section */
+.upload-steps {
+  background: var(--card-bg);                   /* Clean white card background */
+  border: 1px solid var(--border-color);          /* Subtle border */
+  border-radius: 12px;
+  padding: var(--spacing-medium);
+  margin-bottom: var(--spacing-large);
+  box-shadow: 0 4px 10px var(--shadow-color);
+  animation: fadeIn 0.5s ease;
+}
+
+.upload-steps h3 {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: var(--spacing-medium);
+  text-align: center;
+}
+
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+}
+
+/* Each individual step */
+.step {
+  background: var(--secondary-bg);               /* Light background for steps */
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: var(--spacing-small);
+  font-size: 1rem;
+  color: var(--text-color);
+  position: relative;
+  overflow: hidden;
+  transition: background var(--transition-speed) var(--ease-out),
+              transform var(--transition-speed) var(--ease-out),
+              border 0.3s var(--ease-out);
+}
+
+/* A subtle progress fill that expands when the step is completed */
+.step::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: var(--primary-color);
+  opacity: 0.15;
+  transition: width var(--transition-speed) var(--ease-out);
+}
+
+/* When a step is marked as completed */
+.step.completed {
+  background: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+}
+.step.completed::before {
+  width: 100%;
+}
+
+/* Optional active state (e.g. for the current step in progress) */
+.step.active {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(29, 29, 31, 0.3);
+}
+
+/* Hover effect for incomplete steps */
+.step:not(.completed):hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+/* AI Explanation Box */
+.ai-explanation {
+  background: #f0f0f0;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: var(--spacing-small);
+  margin-top: var(--spacing-small);
+  font-size: 0.875rem;
+  color: var(--text-color);
+  animation: fadeIn 0.3s ease;
+}
+
+/* FadeIn Keyframe (if not defined globally) */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* =============================================
+   Global Reset & Variables
+============================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Global Focus Outline for Accessibility */
+:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Root Variables */
+:root {
+  /* Color Palette Inspired by Apple's Minimalism */
+  --primary-color: #1d1d1f;            /* Primary accent for text, icons, buttons */
+  --primary-hover: #2c2c2e;            /* Hover state for primary elements */
+  --secondary-bg: #f5f5f7;             /* Light background for overall page */
+  --text-color: #333333;               /* Dark gray text for readability */
+  --card-bg: #ffffff;                  /* Clean white for cards & panels */
+  --border-color: #e0e0e0;             /* Subtle borders */
+  --shadow-color: rgba(0, 0, 0, 0.1);    /* Soft, minimal shadows */
+  --transition-speed: 0.3s;            /* Standard transition speed */
+  --ease-out: cubic-bezier(0.25, 0.8, 0.25, 1); /* Smooth easing function */
+  --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  /* Spacing (using rem units) */
+  --spacing-small: 0.5rem;
+  --spacing-medium: 1rem;
+  --spacing-large: 1.5rem;
+}
+
+/* Dark Mode Overrides (enable by adding the .dark-mode class to <body>) */
+.dark-mode {
+  --primary-color: #ffffff;
+  --primary-hover: #f0f0f0;
+  --secondary-bg: #1d1d1f;
+  --text-color: #ffffff;
+  --card-bg: #1d1d1f;
+  --border-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--card-bg);
+}
+
+/* HTML & Body Styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-base);
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
+  line-height: 1.6;
+  padding-bottom: 40px;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle Texture Overlay for Depth */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('https://www.transparenttextures.com/patterns/diagmonds.png');
+  opacity: 0.05;
+  z-index: -1;
+}
+
+/* Utility Container */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 15px;
+}
+/* =============================================================================
+   Global Reset & Variables
+============================================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Global Focus Outline for Accessibility */
+:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Root Variables (Apple-inspired minimalism) */
+:root {
+  /* Colors & Theme */
+  --primary-color: #1d1d1f;
+  --primary-hover: #2c2c2e;
+  --secondary-bg: #f5f5f7;
+  --text-color: #333333;
+  --card-bg: #ffffff;
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  
+  /* Shadows */
+  --shadow-small: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-large: 0 8px 20px rgba(0, 0, 0, 0.12);
+  
+  /* Transitions */
+  --transition-speed: 0.3s;
+  --ease-out: cubic-bezier(0.25, 0.8, 0.25, 1);
+  
+  /* Typography */
+  --font-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --line-height: 1.5;
+  
+  /* Spacing & Border Radii */
+  --spacing-small: 0.5rem;
+  --spacing-medium: 1rem;
+  --spacing-large: 1.5rem;
+  --border-radius-small: 4px;
+  --border-radius-medium: 8px;
+  --border-radius-large: 16px;
+}
+
+/* Dark Mode Overrides (if needed) */
+.dark-mode {
+  --primary-color: #ffffff;
+  --primary-hover: #f0f0f0;
+  --secondary-bg: #1d1d1f;
+  --text-color: #ffffff;
+  --card-bg: #1d1d1f;
+  --border-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--card-bg);
+}
+
+/* HTML & Body */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-base);
+  line-height: var(--line-height);
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
+  padding-bottom: 40px;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle texture overlay for depth */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url('https://www.transparenttextures.com/patterns/diagmonds.png');
+  opacity: 0.05;
+  z-index: -1;
+}
+
+/* Utility Container */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 15px;
+}
+
+/* =============================================================================
+   Dashboard Layout & Header
+============================================================================= */
+.dashboard-fullscreen {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--secondary-bg);
+  padding: var(--spacing-medium);
+}
+
+.dashboard-content {
+  flex: 1;
+  width: 90%;
+  max-width: 1600px;
+  margin: var(--spacing-large) auto;
+  background: var(--card-bg);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--shadow-medium);
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.hello-doctor-banner {
+  background: var(--card-bg);
+  color: var(--text-color);
+  text-align: center;
+  padding: 20px 30px;
+  border-radius: var(--border-radius-large);
+  margin: var(--spacing-medium) auto var(--spacing-large);
+  width: 90%;
+  max-width: 1600px;
+  box-shadow: var(--shadow-medium);
+}
+
+.hello-doctor-banner h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.hello-doctor-banner p {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}
+
+/* =============================================================================
+   Top Bar: Search, Sort, Filter & Action Buttons
+============================================================================= */
+.top-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-medium);
+  margin-bottom: var(--spacing-large);
+}
+
+.search-bar-wrapper {
+  display: inline-flex;
+  align-items: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 50px;
+  padding: 10px 18px;
+  gap: var(--spacing-small);
+  flex: 1;
+  min-width: 220px;
+  max-width: 400px;
+  box-shadow: var(--shadow-small);
+  cursor: text;
+}
+
+.search-bar-wrapper:focus-within {
+  box-shadow: 0 0 8px var(--primary-color);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.search-input::placeholder {
+  color: #888;
+}
+
+.icon {
+  font-size: 1.375rem;
+  margin-right: 10px;
+  color: var(--primary-color);
+}
+
+.sort-select,
+.filter-select {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 18px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  background: var(--primary-color);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: var(--shadow-small);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  margin-right: 10px;
+}
+
+.sort-select:hover,
+.sort-select:focus,
+.filter-select:hover,
+.filter-select:focus {
+  background: var(--primary-hover);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-0.125rem);
+}
+
+.primary-button,
+.secondary-button {
+  border: none;
+  border-radius: 50px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-small);
+  text-decoration: none;
+  box-shadow: var(--shadow-small);
+}
+
+.primary-button {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.primary-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-0.125rem);
+  box-shadow: var(--shadow-medium);
+}
+
+.secondary-button {
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+
+.secondary-button:hover {
+  background: #f0f0f5;
+  transform: translateY(-0.125rem);
+  box-shadow: var(--shadow-medium);
+}
+
+/* =============================================================================
+   Profile & Patient Detail Section (Visually Engaging)
+============================================================================= */
+
+/* Patient Info Card with Glassmorphism */
+.patient-info-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-large);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border-radius: 15px;
+  padding: var(--spacing-large);
+  margin-bottom: var(--spacing-large);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform var(--transition-speed) var(--ease-out), box-shadow var(--transition-speed) var(--ease-out);
+}
+
+.patient-info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced Profile Picture */
+/* Use a default silhouette if no image is provided */
+.patient-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--primary-color);
+  margin-bottom: var(--spacing-medium);
+  transition: transform var(--transition-speed) var(--ease-out), box-shadow var(--transition-speed) var(--ease-out);
+  background: url('https://via.placeholder.com/120?text=No+Image') center center no-repeat;
+  background-size: cover;
+}
+
+.patient-photo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Patient Details Typography */
+.patient-details p {
+  margin: var(--spacing-small) 0;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+.patient-details strong {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+}
+
+/* Favorite Button with Tooltip & Animation */
+.favorite-button {
+  background: transparent;
+  border: none;
+  color: #ffc107;
+  font-size: 24px;
+  cursor: pointer;
+  padding: var(--spacing-small);
+  border-radius: 50%;
+  position: relative;
+  transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+
+.favorite-button:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Tooltip for favorite button */
+.favorite-button::after {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+.favorite-button:hover::after {
+  opacity: 1;
+}
+
+/* Edit Notes Button (Call-to-Action) */
+.edit-notes-button {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.edit-notes-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+/* =============================================================================
+   Patient Actions & Details Button (Fixed & Enhanced)
+============================================================================= */
+.patient-actions {
+  margin-top: var(--spacing-medium);
+  display: flex;
+  justify-content: center;
+}
+
+.details-button {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--transition-speed) ease;
+  position: relative;
+}
+
+.details-button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+/* =============================================================================
+   File Upload Section Enhancements
+============================================================================= */
+.file-upload-section {
+  width: 100%;
+  background: var(--card-bg);
+  border: 2px dashed var(--border-color);
+  border-radius: 15px;
+  padding: 20px 25px;
+  box-shadow: 0 4px 10px var(--shadow-color);
+  margin-bottom: 30px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  transition: background 0.3s ease, border 0.3s ease;
+}
+
+.file-upload-section.drag-over {
+  border: 2px dashed var(--primary-color);
+  background: rgba(29, 29, 31, 0.05);
+}
+
+.file-upload-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  cursor: pointer;
+  text-decoration: underline;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.file-upload-label:hover {
+  color: var(--primary-hover);
+}
+
+/* Upload & Cancel Buttons with Icon */
+.upload-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-color);
+  color: #fff;
+  height: 32px;
+  padding: 0 var(--spacing-medium);
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.upload-button::before {
+  content: "⬆";
+  margin-right: 0.5rem;
+}
+
+.upload-button:hover,
+.upload-button:focus {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cancel-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ccc;
+  color: #333;
+  height: 32px;
+  padding: 0 var(--spacing-medium);
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cancel-button:hover,
+.cancel-button:focus {
+  background: #b3b3b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Progress Bar for Upload Simulation */
+.upload-progress {
+  width: 0%;
+  height: 4px;
+  background: var(--primary-color);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* =============================================================================
+   Share & Generate PDF Buttons with Tooltips
+============================================================================= */
+.share-button,
+.pdf-generate {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.share-button:hover,
+.pdf-generate:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Tooltip for share/pdf buttons */
+.share-button::after,
+.pdf-generate::after {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.share-button:hover::after,
+.pdf-generate:hover::after {
+  opacity: 1;
+}
+
+/* =============================================================================
+   Notifications (Slide-in Animation)
+============================================================================= */
+@keyframes slideInNotification {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.notification {
+  animation: slideInNotification 0.5s ease-out;
+}
+
+/* =============================================================================
+   Modal Styles
+============================================================================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeInOverlay 0.3s var(--ease-out) forwards;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: var(--card-bg);
+  border-radius: var(--border-radius-large);
+  padding: 30px 35px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+  text-align: left;
+  max-width: 420px;
+  width: 90%;
+  position: relative;
+  animation: fadeInDialog 0.3s var(--ease-out) forwards;
+}
+
+@keyframes fadeInDialog {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal h2 {
+  margin-bottom: 20px;
+  font-size: 1.375rem;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.modal-content label {
+  font-size: 0.9375rem;
+  color: #555;
+}
+
+.modal-content input,
+.modal-content textarea {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-small);
+  font-size: 0.9375rem;
+  background: #fff;
+}
+
+.modal-content input:focus,
+.modal-content textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 6px rgba(124, 58, 237, 0.3);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.75rem;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  transform: scale(1.1);
+}
+
+/* =============================================================================
+   Responsive Design
+============================================================================= */
+@media (max-width: 1024px) {
+  .dashboard-content,
+  .hello-doctor-banner,
+  .dashboard-insights {
+    width: 95%;
+    max-width: 1000px;
+    padding: 30px;
+  }
+  .hello-doctor-banner h1 {
+    font-size: 1.75rem;
+  }
+  .hello-doctor-banner p {
+    font-size: 1.125rem;
+  }
+  .top-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search-bar-wrapper,
+  .sort-select,
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-content,
+  .hello-doctor-banner,
+  .dashboard-insights {
+    padding: 20px;
+  }
+  .hello-doctor-banner {
+    padding: 20px;
+  }
+  .hello-doctor-banner h1 {
+    font-size: 1.5rem;
+  }
+  .hello-doctor-banner p {
+    font-size: 1rem;
+  }
+  .primary-button,
+  .secondary-button {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+  }
+}
+
+/* =============================================================================
+   Additional Styles for Sharing, PDF Generation, and Upload Steps
+============================================================================= */
+/* (These styles are already included above in their respective sections) */
