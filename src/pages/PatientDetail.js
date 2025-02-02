@@ -15,7 +15,7 @@ import jsPDF from "jspdf";
 // Icons
 import { FaShare } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
-import { AiFillBilibili } from "react-icons/ai";
+import { AiFillBilibili, AiFillStar, AiOutlineStar } from "react-icons/ai";
 
 // Sections
 import UploadSection from "../sections/UploadSection";
@@ -159,9 +159,10 @@ function PatientDetail({ patients, setPatients }) {
         )
       );
 
-      startUploadSimulation();
+      // Do not start simulation automatically; wait for the user to click "Upload"
+      // startUploadSimulation();
     },
-    [id, setPatients, showNotificationMessage, startUploadSimulation]
+    [id, setPatients, showNotificationMessage]
   );
 
   // ====================
@@ -181,9 +182,7 @@ function PatientDetail({ patients, setPatients }) {
   const handleFavoriteToggle = useCallback(() => {
     setIsFavorite((prev) => !prev);
     setPatients((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, isFavorite: !isFavorite } : p
-      )
+      prev.map((p) => (p.id === id ? { ...p, isFavorite: !isFavorite } : p))
     );
     showNotificationMessage(
       isFavorite ? "Removed from favorites." : "Added to favorites!"
@@ -379,7 +378,7 @@ Last Visit History: ${notes.lastVisitHistory}
     );
   }, [patient, brainFileFilter]);
 
-  // 3) Early return if patient is not found.
+  // Early return if patient is not found.
   if (!patient) {
     return (
       <div className="no-patient-found" role="alert">
@@ -444,7 +443,7 @@ Last Visit History: ${notes.lastVisitHistory}
 
         <div className="patient-info-card">
           <img
-            src={patient.photo || "https://via.placeholder.com/150"}
+            src={patient.photo || "https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTA4L2hpcHBvdW5pY29ybjc2X3Bob3RvX29mX2JhYnlfbGFicmFkb3JfeWF3bmluZ19pc29sYXRlZF9vbl93aGl0ZV82YjVmMTIwMS02ZTU1LTRiMzQtOWQ4ZC0yNTM0NWQ4MmM3MDEucG5n.png"}
             alt={`${patient.name}'s portrait`}
             className="patient-photo"
           />
@@ -483,17 +482,39 @@ Last Visit History: ${notes.lastVisitHistory}
           handleExportNotes={handleExportNotes}
         />
 
-        {/* Upload Section is hidden when final diagnosis is shown */}
+        {/* Upload Section with explicit Upload and Cancel buttons */}
         {!showDiagnosis && (
-          <UploadSection
-            patientId={patient.id}
-            isDraggingOver={isDraggingOver}
-            handleDragEnter={handleDragEnter}
-            handleDragLeave={handleDragLeave}
-            handleDragOver={handleDragOver}
-            handleDrop={handleDrop}
-            handleInputFileChange={handleInputFileChange}
-          />
+          <div className="upload-controls">
+            <UploadSection
+              patientId={patient.id}
+              isDraggingOver={isDraggingOver}
+              handleDragEnter={handleDragEnter}
+              handleDragLeave={handleDragLeave}
+              handleDragOver={handleDragOver}
+              handleDrop={handleDrop}
+              handleInputFileChange={handleInputFileChange}
+            />
+            <div className="upload-button-group">
+              <button
+                className="upload-button"
+                onClick={startUploadSimulation}
+                aria-label="Upload File"
+              >
+                Upload
+              </button>
+              <button
+                className="cancel-button"
+                onClick={() => {
+                  setUploading(false);
+                  setUploadStep(0);
+                  showNotificationMessage("File upload canceled.");
+                }}
+                aria-label="Cancel File Upload"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Display upload progress steps when uploading */}
@@ -508,30 +529,11 @@ Last Visit History: ${notes.lastVisitHistory}
                 Step 2: Data Preprocessing
               </div>
               <div className={`step ${uploadStep >= 3 ? "completed" : ""}`}>
-                Step 3: AI Inference
-                <span
-                  onClick={handleToggleAiExplanation}
-                  style={{ cursor: "pointer", marginLeft: "8px" }}
-                  title="How does the AI work?"
-                  tabIndex={0}
-                  role="button"
-                  aria-label="Explain AI process"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleToggleAiExplanation();
-                  }}
-                >
-                  <AiFillBilibili size={18} />
-                </span>
+                Step 3:
+
                 {showAiExplanation && (
-                  <div className="ai-explanation-container">
-                    <p>
-                      <strong>How does the AI work?</strong>
-                      <br />
-                      Our AI model analyzes 3D MRI scans to detect patterns that
-                      may indicate tumors or lesions. It compares your MRI against a large set
-                      of annotated scans to flag potential abnormalities for further
-                      review by medical experts.
-                    </p>
+                  <div className="ai-explanation">
+                    <p>AI Magic...</p>
                   </div>
                 )}
               </div>
@@ -543,7 +545,7 @@ Last Visit History: ${notes.lastVisitHistory}
         )}
 
         {/* Brain Files Filter */}
-        {patient.brainFiles.length > 1 && (
+        {patient.brainFiles && patient.brainFiles.length > 1 && (
           <div className="brain-files-filter">
             <FiSearch className="search-icon" />
             <input
@@ -592,7 +594,7 @@ Last Visit History: ${notes.lastVisitHistory}
             <FaShare /> Share Patient
           </button>
           <button
-            className="primary-button"
+            className="pdf-generate"
             onClick={handleGeneratePDF}
             aria-label="Generate PDF report"
           >

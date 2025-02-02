@@ -1,118 +1,162 @@
 /* Overall layout */
-/* src/styles/Navbar.css and other CSS files */
+/* src/styles/Login.css */
 
 body {
-    font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .login-container {
-    display: flex;
-    height: 100vh;
-    background-color: #f5f5f5;
-    font-family: Arial, sans-serif;
-  }
+  display: flex;
+  height: 100vh;
+  background-color: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+/* -------------------------------------
+   Color / Theme Variables
+-------------------------------------*/
+:root {
+  --primary-color: #8a2be2; /* Main purple */
+  --primary-hover: #7c27cb; /* Slightly darker variant for hover states */
+  --secondary-bg: #eeeafc;
+  --text-color: #8a2be2; /* Using primary color for text */
+  --card-bg: #fff;
+  --border-color: #8a2be2; /* Use primary color for borders */
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --transition-speed: 0.3s;
+  --ease-out: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --font-base: "Poppins", sans-serif;
   
-  /* Left Section - Image */
-  .login-image {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: white;
-  }
-  
-  .login-image img {
-    max-width: 100%;
-    height: auto;
-    object-fit: cover;
-  }
-  
-  /* Right Section - Form */
-  .login-form {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 40px;
-    background-color: #ffffff;
-  }
-  
-  .login-form h1 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #000000;
-  }
-  
-  form {
-    width: 100%;
-    max-width: 400px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  label {
-    margin-bottom: 5px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  input {
-    margin-bottom: 15px;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  input:focus {
-    outline: none;
-    border-color: #6c63ff;
-  }
-  
-  .login-links {
-    text-align: right;
-    margin-bottom: 15px;
-  }
-  
-  .login-links a {
-    text-decoration: none;
-    font-size: 14px;
-    color: #6c63ff;
-  }
-  
-  .login-links a:hover {
-    text-decoration: underline;
-  }
-  
-  .login-button {
-    background-color:  #6c63ff;
-    color: #000;
-    border: none;
-    border-radius: 4px;
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .login-button:hover {
-    background-color: #f4c200;
-  }
-  
-  .signup-link {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #333;
-  }
-  
-  .signup-link a {
-    color: #6c63ff;
-    text-decoration: none;
-  }
-  
-  .signup-link a:hover {
-    text-decoration: underline;
-  }
-  
+  /* Spacing (using rem units) */
+  --spacing-small: 0.5rem;
+  --spacing-medium: 1rem;
+  --spacing-large: 1.5rem;
+}
+
+/* Dark Mode Overrides (if needed) */
+.dark-mode {
+  --primary-color: #8a2be2;
+  --primary-hover: #7c27cb;
+  --secondary-bg: #2e2e2e;
+  --text-color: #8a2be2;
+  --card-bg: #333;
+  --border-color: #8a2be2;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  background-color: #1c1c1c;
+}
+
+/* -------------------------------------
+   Left Section - Logo / Image
+-------------------------------------*/
+.login-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffffff;  /* White background */
+  overflow: hidden;
+}
+
+.login-image img {
+  width: 250px;      /* Set size for a more prominent logo */
+  height: 250px;
+  object-fit: contain; /* Ensures the full image is visible */
+  /* Removed border-radius to eliminate the circular effect */
+}
+
+/* -------------------------------------
+   Right Section - Form
+-------------------------------------*/
+.login-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  background-color: var(--card-bg);
+}
+
+.login-form h1 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: var(--primary-color);
+}
+
+form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+input {
+  margin-bottom: 15px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid var(--primary-color);
+  border-radius: 4px;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.error-message {
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.login-links {
+  text-align: right;
+  margin-bottom: 15px;
+}
+
+.login-links a {
+  text-decoration: none;
+  font-size: 14px;
+  color: var(--primary-color);
+}
+
+.login-links a:hover {
+  text-decoration: underline;
+}
+
+.login-button {
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color var(--transition-speed) var(--ease-out);
+}
+
+.login-button:hover {
+  background-color: var(--primary-hover);
+}
+
+.signup-link {
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--primary-color);
+}
+
+.signup-link a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+}

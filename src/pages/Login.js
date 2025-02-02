@@ -2,28 +2,27 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/Login.css"; // Import the CSS file for styling
-import logo from "../assets/logo.png"; // Correct import of the logo
+import "../styles/Login.css";
+import logo from "../assets/logo.png"; // Updated import of the logo
 
 function Login() {
-    const [klinikumId, setKlinikumId] = useState(""); // State for Klinikum ID
-    const [password, setPassword] = useState(""); // State for password
-    const [errorMessage, setErrorMessage] = useState(""); // State for error message
+    const [klinikumId, setKlinikumId] = useState("");
+    const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
-    const navigate = useNavigate(); // Hook for navigation
+    const navigate = useNavigate();
 
-    // Handle input change and enforce alphanumeric only for Klinikum ID
+    // Enforce alphanumeric input for Klinikum ID
     const handleKlinikumIdChange = (e) => {
         const value = e.target.value;
         if (/^[a-zA-Z0-9]*$/.test(value)) {
             setKlinikumId(value);
-            setErrorMessage(""); // Clear error message
+            setErrorMessage("");
         } else {
             setErrorMessage("Only alphanumeric characters are allowed!");
         }
     };
 
-    // Handle password input change
     const handlePasswordChange = (e) => {
         setPassword(e.target.value);
     };
@@ -41,13 +40,13 @@ function Login() {
             return;
         }
 
-        // Simulate login validation (can be replaced with API call)
+        // Simulate successful login
         console.log("Login successful:", { klinikumId, password });
 
-        // Clear the fields after submission
+        // Clear fields and errors
         setKlinikumId("");
         setPassword("");
-        setErrorMessage(""); // Clear any error messages
+        setErrorMessage("");
 
         // Redirect to Dashboard
         navigate("/dashboard");
@@ -55,16 +54,17 @@ function Login() {
 
     return (
         <div className="login-container">
-            {/* Left section with an image */}
+            {/* Left Section with white background and logo */}
             <div className="login-image">
                 <img src={logo} alt="Login visual" />
             </div>
 
-            {/* Right section with the form */}
+            {/* Right Section with the Login Form */}
             <div className="login-form">
                 <h1>Access to ODOS MED</h1>
                 <form onSubmit={handleSubmit}>
-                    {/* Klinikum ID Field */}
+                    {errorMessage && <p className="error-message">{errorMessage}</p>}
+
                     <label htmlFor="klinikumId">Klinikum ID</label>
                     <input
                         type="text"
@@ -73,11 +73,7 @@ function Login() {
                         value={klinikumId}
                         onChange={handleKlinikumIdChange}
                     />
-                    {errorMessage && klinikumId === "" && (
-                        <p className="error-message">{errorMessage}</p>
-                    )}
 
-                    {/* Password Field */}
                     <label htmlFor="password">Password</label>
                     <input
                         type="password"
@@ -86,22 +82,16 @@ function Login() {
                         value={password}
                         onChange={handlePasswordChange}
                     />
-                    {errorMessage && password === "" && (
-                        <p className="error-message">{errorMessage}</p>
-                    )}
 
-                    {/* Forgot Password */}
                     <div className="login-links">
                         <a href="#">Forgot password?</a>
                     </div>
 
-                    {/* Login Button */}
                     <button type="submit" className="login-button">
                         Login
                     </button>
                 </form>
 
-                {/* Create Account Link */}
                 <div className="signup-link">
                     New to ODOS MED? <a href="#">Create an account</a>
                 </div>

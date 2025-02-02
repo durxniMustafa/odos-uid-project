@@ -25,7 +25,7 @@ const DiagnosisSection = ({ patient, handleAddSignature }) => {
                         <li>Field Strength: 3T</li>
                     </ul>
                     <p><strong>Technician:</strong> Dr. Emily Carter</p>
-                </div>
+                </div> 
             </div>
 
             <div className="diagnosis-charts-container">

@@ -69,29 +69,25 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
             email: contactInfo.email,
             phone: contactInfo.phone,
             address: contactInfo.address,
-            photo: "",
+            photo: "/Users/durxnii/Downloads/Vector.png",
             notes: {
                 medicalHistory: "No history yet...",
                 currentMedications: "No current medications yet...",
                 immunizations: "No immunizations listed...",
-                labResults: "No recent lab results yet...",
+                labResults: "No lab results available yet...",
                 lifestyleNotes: "No lifestyle notes...",
                 lastVisitHistory: "No past visit history...",
             },
             riskLevel: randomRisk,
             isFavorite: false,
-            createdAt: new Date().toISOString(), // Timestamp for recent patients
+            createdAt: new Date().toISOString(),
         };
         onAdd(newPatient);
         onClose();
     };
 
     return (
-        <div
-            className="modal-overlay"
-            onClick={onClose}
-            aria-label="Close Add Patient Modal"
-        >
+        <div className="modal-overlay" onClick={onClose} aria-label="Close Add Patient Modal">
             <div
                 className="modal multi-step-modal"
                 onClick={(e) => e.stopPropagation()}
@@ -99,11 +95,7 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                 aria-modal="true"
                 aria-labelledby="modal-title"
             >
-                <button
-                    className="modal-close"
-                    onClick={onClose}
-                    aria-label="Close Modal"
-                >
+                <button className="modal-close" onClick={onClose} aria-label="Close Modal">
                     &times;
                 </button>
                 <h2 id="modal-title">Add New Patient</h2>
@@ -116,9 +108,7 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                                 id="patient-name"
                                 type="text"
                                 value={basicInfo.name}
-                                onChange={(e) =>
-                                    setBasicInfo({ ...basicInfo, name: e.target.value })
-                                }
+                                onChange={(e) => setBasicInfo({ ...basicInfo, name: e.target.value })}
                             />
                         </label>
                         <label htmlFor="patient-dob">
@@ -127,9 +117,7 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                                 id="patient-dob"
                                 type="date"
                                 value={basicInfo.dob}
-                                onChange={(e) =>
-                                    setBasicInfo({ ...basicInfo, dob: e.target.value })
-                                }
+                                onChange={(e) => setBasicInfo({ ...basicInfo, dob: e.target.value })}
                             />
                         </label>
                     </div>
@@ -143,9 +131,7 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                                 id="patient-email"
                                 type="email"
                                 value={contactInfo.email}
-                                onChange={(e) =>
-                                    setContactInfo({ ...contactInfo, email: e.target.value })
-                                }
+                                onChange={(e) => setContactInfo({ ...contactInfo, email: e.target.value })}
                             />
                         </label>
                         <label htmlFor="patient-phone">
@@ -154,9 +140,7 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                                 id="patient-phone"
                                 type="tel"
                                 value={contactInfo.phone}
-                                onChange={(e) =>
-                                    setContactInfo({ ...contactInfo, phone: e.target.value })
-                                }
+                                onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
                             />
                         </label>
                         <label htmlFor="patient-address">
@@ -164,9 +148,7 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                             <textarea
                                 id="patient-address"
                                 value={contactInfo.address}
-                                onChange={(e) =>
-                                    setContactInfo({ ...contactInfo, address: e.target.value })
-                                }
+                                onChange={(e) => setContactInfo({ ...contactInfo, address: e.target.value })}
                             />
                         </label>
                     </div>
@@ -179,8 +161,7 @@ function MultiStepAddPatient({ onClose, onAdd, showNotification }) {
                             <strong>Name:</strong> {basicInfo.name}
                         </p>
                         <p>
-                            <strong>Date of Birth:</strong>{" "}
-                            {dayjs(basicInfo.dob).format("YYYY-MM-DD")}
+                            <strong>Date of Birth:</strong> {dayjs(basicInfo.dob).format("YYYY-MM-DD")}
                         </p>
                         <p>
                             <strong>Email:</strong> {contactInfo.email}
@@ -237,9 +218,9 @@ function highlightText(text, query) {
 
 function getGreetingMessage() {
     const hour = new Date().getHours();
-    if (hour < 12) return "Good morning, Doctor!";
-    if (hour < 18) return "Good afternoon, Doctor!";
-    return "Good evening, Doctor!";
+    if (hour < 12) return "Good morning, Dr. Max Mustermann!";
+    if (hour < 18) return "Good afternoon, Dr. Max Mustermann!";
+    return "Good evening, Dr. Max Mustermann!";
 }
 
 function Dashboard() {
@@ -291,43 +272,40 @@ function Dashboard() {
                 },
                 riskLevel: randomRisk,
                 isFavorite: false,
-                createdAt: new Date().toISOString(), // Timestamp for ordering
+                createdAt: new Date().toISOString(),
             };
 
             setPatients((prev) => [...prev, newRandomPatient]);
             showNotificationMessage("Random patient added!");
         } catch (error) {
             console.error("Error fetching random user:", error);
-            showNotificationMessage(
-                "Failed to fetch random user. Please try again."
-            );
+            showNotificationMessage("Failed to fetch random user. Please try again.");
         }
     };
 
-    const filteredPatients = patients
-        .filter((p) => {
-            const q = searchQuery.toLowerCase();
-            return (
-                p.name.toLowerCase().includes(q) ||
-                p.email.toLowerCase().includes(q) ||
-                (p.phone && p.phone.toLowerCase().includes(q)) ||
-                p.address.toLowerCase().includes(q)
-            );
-        })
-        .sort((a, b) => {
-            if (sortBy === "name") {
-                return a.name.localeCompare(b.name);
-            } else if (sortBy === "dob") {
-                return new Date(a.dob) - new Date(b.dob);
-            }
-            return 0;
-        });
+    // Filter and sort patients based on search and sort criteria
+    function filteredPatients() {
+        return patients
+            .filter((p) => {
+                const q = searchQuery.toLowerCase();
+                return (
+                    p.name.toLowerCase().includes(q) ||
+                    p.email.toLowerCase().includes(q) ||
+                    (p.phone && p.phone.toLowerCase().includes(q)) ||
+                    p.address.toLowerCase().includes(q)
+                );
+            })
+            .sort((a, b) => {
+                if (sortBy === "name") {
+                    return a.name.localeCompare(b.name);
+                } else if (sortBy === "dob") {
+                    return new Date(a.dob) - new Date(b.dob);
+                }
+                return 0;
+            });
+    }
 
-    // Compute insights based on creation timestamp and risk level
-    const sortedPatientsByDate = [...patients].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-    const last20Patients = sortedPatientsByDate.slice(0, 20);
+    // Compute insights (for demonstration)
     const criticalPatients = patients.filter((p) => p.riskLevel === "high");
 
     const toggleFavorite = (patientId) => {
@@ -356,19 +334,11 @@ function Dashboard() {
                 <div className="top-bar">
                     <div className="search-bar-wrapper">
                         <AiOutlineSearch className="icon" />
-                        <input
-                            type="text"
-                            placeholder="Search patients..."
-                            aria-label="Search patients"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="search-input"
-                        />
                     </div>
 
                     <div style={{ fontSize: "14px", color: "#555" }}>
-                        {filteredPatients.length} result
-                        {filteredPatients.length !== 1 ? "s" : ""} found
+                        {filteredPatients().length} result
+                        {filteredPatients().length !== 1 ? "s" : ""} found
                     </div>
 
                     <select
@@ -383,10 +353,10 @@ function Dashboard() {
 
                     <button
                         onClick={() => setShowAddWizard(true)}
-                        className="primary-button"
+                        className="patient-add"
                         aria-label="Add Patient"
                     >
-                        <TiUserAddOutline /> Add Patient
+                        Add Patient
                     </button>
 
                     <button
@@ -398,25 +368,12 @@ function Dashboard() {
                     </button>
                 </div>
 
-                {/* Insight Section for Personalization */}
+                {/* Insight Section */}
                 <div className="dashboard-insights">
-                    <div className="insight-card">
-                        <h3>Last 20 Patients</h3>
-                        {last20Patients.length ? (
-                            <ul>
-                                {last20Patients.map((patient) => (
-                                    <li key={patient.id}>{patient.name}</li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>No recent patients added.</p>
-                        )}
-                    </div>
                     <div className="insight-card">
                         <h3>See What You Have Missed</h3>
                         <p>
-                            You have 2 new lab results, 1 updated appointment, and 1 message
-                            from a patient.
+                            You have 2 new lab results, 1 updated appointment, and 1 message from a patient.
                         </p>
                     </div>
                     <div className="insight-card">
@@ -424,9 +381,7 @@ function Dashboard() {
                         {criticalPatients.length ? (
                             <ul>
                                 {criticalPatients.slice(0, 3).map((patient) => (
-                                    <li key={patient.id}>
-                                        {patient.name} - High Risk
-                                    </li>
+                                    <li key={patient.id}>{patient.name} - High Risk</li>
                                 ))}
                             </ul>
                         ) : (
@@ -436,17 +391,15 @@ function Dashboard() {
                     <div className="insight-card">
                         <h3>Your Insights</h3>
                         <p>Total Patients: {patients.length}</p>
-                        <p>
-                            Favorite Patients:{" "}
-                            {patients.filter((p) => p.isFavorite).length}
-                        </p>
+                        <p>Favorite Patients: {patients.filter((p) => p.isFavorite).length}</p>
                         <p>High Risk Patients: {criticalPatients.length}</p>
                     </div>
                 </div>
 
+                {/* Patients List */}
                 <div className="patients-list">
-                    {filteredPatients.length > 0 ? (
-                        filteredPatients.map((patient) => {
+                    {filteredPatients().length > 0 ? (
+                        filteredPatients().map((patient) => {
                             const photoUrl = patient.photo
                                 ? patient.photo
                                 : "https://via.placeholder.com/80?text=No+Photo";
@@ -467,37 +420,43 @@ function Dashboard() {
                                         className="patient-photo"
                                         onError={(e) => {
                                             e.target.src =
-                                                "https://via.placeholder.com/80?text=No+Photo";
+                                                "https://images.unsplash.com/photo-1507146426996-ef05306b995a?fm=jpg&q=60&w=3000";
                                         }}
                                     />
+
                                     <div className="patient-info">
-                                        <p
-                                            className="patient-name"
-                                            dangerouslySetInnerHTML={{
-                                                __html: highlightText(patient.name, searchQuery),
-                                            }}
-                                        />
-                                        <div className={`risk-badge ${patient.riskLevel}`}>
-                                            {patient.riskLevel} risk
+                                        <div className="patient-basic-info">
+                                            <p
+                                                className="patient-name"
+                                                dangerouslySetInnerHTML={{
+                                                    __html: highlightText(patient.name, searchQuery),
+                                                }}
+                                            />
+                                            <div className={`risk-badge ${patient.riskLevel}`}>
+                                                {patient.riskLevel === "low" && "Good to Go"}
+                                                {patient.riskLevel === "medium" && "Danger"}
+                                                {patient.riskLevel === "high" && "Needs Check"}
+                                            </div>
                                         </div>
 
-                                        <p className="patient-detail">
-                                            <AiOutlineMail className="detail-icon" />
-                                            {patient.email}
-                                        </p>
-                                        <p className="patient-detail">
-                                            <AiOutlineCalendar className="detail-icon" />
-                                            {dayjs(patient.dob).format("YYYY-MM-DD")}
-                                        </p>
-                                        <p className="patient-detail">
-                                            <AiOutlinePhone className="detail-icon" />
-                                            {patient.phone || "No phone"}
-                                        </p>
-                                        <p className="patient-detail">
-                                            <AiOutlineEnvironment className="detail-icon" />
-                                            {patient.address}
-                                        </p>
+                                        <div className="patient-contact-info">
+                                            <p className="patient-detail">
+                                                <AiOutlineMail className="detail-icon" /> {patient.email}
+                                            </p>
+                                            <p className="patient-detail">
+                                                <AiOutlineCalendar className="detail-icon" />{" "}
+                                                {dayjs(patient.dob).format("YYYY-MM-DD")}
+                                            </p>
+                                            <p className="patient-detail">
+                                                <AiOutlinePhone className="detail-icon" />{" "}
+                                                {patient.phone || "No phone"}
+                                            </p>
+                                            <p className="patient-detail">
+                                                <AiOutlineEnvironment className="detail-icon" /> {patient.address}
+                                            </p>
+                                        </div>
                                     </div>
+
                                     <div className="patient-actions">
                                         <Link to={`/patient/${patient.id}`} className="details-button">
                                             Details

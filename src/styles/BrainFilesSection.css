@@ -253,7 +253,7 @@
 -------------------------------------- */
 .pre-analysis-btn,
 .consultation-btn {
-  background: #6a1b9a;
+  background: #8a2be2;
   color: #fff;
   padding: 10px 16px;
   border-radius: 20px;
@@ -2063,4 +2063,274 @@ body::before {
     aspect-ratio: unset;
     height: 300px;
   }
+}
+/* -------------------------------------
+   Brain Files Section & Intro Box
+-------------------------------------- */
+.brain-files-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-large, 24px);
+  margin: var(--spacing-large, 24px) auto;
+  padding: 0 var(--spacing-medium, 16px);
+  max-width: 1200px;
+  animation: fadeIn 0.5s var(--ease-out) forwards;
+}
+
+.intro-box {
+  background: linear-gradient(135deg, #f9f9ff, #ffffff);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: var(--spacing-medium, 16px);
+  transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+  animation: fadeIn 0.5s var(--ease-out) forwards;
+}
+
+.intro-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.intro-box h3 {
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-medium, 16px);
+  font-size: clamp(18px, 2.5vw, 20px);
+  font-weight: 600;
+}
+
+.intro-box ul {
+  margin: 0;
+  padding-left: 24px;
+  list-style: disc;
+  font-size: clamp(14px, 2vw, 15px);
+  color: #555;
+  line-height: 1.6;
+}
+
+.intro-box ul li {
+  margin-bottom: var(--spacing-small, 8px);
+}
+
+/* -------------------------------------
+   Brain File Card Container
+-------------------------------------- */
+.brain-file-card {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--spacing-large, 24px);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: var(--spacing-large, 24px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+  animation: fadeInStagger 0.5s var(--ease-out) forwards;
+}
+
+.brain-file-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* Highlight Critical Files */
+.critical-card {
+  border-left: 6px solid #f44336;
+  background-color: #fff5f5;
+  animation: shimmer 2s infinite;
+}
+
+/* -------------------------------------
+   BrainViewer Wrapper & Mount
+-------------------------------------- */
+.brain-file-card-left {
+  flex: 3;
+  min-width: 320px;
+}
+
+.brain-viewer-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  background: #f2f2f2;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.3s var(--ease-out);
+}
+
+.brain-viewer-wrapper:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.brain-viewer-root {
+  width: 100%;
+  height: 100%;
+}
+
+.brain-viewer-mount {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+/* -------------------------------------
+   File Info & AI Section
+-------------------------------------- */
+.brain-file-card-right {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium, 16px);
+  justify-content: space-between;
+}
+
+.brain-file-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-small, 8px);
+  transition: color 0.3s var(--ease-out);
+}
+
+.brain-file-name:hover {
+  color: var(--primary-hover);
+}
+
+/* -------------------------------------
+   Doctor’s Manual Notes
+-------------------------------------- */
+.doctor-section {
+  margin: var(--spacing-small, 8px) 0;
+}
+
+.doctor-section p {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: var(--spacing-small, 8px);
+  color: #444;
+}
+
+.doctor-section textarea {
+  font-family: inherit;
+  font-size: 15px;
+  padding: 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  resize: vertical;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.05);
+  transition: border 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+}
+
+.doctor-section textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(138, 43, 226, 0.3);
+  outline: none;
+}
+
+/* -------------------------------------
+   AI Confidence & Explanation
+-------------------------------------- */
+.ai-confidence {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.info-link {
+  position: relative;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s var(--ease-out);
+}
+
+.info-link:hover {
+  color: var(--primary-hover);
+}
+
+.info-link:hover::after {
+  content: "Click for explanation";
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: fadeInToolTip 0.2s ease-in forwards;
+}
+
+@keyframes fadeInToolTip {
+  to { opacity: 1; }
+}
+
+/* -------------------------------------
+   Animations
+-------------------------------------- */
+@keyframes fadeInStagger {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -500px 0; }
+  100% { background-position: 500px 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* -------------------------------------
+   Responsive Adjustments
+-------------------------------------- */
+@media (max-width: 768px) {
+  .brain-file-card {
+    flex-direction: column;
+  }
+  .brain-viewer-wrapper {
+    aspect-ratio: unset;
+    height: 300px;
+  }
+}
+/* Print Report Link (small and less noticeable) */
+.print-report-link {
+  font-size: 12px;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-top: 100px;
+}
+.print-report-link:hover {
+  color: #555;
+}
+
+/* (Optional) Modal header styling */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }

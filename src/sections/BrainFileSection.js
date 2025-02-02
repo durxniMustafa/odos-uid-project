@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import BrainViewer from "../pages/BrainViewer";
-import "../styles/BrainFilesSection.css"; // Use the improved CSS
+import "../styles/BrainFilesSection.css"; // Use your existing CSS (see additional CSS below)
 
-// Example bounding box data
+/* Example bounding box data */
 const defaultRegions = [
   {
     id: 1,
@@ -20,7 +20,7 @@ const defaultRegions = [
   },
 ];
 
-// Short patient context (for system prompt)
+/* Short patient context (for system prompt) */
 const patientContext = {
   age: 55,
   gender: "Male",
@@ -34,7 +34,7 @@ export default function BrainFilesSection({
   handleFeedback,
   handleGenerateReport,
 }) {
-  // State for each file (now including extra fields)
+  // State for each file (with extra fields)
   const [fileStates, setFileStates] = useState(() =>
     filteredBrainFiles.map((bf) => ({
       fileId: bf.id,
@@ -57,6 +57,8 @@ export default function BrainFilesSection({
 
   // State for controlling the detailed report modal
   const [showReportModal, setShowReportModal] = useState(false);
+  // Track the file ID for which the detailed report is being edited
+  const [currentReportFileId, setCurrentReportFileId] = useState(null);
 
   if (filteredBrainFiles.length === 0) {
     return <p>No brain files found.</p>;
@@ -73,9 +75,7 @@ export default function BrainFilesSection({
     );
   };
 
-  /* -----------------------------------------------------------------
-     1) AI-based Pre-Analysis (simulate random confidence & region scores)
-  ----------------------------------------------------------------- */
+  /* 1) AI-based Pre-Analysis (simulate random confidence & region scores) */
   const handleAiPreAnalysis = (fileId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -95,9 +95,7 @@ export default function BrainFilesSection({
     });
   };
 
-  /* -----------------------------------------------------------------
-     2) AI Consultation (short summary from GPT)
-  ----------------------------------------------------------------- */
+  /* 2) AI Consultation (short summary from GPT) */
   const handleAiConsultation = async (fileId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -170,9 +168,7 @@ Provide a concise clinical summary, recommendations, and next steps.
     }
   };
 
-  /* -----------------------------------------------------------------
-     3) Follow-up Question (continue conversation)
-  ----------------------------------------------------------------- */
+  /* 3) Follow-up Question (continue conversation) */
   const handleFollowUp = async (fileId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -225,9 +221,7 @@ Provide a concise clinical summary, recommendations, and next steps.
     }
   };
 
-  /* -----------------------------------------------------------------
-     4) Generate Detailed Radiology Report (Show-Off Feature)
-  ----------------------------------------------------------------- */
+  /* 4) Generate Detailed Radiology Report */
   const handleGenerateDetailedReport = async (fileId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -294,6 +288,8 @@ Provide the report in a clear, structured format.
         aiStatus: "Detailed Report Generated",
         detailedReport,
       });
+      // Set the current file for the modal and then open it.
+      setCurrentReportFileId(fileId);
       setShowReportModal(true);
     } catch (err) {
       updateFileState(fileId, {
@@ -304,9 +300,7 @@ Provide the report in a clear, structured format.
     }
   };
 
-  /* -----------------------------------------------------------------
-     5) Explain Region (Show-Off Feature)
-  ----------------------------------------------------------------- */
+  /* 5) Explain Region (Show-Off Feature) */
   const handleExplainRegion = async (fileId, regionId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -352,9 +346,7 @@ Provide the report in a clear, structured format.
     }
   };
 
-  /* -----------------------------------------------------------------
-     6) Generate Differential Diagnosis (Additional Functionality)
-  ----------------------------------------------------------------- */
+  /* 6) Generate Differential Diagnosis (Additional Functionality) */
   const handleGenerateDifferentialDiagnosis = async (fileId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -422,9 +414,7 @@ Please list 3-5 possible diagnoses with brief explanations.
     }
   };
 
-  /* -----------------------------------------------------------------
-     7) Suggest Treatment Options (Additional Functionality)
-  ----------------------------------------------------------------- */
+  /* 7) Suggest Treatment Options (Additional Functionality) */
   const handleSuggestTreatment = async (fileId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -489,24 +479,17 @@ Please provide 3-5 treatment suggestions in a bullet list format.
     }
   };
 
-  /* -----------------------------------------------------------------
-     8) Handle Print Report Functionality
-        (Opens the browser print dialog for the detailed report modal)
-  ----------------------------------------------------------------- */
+  /* 8) Handle Print Report Functionality */
   const handlePrintReport = () => {
     window.print();
   };
 
-  /* -----------------------------------------------------------------
-     9) Handle AI Feedback (like/dislike)
-  ----------------------------------------------------------------- */
+  /* 9) Handle AI Feedback (like/dislike) */
   const handleAiFeedback = (fileId, feedback) => {
     updateFileState(fileId, { aiFeedback: feedback });
   };
 
-  /* -----------------------------------------------------------------
-     10) Toggle Confidence Explanation Popup
-  ----------------------------------------------------------------- */
+  /* 10) Toggle Confidence Explanation Popup */
   const toggleConfidenceExplanation = (fileId) => {
     const st = getFileState(fileId);
     if (!st) return;
@@ -524,7 +507,7 @@ Please provide 3-5 treatment suggestions in a bullet list format.
           <li><strong>Doctor’s Role:</strong> Final clinical judgment, treatment decisions, and patient communication.</li>
           <li><strong>AI’s Role:</strong> Provide data-driven insights (pre-analysis, consultation, detailed reports, differential diagnosis, and treatment suggestions) to assist your diagnosis.</li>
           <li><strong>Confidence Threshold:</strong> Scores above 90% indicate potential urgency.</li>
-          <li><strong>AI Reusability:</strong> Historical data can be compared in future scans.</li>
+          <li><strong>AI Reusability:</strong> Historical data can be compared on future scans or used to improve the mode. For more information, please contact the ODOS specialists. </li>
         </ul>
       </div>
 
@@ -616,19 +599,19 @@ Please provide 3-5 treatment suggestions in a bullet list format.
                 Generate Detailed Radiology Report
               </button>
 
-              {/* Print Report Button (Appears if a detailed report exists) */}
+              {/* Print Report Button (for files with a detailed report, if desired elsewhere) */}
               {st.detailedReport && (
-                <button className="secondary-button" onClick={handlePrintReport}>
-                  Print Report
-                </button>
+                <div style={{ marginTop: "10px" }}>
+                  {/* You could also place a small print icon here if needed */}
+                </div>
               )}
 
-              {/* Differential Diagnosis Button (New Functionality) */}
+              {/* Differential Diagnosis Button */}
               <button className="consultation-btn" onClick={() => handleGenerateDifferentialDiagnosis(bf.id)}>
                 Generate Differential Diagnosis
               </button>
 
-              {/* Treatment Suggestions Button (New Functionality) */}
+              {/* Treatment Suggestions Button */}
               <button className="consultation-btn" onClick={() => handleSuggestTreatment(bf.id)}>
                 Suggest Treatment Options
               </button>
@@ -647,7 +630,6 @@ Please provide 3-5 treatment suggestions in a bullet list format.
                           <div className="region-confidence-bar">
                             <div className="region-confidence-fill" style={{ width: `${conf}%` }} />
                           </div>
-                          {/* Explain Region Button */}
                           <button className="info-link" onClick={() => handleExplainRegion(bf.id, r.id)}>
                             Explain Region
                           </button>
@@ -674,8 +656,6 @@ Please provide 3-5 treatment suggestions in a bullet list format.
                     <strong>Error:</strong> {st.aiError}
                   </div>
                 )}
-
-                {/* AI Conversation (excluding system messages) */}
                 {st.conversation.length > 0 && (
                   <div className="ai-conversation">
                     <h5>ODOS Med Consultation</h5>
@@ -713,11 +693,11 @@ Please provide 3-5 treatment suggestions in a bullet list format.
         );
       })}
 
-      {/* Legal/Ethical Disclaimer & Next Steps */}
+      {/* Disclaimer */}
       <div className="disclaimer-section">
         <h4>Important Notes & Next Steps</h4>
         <ul>
-          <li><strong>Actionable Follow-Up:</strong> If lesions are flagged as “critical,” promptly consult a specialist.</li>
+          <li><strong>Actionable Follow-Up:</strong> Urgency is required when lesions are flagged as 'critical'.</li>
           <li><strong>Ongoing Monitoring:</strong> Schedule periodic scans to monitor changes over time.</li>
           <li><strong>Disclaimer:</strong> This AI tool is for informational purposes only. Final decisions must be made by a licensed professional.</li>
           <li><strong>Guidelines:</strong> Always follow clinical guidelines and local regulations when interpreting AI outputs.</li>
@@ -725,26 +705,40 @@ Please provide 3-5 treatment suggestions in a bullet list format.
       </div>
 
       {/* Detailed Report Modal */}
-      {showReportModal && (
-        <div className="modal-overlay" onClick={() => setShowReportModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Detailed Radiology Report</h2>
-            <div style={{ textAlign: "left", maxHeight: "400px", overflowY: "auto" }}>
-              <pre style={{ whiteSpace: "pre-wrap", fontSize: "14px", lineHeight: 1.4 }}>
-                {fileStates.find((f) => f.detailedReport)?.detailedReport || "No report available."}
-              </pre>
-            </div>
-            <div className="modal-actions">
-              <button className="close-modal-button" onClick={() => setShowReportModal(false)}>
-                Close
-              </button>
-              <button className="secondary-button" onClick={handlePrintReport}>
-                Print Report
-              </button>
+      {showReportModal && currentReportFileId !== null && (() => {
+        // Get the state for the current report
+        const currentFileState = fileStates.find((f) => f.fileId === currentReportFileId);
+        return (
+          <div className="modal-overlay" onClick={() => { setShowReportModal(false); setCurrentReportFileId(null); }}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>Detailed Radiology Report</h2>
+                {/* Smaller, less noticeable print link in the header */}
+                <button className="print-report-link" onClick={handlePrintReport}>Print</button>
+              </div>
+              <div style={{ textAlign: "left", maxHeight: "600px", overflowY: "auto" }}>
+                <textarea
+                  value={currentFileState?.detailedReport || ""}
+                  onChange={(e) => updateFileState(currentReportFileId, { detailedReport: e.target.value })}
+                  style={{
+                    width: "100%",
+                    height: "500px",
+                    fontFamily: "monospace",
+                    whiteSpace: "pre-wrap",
+                    fontSize: "16px",
+                    lineHeight: 1.5,
+                  }}
+                />
+              </div>
+              <div className="modal-actions">
+                <button className="close-modal-button" onClick={() => { setShowReportModal(false); setCurrentReportFileId(null); }}>
+                  Close
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
